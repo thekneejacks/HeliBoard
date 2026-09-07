@@ -11,10 +11,11 @@ android {
 
     defaultConfig {
         applicationId = "helium314.keyboard"
-        minSdk = 21
+        minSdk = 27
         targetSdk = 37
         versionCode = 4101
         versionName = "4.1"
+        resConfigs("en")
         ndk {
             abiFilters.clear()
             abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
@@ -25,7 +26,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = true
-            isShrinkResources = false
+            isShrinkResources = true
             isDebuggable = false
             isJniDebuggable = false
         }
