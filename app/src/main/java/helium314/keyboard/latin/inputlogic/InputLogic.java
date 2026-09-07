@@ -1726,7 +1726,7 @@ public final class InputLogic {
     }
 
     private void addToHistoryIfEmoji(final String text, final SettingsValues settingsValues) {
-        if (mLastComposedWord == LastComposedWord.NOT_A_COMPOSED_WORD // we want a last composed word, also to avoid storing consecutive emojis
+        /*if (mLastComposedWord == LastComposedWord.NOT_A_COMPOSED_WORD // we want a last composed word, also to avoid storing consecutive emojis
             || mWordComposer.isComposingWord() // emoji will be part of the word in this case, better do nothing
             || !settingsValues.mBigramPredictionEnabled // this is only for next word suggestions, so they need to be enabled
             || settingsValues.mIncognitoModeEnabled
@@ -1743,7 +1743,8 @@ public final class InputLogic {
             mConnection.getNgramContextFromNthPreviousWord(settingsValues.mSpacingAndPunctuations, 2),
             (int) TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()),
             settingsValues.mBlockPotentiallyOffensive
-        );
+        );*/
+        return;
     }
 
     public void performUpdateSuggestionStripSync(final SettingsValues settingsValues, final int inputStyle) {
@@ -1753,7 +1754,7 @@ public final class InputLogic {
             Log.d(TAG, "performUpdateSuggestionStripSync()");
         }
         // Check if we have a suggestion engine attached.
-        if (!settingsValues.needsToLookupSuggestions()) {
+        //if (!settingsValues.needsToLookupSuggestions()) {
             if (mWordComposer.isComposingWord()) {
                 Log.w(TAG, "Called updateSuggestionsOrPredictions but suggestions were not "
                         + "requested!");
@@ -1761,14 +1762,14 @@ public final class InputLogic {
             // Clear the suggestions strip.
             mSuggestionStripViewAccessor.setSuggestions(SuggestedWords.getEmptyInstance());
             return;
-        }
+        //}
 
-        if (!mWordComposer.isComposingWord() && !settingsValues.mBigramPredictionEnabled) {
+        /*if (!mWordComposer.isComposingWord() && !settingsValues.mBigramPredictionEnabled) {
             mSuggestionStripViewAccessor.setNeutralSuggestionStrip();
             return;
         }
 
-        final AsyncResultHolder<SuggestedWords> holder = new AsyncResultHolder<>("Suggest");
+        /*final AsyncResultHolder<SuggestedWords> holder = new AsyncResultHolder<>("Suggest");
         mInputLogicHandler.getSuggestedWords(() -> getSuggestedWords(
             inputStyle, SuggestedWords.NOT_A_SEQUENCE_NUMBER,
             suggestedWords -> {
@@ -1786,9 +1787,9 @@ public final class InputLogic {
                     holder.set(retrieveOlderSuggestions(typedWordInfo, mSuggestedWords));
                 }
             }
-        ));
+        ));*/
         // This line may cause the current thread to wait.
-        final SuggestedWords suggestedWords = holder.get(null,
+        /*final SuggestedWords suggestedWords = holder.get(null,
                 Constants.GET_SUGGESTED_WORDS_TIMEOUT);
         if (suggestedWords != null) {
             // Prefer clipboard suggestions (if available and setting is enabled) over beginning of sentence predictions.
@@ -1803,7 +1804,7 @@ public final class InputLogic {
         if (DebugFlags.DEBUG_ENABLED) {
             long runTimeMillis = SystemClock.elapsedRealtime() - startTimeMillis;
             Log.d(TAG, "performUpdateSuggestionStripSync() : " + runTimeMillis + " ms to finish");
-        }
+        }*/
     }
 
     /**
@@ -2407,13 +2408,14 @@ public final class InputLogic {
             // INPUT_STYLE_TYPING.
             performUpdateSuggestionStripSync(settingsValues, SuggestedWords.INPUT_STYLE_TYPING);
         }
-        final SuggestedWordInfo autoCorrectionOrNull = mWordComposer.getAutoCorrectionOrNull();
+        //final SuggestedWordInfo autoCorrectionOrNull = mWordComposer.getAutoCorrectionOrNull();
         final String typedWord = mWordComposer.getTypedWord();
-        final String stringToCommit = (autoCorrectionOrNull != null) ? autoCorrectionOrNull.mWord : typedWord;
-        if (stringToCommit != null) {
+        //final String stringToCommit = (autoCorrectionOrNull != null) ? autoCorrectionOrNull.mWord : typedWord;
+        //final String stringToCommit = typedWord;
+        //if (stringToCommit != null) {
             final boolean isBatchMode = mWordComposer.isBatchMode();
-            commitChosenWord(settingsValues, stringToCommit, LastComposedWord.COMMIT_TYPE_DECIDED_WORD, separator);
-            if (!typedWord.equals(stringToCommit)) {
+            commitChosenWord(settingsValues, typedWord, LastComposedWord.COMMIT_TYPE_DECIDED_WORD, separator);
+            /*if (!typedWord.equals(stringToCommit)) {
                 // This will make the correction flash for a short while as a visual clue
                 // to the user that auto-correction happened. It has no other effect; in particular
                 // note that this won't affect the text inside the text field AT ALL: it only makes
@@ -2429,10 +2431,10 @@ public final class InputLogic {
                 StatsUtils.onAutoCorrection(typedWord, stringToCommit, isBatchMode,
                         mDictionaryFacilitator, prevWordsContext);
                 StatsUtils.onWordCommitAutoCorrect(stringToCommit, isBatchMode);
-            } else {
-                StatsUtils.onWordCommitUserTyped(stringToCommit, isBatchMode);
-            }
-        }
+            } else {*/
+                StatsUtils.onWordCommitUserTyped(typedWord, isBatchMode);
+            //}
+        //}
     }
 
     /**

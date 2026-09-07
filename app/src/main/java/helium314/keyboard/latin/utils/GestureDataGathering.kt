@@ -148,7 +148,7 @@ object BackgroundGatheringCache {
         if (DEBUG) Log.i(TAG, "save cached data")
         cachedWords.clear()
         updateIcon(words.isNotEmpty())
-        scope.launch { words.forEach { it.save(context) } }
+        //scope.launch { words.forEach { it.save(context) } }
     }
 
     fun clear() {

@@ -172,7 +172,7 @@ fun GestureDataScreen(
         }
         lastData?.let { scope.launch {
             ++sessionWordCount
-            it.save(ctx)
+            //it.save(ctx)
         } }
         wordFromDict = getRandomWord(words)
         lastData = null
@@ -234,7 +234,7 @@ fun GestureDataScreen(
                             || suggestions.first().mWord == target) { // or the target word first (but negative), which can happen in some cases
                         scope.launch {
                             ++sessionWordCount
-                            newData.save(ctx)
+                            //newData.save(ctx)
                         }
                         nextWord(false)
                     } else {
