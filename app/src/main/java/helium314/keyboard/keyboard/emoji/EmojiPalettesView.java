@@ -350,7 +350,7 @@ public final class EmojiPalettesView extends LinearLayout
     }
 
     void addRecentKey(final Key key) {
-        if (Settings.getValues().mIncognitoModeEnabled) {
+        /*if (Settings.getValues().mIncognitoModeEnabled) {
             // We do not want to log recent keys while being in incognito
             return;
         }
@@ -360,7 +360,7 @@ public final class EmojiPalettesView extends LinearLayout
         }
         getRecentsKeyboard().addKeyFirst(key);
         if (initialized)
-            mPager.getAdapter().notifyItemChanged(mEmojiCategory.getRecentTabId());
+            mPager.getAdapter().notifyItemChanged(mEmojiCategory.getRecentTabId());*/
     }
 
     private void setupBottomRowKeyboard(EditorInfo editorInfo, KeyboardActionListener keyboardActionListener) {

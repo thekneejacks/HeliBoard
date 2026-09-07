@@ -1706,12 +1706,12 @@ public final class InputLogic {
             return;
         boolean wasAutoCapitalized = mWordComposer.wasAutoCapitalized() && !mWordComposer.isMostlyCaps();
         String word = StringUtilsKt.stripTrailingSeparatorsAndConnectors(suggestion, settingsValues.mSpacingAndPunctuations);
-        if (settingsValues.mIncognitoModeEnabled) {
+        //if (settingsValues.mIncognitoModeEnabled) {
             // don't add to history, but still adjust confidences
             // otherwise incognito input fields can be very annoying when the wrong language is active
             mDictionaryFacilitator.adjustConfidences(word, wasAutoCapitalized);
             return;
-        }
+        /*}
         if (mConnection.hasSlowInputConnection()) {
             // Since we don't unlearn when the user backspaces on a slow InputConnection,
             // turn off learning to guard against adding typos that the user later deletes.
@@ -1722,7 +1722,7 @@ public final class InputLogic {
         }
         final int timeStampInSeconds = (int)TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis());
         mDictionaryFacilitator.addToUserHistory(word, wasAutoCapitalized, ngramContext,
-                timeStampInSeconds, settingsValues.mBlockPotentiallyOffensive);
+                timeStampInSeconds, settingsValues.mBlockPotentiallyOffensive);*/
     }
 
     private void addToHistoryIfEmoji(final String text, final SettingsValues settingsValues) {

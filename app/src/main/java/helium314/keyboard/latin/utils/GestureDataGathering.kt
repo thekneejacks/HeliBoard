@@ -172,7 +172,7 @@ fun setUseBackgroundGathering(context: Context, editorInfo: EditorInfo): Boolean
 }
 
 private fun isBackgroundGatheringUsed(context: Context, editorInfo: EditorInfo): Boolean {
-    if (!JniUtils.sHaveGestureLib) return false
+    /*if (!JniUtils.sHaveGestureLib) return false
     if (!GestureDataGatheringSettings.isBackgroundGatheringEnabled(context.prefs())) return false
     if (Settings.getValues().mIncognitoModeEnabled) return false
     val inputAttributes = InputAttributes(editorInfo, false, "")
@@ -183,7 +183,8 @@ private fun isBackgroundGatheringUsed(context: Context, editorInfo: EditorInfo):
     if (GestureDataGatheringSettings.isForbiddenForDataGathering(editorInfo.packageName, context)) return false
     if (editorInfo.privateImeOptions == "noBackground") return false // meant for review screen
     // we might not have a known dictionary, they are informed about this when enabling background gathering
-    return true
+    return true*/
+    return false
 }
 
 const val dictTestImeOption = "useTestDictionaryFacilitator,${BuildConfig.APPLICATION_ID}.${Constants.ImeOption.NO_FLOATING_GESTURE_PREVIEW}"
@@ -206,17 +207,17 @@ class WordData(
     val topSuggestion: SuggestedWords.SuggestedWordInfo? = null
 ) {
     // keyboard is not immutable, so better store potentially relevant information immediately
-    private val keys = keyboard.sortedKeys
+    /*private val keys = keyboard.sortedKeys
     private val height = keyboard.mOccupiedHeight
     private val width = keyboard.mOccupiedWidth
 
     private val packageName = keyboard.mId.editorInfo.packageName
     private val pointerData = PointerData.fromPointers(composedData.mInputPointers)
 
-    private val timestamp = System.currentTimeMillis()
+    private val timestamp = System.currentTimeMillis()*/
 
     fun save(context: Context) {
-        GestureDataGatheringSettings.onTrySaveData(context.prefs())
+        /*GestureDataGatheringSettings.onTrySaveData(context.prefs())
         if (!isSavingOk(context))
             return
         val dao = GestureDataDao.getInstance(context) ?: return
@@ -268,7 +269,8 @@ class WordData(
         )
         scope.launch { dao.add(data, topWord, timestamp) }
         if (!activeMode)
-            scope.launch(Dispatchers.Main) { GestureDataGatheringSettings.informAboutTooManyBackgroundModeWords(context, dao) }
+            scope.launch(Dispatchers.Main) { GestureDataGatheringSettings.informAboutTooManyBackgroundModeWords(context, dao) }*/
+        return
     }
 
     fun filterSuggestions(blockedWords: Collection<String>): List<SuggestedWords.SuggestedWordInfo> {
@@ -307,7 +309,7 @@ class WordData(
 
     // find when we should NOT save
     fun isSavingOk(context: Context): Boolean {
-        if (inputStyle != SuggestedWords.INPUT_STYLE_TAIL_BATCH)
+        /*if (inputStyle != SuggestedWords.INPUT_STYLE_TAIL_BATCH)
             return false
         if (activeMode)
             // active mode should be fine, the check is just an addition in case there is a bug that sets the wrong mode or dictionary facilitator
@@ -338,7 +340,10 @@ class WordData(
         // don't store if target word / first suggestion is blocked, the other suggestions will get redacted anyway
         if ((targetWord ?: topSuggestion?.mWord) in ignoreWords)
             return false
-        return true
+        return true*/
+
+        //always use incognitp
+        return false
     }
 
     private fun SuggestedWords.SuggestedWordInfo.redact() =

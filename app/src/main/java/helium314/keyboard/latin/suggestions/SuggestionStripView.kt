@@ -511,13 +511,13 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
         val settingsValues = Settings.getValues()
 
         val toolbarIsExpandable = settingsValues.mToolbarMode == ToolbarMode.EXPANDABLE
-        if (settingsValues.mIncognitoModeEnabled) {
+        //if (settingsValues.mIncognitoModeEnabled) {
             toolbarExpandKey.setImageDrawable(incognitoIcon)
             toolbarExpandKey.isVisible = true
-        } else {
+        /*} else {
             toolbarExpandKey.setImageDrawable(toolbarArrowIcon)
             toolbarExpandKey.isVisible = toolbarIsExpandable
-        }
+        }*/
 
         toolbarExpandKey.setOnClickListener(if (!toolbarIsExpandable) null else this)
         pinnedKeys.visibility = suggestionsStrip.visibility
