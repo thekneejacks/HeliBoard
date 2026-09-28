@@ -50,8 +50,6 @@ import helium314.keyboard.latin.define.DebugFlags;
 import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.settings.SettingsValues;
 import helium314.keyboard.latin.settings.SpacingAndPunctuations;
-import helium314.keyboard.latin.utils.BackgroundGatheringCache;
-import helium314.keyboard.latin.utils.GestureDataGatheringKt;
 import helium314.keyboard.latin.utils.InputTypeUtils;
 import helium314.keyboard.latin.utils.IntentUtils;
 import helium314.keyboard.latin.utils.Log;
@@ -205,12 +203,9 @@ public final class InputLogic {
         String rawText = event.getTextToCommit().toString();
         InputTransaction inputTransaction = new InputTransaction(settingsValues, event, SystemClock.uptimeMillis(), mSpaceState, getActualCapsMode(settingsValues, keyboardCapsMode));
         mConnection.beginBatchEdit();
-        if (GestureDataGatheringKt.useBackgroundGathering && mConnection.hasSelection())
-            BackgroundGatheringCache.INSTANCE.onEditSelection(mConnection.getSelectedText(0), mConnection.getTextBeforeCursor(40, 0), mConnection.getTextAfterCursor(40, 0));
         if (mWordComposer.isComposingWord()) {
             if (mWordComposer.isCursorFrontOrMiddleOfComposingWord()) {
-                if (GestureDataGatheringKt.useBackgroundGathering)
-                    BackgroundGatheringCache.INSTANCE.onEditWord(mWordComposer.getTypedWord());
+
 
                 // stop composing, otherwise the text will end up at the end of the current word
                 mConnection.finishComposingText();
@@ -269,9 +264,7 @@ public final class InputLogic {
             return expectCursorMove;
         }
 
-        // if all text is gone, we treat it like onStartInput
-        if (GestureDataGatheringKt.useBackgroundGathering && newSelStart == 0 && newSelEnd == 0 && !mConnection.hasTextAfterCursor())
-            BackgroundGatheringCache.saveOrClear(mLatinIME);
+
 
         // TODO: the following is probably better done in resetEntireInputState().
         // it should only happen when the cursor moved, and the very purpose of the
@@ -350,11 +343,6 @@ public final class InputLogic {
         mWordBeingCorrectedByCursor = null;
         mJustRevertedACommit = false;
 
-        if (GestureDataGatheringKt.useBackgroundGathering && mConnection.hasSelection())
-            BackgroundGatheringCache.INSTANCE.onEditSelection(mConnection.getSelectedText(0), mConnection.getTextBeforeCursor(40, 0), mConnection.getTextAfterCursor(40, 0));
-        if (GestureDataGatheringKt.useBackgroundGathering && mWordComposer.isComposingWord() && mWordComposer.isCursorFrontOrMiddleOfComposingWord())
-            BackgroundGatheringCache.INSTANCE.onEditWord(mWordComposer.getTypedWord());
-
         Event processedEvent = mWordComposer.processEvent(event);
         InputTransaction inputTransaction = new InputTransaction(settingsValues, processedEvent, SystemClock.uptimeMillis(), mSpaceState, getActualCapsMode(settingsValues, keyboardCapsMode));
         if (processedEvent.getKeyCode() != KeyCode.DELETE || inputTransaction.getTimestamp() > mLastKeyTime + Constants.LONG_PRESS_MILLISECONDS) {
@@ -405,10 +393,6 @@ public final class InputLogic {
         handler.cancelUpdateSuggestionStrip();
         ++mAutoCommitSequenceNumber;
 
-        if (GestureDataGatheringKt.useBackgroundGathering && mConnection.hasSelection())
-            BackgroundGatheringCache.INSTANCE.onEditSelection(mConnection.getSelectedText(0), mConnection.getTextBeforeCursor(40, 0), mConnection.getTextAfterCursor(40, 0));
-        if (GestureDataGatheringKt.useBackgroundGathering && mWordComposer.isComposingWord() && mWordComposer.isCursorFrontOrMiddleOfComposingWord())
-            BackgroundGatheringCache.INSTANCE.onEditWord(mWordComposer.getTypedWord());
 
         mConnection.beginBatchEdit();
         if (mWordComposer.isComposingWord()) {
@@ -658,8 +642,6 @@ public final class InputLogic {
                 }
                 break;
             case KeyCode.UNDO:
-                if (GestureDataGatheringKt.useBackgroundGathering)
-                    BackgroundGatheringCache.INSTANCE.onUndo(mWordComposer.isComposingWord() ? mWordComposer.getTypedWord() : mLastComposedWord.mCommittedWord);
                 sendDownUpKeyEventWithMetaState(KeyEvent.KEYCODE_Z, KeyEvent.META_CTRL_ON);
                 break;
             case KeyCode.REDO:
@@ -1052,14 +1034,10 @@ public final class InputLogic {
         if (mWordComposer.isComposingWord()) {
             if (mWordComposer.isBatchMode()) {
                 final String rejectedSuggestion = mWordComposer.getTypedWord();
-                if (GestureDataGatheringKt.useBackgroundGathering)
-                    BackgroundGatheringCache.INSTANCE.onRejectedSuggestion(rejectedSuggestion);
                 mWordComposer.reset();
                 mWordComposer.setRejectedBatchModeSuggestion(rejectedSuggestion);
                 StatsUtils.onBackspaceWordDelete(rejectedSuggestion.length());
             } else {
-                if (GestureDataGatheringKt.useBackgroundGathering)
-                    BackgroundGatheringCache.INSTANCE.removeLast(mWordComposer.getTypedWord());
                 mWordComposer.applyProcessedEvent(event);
                 StatsUtils.onBackspacePressed(1);
             }

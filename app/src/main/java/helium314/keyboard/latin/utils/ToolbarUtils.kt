@@ -71,8 +71,6 @@ fun setToolbarButtonsActivatedStateOnPrefChange(buttonsGroup: ViewGroup, key: St
     // settings need to be updated when buttons change
     if (key != Settings.PREF_AUTO_CORRECTION
         && key != Settings.PREF_ALWAYS_INCOGNITO_MODE
-        && key != GestureDataGatheringSettings.PREF_BACKGROUND_GATHERING_ENABLED
-        && key != GestureDataGatheringSettings.PREF_BACKGROUND_DISABLED_BEFORE_TIME_MILLIS
         && key?.startsWith(Settings.PREF_ONE_HANDED_MODE_PREFIX) == false)
         return
 
@@ -88,7 +86,6 @@ private fun setToolbarButtonActivatedState(button: ImageButton) {
         ONE_HANDED -> Settings.getValues().mOneHandedModeEnabled
         SPLIT -> Settings.getValues().mIsSplitKeyboardEnabled
         AUTOCORRECT -> Settings.getValues().mAutoCorrectionEnabledPerUserSettings
-        BACKGROUND_GATHERING -> useBackgroundGathering
         else -> true
     }
 }

@@ -72,7 +72,6 @@ import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.settings.SettingsValues;
 import helium314.keyboard.latin.suggestions.SuggestionStripView;
 import helium314.keyboard.latin.touchinputconsumer.GestureConsumer;
-import helium314.keyboard.latin.utils.BackgroundGatheringCache;
 import helium314.keyboard.latin.utils.ColorUtilKt;
 import helium314.keyboard.latin.utils.FloatingKeyboardUtils;
 import helium314.keyboard.latin.utils.FoldableUtils;
@@ -648,13 +647,13 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
         mHandler.onFinishInputView(finishingInput);
 
         mGestureConsumer = GestureConsumer.NULL_GESTURE_CONSUMER;
-        BackgroundGatheringCache.saveOrClear(this);
+        //BackgroundGatheringCache.saveOrClear(this);
     }
 
     @Override
     public void onFinishInput() {
         mHandler.onFinishInput();
-        BackgroundGatheringCache.saveOrClear(this);
+        //BackgroundGatheringCache.saveOrClear(this);
     }
 
     @Override
