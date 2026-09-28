@@ -11,7 +11,7 @@ import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.SuggestionSpan
 import helium314.keyboard.latin.SuggestedWords
-import java.util.*
+import java.util.Locale
 
 fun getTextWithAutoCorrectionIndicatorUnderline(context: Context?, text: String, locale: Locale?): CharSequence {
     if (text.isEmpty())

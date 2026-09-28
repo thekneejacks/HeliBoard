@@ -6,22 +6,22 @@
 
 package helium314.keyboard.latin;
 
+import static helium314.keyboard.latin.common.Constants.ImeOption.NO_FLOATING_GESTURE_PREVIEW;
+import static helium314.keyboard.latin.common.Constants.ImeOption.NO_MICROPHONE;
+
 import android.os.Build;
 import android.text.InputType;
 import android.view.inputmethod.EditorInfo;
 
-import helium314.keyboard.latin.common.StringUtilsKt;
-import helium314.keyboard.compat.AppWorkarounds;
-import helium314.keyboard.latin.utils.Log;
-import helium314.keyboard.latin.utils.InputTypeUtils;
+import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static helium314.keyboard.latin.common.Constants.ImeOption.NO_FLOATING_GESTURE_PREVIEW;
-import static helium314.keyboard.latin.common.Constants.ImeOption.NO_MICROPHONE;
-
-import androidx.annotation.NonNull;
+import helium314.keyboard.compat.AppWorkarounds;
+import helium314.keyboard.latin.common.StringUtilsKt;
+import helium314.keyboard.latin.utils.InputTypeUtils;
+import helium314.keyboard.latin.utils.Log;
 
 /**
  * Class to hold attributes of the input field.

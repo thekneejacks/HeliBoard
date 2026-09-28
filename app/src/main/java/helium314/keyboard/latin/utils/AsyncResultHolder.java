@@ -6,8 +6,6 @@
 
 package helium314.keyboard.latin.utils;
 
-import helium314.keyboard.latin.utils.Log;
-
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 

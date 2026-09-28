@@ -11,7 +11,6 @@ import android.util.SparseIntArray
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode
 import helium314.keyboard.latin.common.Constants
 import java.text.Normalizer
-import java.util.*
 
 /**
  * A combiner that handles dead keys.

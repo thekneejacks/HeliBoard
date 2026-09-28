@@ -6,13 +6,13 @@
 
 package helium314.keyboard.latin.utils;
 
+import java.util.HashMap;
+
 import helium314.keyboard.latin.makedict.DictionaryHeader;
 import helium314.keyboard.latin.makedict.NgramProperty;
 import helium314.keyboard.latin.makedict.ProbabilityInfo;
 import helium314.keyboard.latin.makedict.WeightedString;
 import helium314.keyboard.latin.makedict.WordProperty;
-
-import java.util.HashMap;
 
 public class CombinedFormatUtils {
     public static final String DICTIONARY_TAG = "dictionary";

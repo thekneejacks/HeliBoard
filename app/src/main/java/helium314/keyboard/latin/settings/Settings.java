@@ -22,6 +22,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.Locale;
+import java.util.concurrent.locks.ReentrantLock;
+
 import helium314.keyboard.compat.ConfigurationCompatKt;
 import helium314.keyboard.keyboard.KeyboardActionListener;
 import helium314.keyboard.keyboard.internal.PopupKeySpec;
@@ -42,13 +47,8 @@ import helium314.keyboard.latin.utils.RunInLocaleKt;
 import helium314.keyboard.latin.utils.StatsUtils;
 import helium314.keyboard.latin.utils.SubtypeSettings;
 import helium314.keyboard.latin.utils.ToolbarKey;
-import helium314.keyboard.latin.utils.ToolbarUtilsKt;
 import helium314.keyboard.latin.utils.ToolbarMode;
-
-import java.io.File;
-import java.util.Arrays;
-import java.util.Locale;
-import java.util.concurrent.locks.ReentrantLock;
+import helium314.keyboard.latin.utils.ToolbarUtilsKt;
 
 public final class Settings implements SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String TAG = Settings.class.getSimpleName();

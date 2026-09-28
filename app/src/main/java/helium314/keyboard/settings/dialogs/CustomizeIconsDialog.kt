@@ -31,18 +31,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.edit
 import helium314.keyboard.keyboard.internal.KeyboardIconsSet
 import helium314.keyboard.latin.R
 import helium314.keyboard.latin.settings.customIconNames
+import helium314.keyboard.latin.utils.Theme
 import helium314.keyboard.latin.utils.getStringResourceOrName
 import helium314.keyboard.latin.utils.prefs
-import helium314.keyboard.latin.utils.Theme
-import helium314.keyboard.settings.initPreview
 import helium314.keyboard.latin.utils.previewDark
-import kotlinx.serialization.json.Json
-import androidx.core.content.edit
 import helium314.keyboard.settings.GetIconOrEmpty
+import helium314.keyboard.settings.initPreview
 import helium314.keyboard.settings.painterResourceCompat
+import kotlinx.serialization.json.Json
 
 @Composable
 fun CustomizeIconsDialog(

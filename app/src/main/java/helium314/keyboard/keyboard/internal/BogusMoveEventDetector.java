@@ -8,11 +8,11 @@ package helium314.keyboard.keyboard.internal;
 
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
-import helium314.keyboard.latin.utils.Log;
 
 import helium314.keyboard.latin.R;
 import helium314.keyboard.latin.common.Constants;
 import helium314.keyboard.latin.define.DebugFlags;
+import helium314.keyboard.latin.utils.Log;
 
 // This hack is applied to certain classes of tablets.
 public final class BogusMoveEventDetector {

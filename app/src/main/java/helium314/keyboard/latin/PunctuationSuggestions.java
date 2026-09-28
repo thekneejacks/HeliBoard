@@ -9,13 +9,13 @@ package helium314.keyboard.latin;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import helium314.keyboard.keyboard.internal.KeySpecParser;
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
 import helium314.keyboard.latin.common.StringUtils;
 import helium314.keyboard.latin.dictionary.Dictionary;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * The extended {@link SuggestedWords} class to represent punctuation suggestions.

@@ -7,10 +7,11 @@
 package helium314.keyboard.latin;
 
 import android.content.Context;
-import helium314.keyboard.latin.utils.Log;
 
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+
+import helium314.keyboard.latin.utils.Log;
 
 /**
  * Cache for dictionary facilitators of multiple locales.

@@ -26,34 +26,6 @@ class SingleDictionaryFacilitator(private val dict: Dictionary) : DictionaryFaci
      * where a non-match is considered an absolute zero.
      * Other suggestion fields of combined matches are taken from the highest-score one.
      */
-    fun getSuggestions(words: List<String>): SuggestionResults {
-        val suggestionResults = SuggestionResults(SuggestedWords.MAX_SUGGESTIONS, false, false)
-        words.flatMap { word -> getSuggestions(word).distinctBy { it.word } } // Filter out duplicate results per word
-            .groupBy { it.word }
-            .forEach { (_, results) ->
-                val info = results.maxBy { it.mScore }
-                val score = (results.sumOf { it.mScore.toLong() - Int.MIN_VALUE } / words.size + Int.MIN_VALUE).toInt()
-                suggestionResults.add(
-                    SuggestedWords.SuggestedWordInfo(
-                        info.word, info.mPrevWordsContext, score, info.mKindAndFlags,
-                        info.mSourceDict, info.mIndexOfTouchPointOfSecondWord, info.mAutoCommitFirstWordConfidence
-                    )
-                )
-            }
-        return suggestionResults
-    }
-
-    // this will not work from spell checker if used together with a different keyboard app
-    fun getSuggestions(word: String): SuggestionResults {
-        val suggestionResults = getSuggestionResults(
-            ComposedData.createForWord(word),
-            NgramContext.getEmptyPrevWordsContext(0),
-            KeyboardSwitcher.getInstance().keyboard!!, // looks like actual keyboard doesn't matter (composed data doesn't contain coordinates)
-            SettingsValuesForSuggestion(false, false),
-            Suggest.SESSION_ID_TYPING, SuggestedWords.INPUT_STYLE_TYPING
-        )
-        return suggestionResults
-    }
 
     override fun getSuggestionResults(
         composedData: ComposedData, ngramContext: NgramContext, keyboard: Keyboard,

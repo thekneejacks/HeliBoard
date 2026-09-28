@@ -16,12 +16,12 @@ import android.text.TextUtils;
 
 import com.android.inputmethod.latin.BinaryDictionary;
 
-import helium314.keyboard.latin.utils.Log;
-import helium314.keyboard.latin.utils.SubtypeLocaleUtils;
-
 import java.io.File;
 import java.util.Arrays;
 import java.util.Locale;
+
+import helium314.keyboard.latin.utils.Log;
+import helium314.keyboard.latin.utils.SubtypeLocaleUtils;
 
 /**
  * An expandable dictionary that stores the words in the user dictionary provider into a binary

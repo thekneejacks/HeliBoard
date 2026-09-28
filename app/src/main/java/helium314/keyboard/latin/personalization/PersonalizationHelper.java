@@ -7,17 +7,17 @@
 package helium314.keyboard.latin.personalization;
 
 import android.content.Context;
-import helium314.keyboard.latin.utils.Log;
 
 import androidx.annotation.NonNull;
-
-import helium314.keyboard.latin.common.FileUtils;
 
 import java.io.File;
 import java.io.FilenameFilter;
 import java.lang.ref.SoftReference;
 import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
+
+import helium314.keyboard.latin.common.FileUtils;
+import helium314.keyboard.latin.utils.Log;
 
 /**
  * Helps handle and manage personalized dictionaries such as {@link UserHistoryDictionary}.

@@ -8,13 +8,13 @@ package helium314.keyboard.latin.touchinputconsumer;
 
 import android.view.inputmethod.EditorInfo;
 
+import java.util.Locale;
+
 import helium314.keyboard.keyboard.Keyboard;
 import helium314.keyboard.latin.DictionaryFacilitator;
 import helium314.keyboard.latin.SuggestedWords;
 import helium314.keyboard.latin.common.InputPointers;
 import helium314.keyboard.latin.inputlogic.PrivateCommandPerformer;
-
-import java.util.Locale;
 
 /**
  * Stub for GestureConsumer.

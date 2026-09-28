@@ -10,7 +10,7 @@ import android.os.Build
 import android.text.InputType
 import android.view.inputmethod.EditorInfo
 import helium314.keyboard.latin.utils.Log
-import java.util.*
+import java.util.Locale
 
 object EditorInfoCompatUtils {
 

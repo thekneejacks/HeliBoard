@@ -6,11 +6,11 @@
 
 package com.android.inputmethod.latin;
 
+import java.util.Locale;
+
 import helium314.keyboard.latin.common.NativeSuggestOptions;
 import helium314.keyboard.latin.define.DecoderSpecificConstants;
 import helium314.keyboard.latin.utils.JniUtils;
-
-import java.util.Locale;
 
 public final class DicTraverseSession {
     static {

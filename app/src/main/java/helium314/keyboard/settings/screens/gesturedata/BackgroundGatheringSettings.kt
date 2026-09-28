@@ -62,33 +62,31 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.edit
 import androidx.core.graphics.drawable.toBitmap
-import helium314.keyboard.latin.AppsManager
-import helium314.keyboard.latin.R
-import helium314.keyboard.latin.utils.DeleteButton
-import helium314.keyboard.latin.utils.GestureDataGatheringSettings
-import helium314.keyboard.latin.utils.dpToPx
-import helium314.keyboard.latin.utils.prefs
-import helium314.keyboard.settings.dialogs.ThreeButtonAlertDialog
-import kotlinx.coroutines.launch
-import kotlin.collections.plus
 import androidx.core.graphics.toColorInt
 import com.android.inputmethod.latin.BinaryDictionary
 import helium314.keyboard.keyboard.KeyboardSwitcher
+import helium314.keyboard.latin.AppsManager
+import helium314.keyboard.latin.R
 import helium314.keyboard.latin.common.Constants.Separators
 import helium314.keyboard.latin.common.Links
 import helium314.keyboard.latin.dictionary.DictionaryFactory
 import helium314.keyboard.latin.dictionary.ReadOnlyBinaryDictionary
 import helium314.keyboard.latin.settings.Settings
+import helium314.keyboard.latin.utils.DeleteButton
+import helium314.keyboard.latin.utils.GestureDataGatheringSettings
 import helium314.keyboard.latin.utils.GestureDataGatheringSettings.getAppExclusions
 import helium314.keyboard.latin.utils.GestureDataGatheringSettings.getAppIncludeByDefault
 import helium314.keyboard.latin.utils.ToolbarKey
 import helium314.keyboard.latin.utils.defaultToolbarPref
+import helium314.keyboard.latin.utils.dpToPx
 import helium314.keyboard.latin.utils.getKnownDictHashes
+import helium314.keyboard.latin.utils.prefs
 import helium314.keyboard.settings.dialogs.ConfirmationDialog
 import helium314.keyboard.settings.dialogs.InfoDialog
+import helium314.keyboard.settings.dialogs.ThreeButtonAlertDialog
 import helium314.keyboard.settings.painterResourceCompat
 import kotlinx.coroutines.Dispatchers
-import kotlin.text.split
+import kotlinx.coroutines.launch
 
 // functionality for gesture data gathering as part of the NLNet Project https://nlnet.nl/project/GestureTyping/
 // will be removed once the project is finished

@@ -7,20 +7,20 @@
 package com.android.inputmethod.keyboard;
 
 import android.graphics.Rect;
-import helium314.keyboard.latin.utils.Log;
 
 import androidx.annotation.NonNull;
-
-import helium314.keyboard.keyboard.Key;
-import helium314.keyboard.keyboard.internal.TouchPositionCorrection;
-import helium314.keyboard.latin.common.Constants;
-import helium314.keyboard.latin.utils.JniUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+
+import helium314.keyboard.keyboard.Key;
+import helium314.keyboard.keyboard.internal.TouchPositionCorrection;
+import helium314.keyboard.latin.common.Constants;
+import helium314.keyboard.latin.utils.JniUtils;
+import helium314.keyboard.latin.utils.Log;
 
 public class ProximityInfo {
     private static final String TAG = ProximityInfo.class.getSimpleName();

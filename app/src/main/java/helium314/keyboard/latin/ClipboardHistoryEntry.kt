@@ -10,11 +10,11 @@ import android.os.Build
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.FileProvider
+import androidx.core.view.inputmethod.InputContentInfoCompat
 import helium314.keyboard.latin.common.ColorType
+import helium314.keyboard.latin.database.ClipboardDao
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.utils.Log
-import androidx.core.view.inputmethod.InputContentInfoCompat
-import helium314.keyboard.latin.database.ClipboardDao
 import java.io.File
 
 class ClipboardHistoryEntry(

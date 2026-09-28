@@ -6,11 +6,11 @@
 
 package helium314.keyboard.keyboard.internal;
 
-import helium314.keyboard.latin.utils.Log;
-
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
+
+import helium314.keyboard.latin.utils.Log;
 
 public final class PointerTrackerQueue {
     private static final String TAG = PointerTrackerQueue.class.getSimpleName();

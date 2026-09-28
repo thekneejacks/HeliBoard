@@ -8,9 +8,9 @@ package helium314.keyboard.keyboard.internal;
 
 import androidx.annotation.NonNull;
 
-import helium314.keyboard.keyboard.Key;
-
 import java.util.HashMap;
+
+import helium314.keyboard.keyboard.Key;
 
 public abstract class UniqueKeysCache {
     public abstract void setEnabled(boolean enabled);

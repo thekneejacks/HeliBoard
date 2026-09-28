@@ -9,11 +9,11 @@ package helium314.keyboard.latin.common;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
-import helium314.keyboard.latin.utils.ScriptUtils;
-
 import java.util.Arrays;
 import java.util.Locale;
+
+import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
+import helium314.keyboard.latin.utils.ScriptUtils;
 
 public final class StringUtils {
 

@@ -48,9 +48,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import java.io.File
 import java.util.EnumMap
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.set
 
 fun checkVersionUpgrade(context: Context) {
     val prefs = context.prefs()

@@ -18,6 +18,10 @@ import android.view.inputmethod.InputMethodSubtype;
 import androidx.annotation.NonNull;
 import androidx.core.util.TypedValueCompat;
 
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Locale;
+
 import helium314.keyboard.compat.ConfigurationCompatKt;
 import helium314.keyboard.compat.IsLockedCompatKt;
 import helium314.keyboard.keyboard.KeyboardActionListener;
@@ -37,10 +41,6 @@ import helium314.keyboard.latin.utils.ScriptUtils;
 import helium314.keyboard.latin.utils.SubtypeSettings;
 import helium314.keyboard.latin.utils.SubtypeUtilsKt;
 import helium314.keyboard.latin.utils.ToolbarMode;
-
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Locale;
 
 /**
  * When you call the constructor of this class, you may want to change the current system locale by

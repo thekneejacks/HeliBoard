@@ -10,12 +10,12 @@ import android.view.inputmethod.InputMethodSubtype;
 
 import androidx.annotation.NonNull;
 
-import helium314.keyboard.latin.RichInputMethodSubtype;
-import helium314.keyboard.latin.settings.Settings;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+
+import helium314.keyboard.latin.RichInputMethodSubtype;
+import helium314.keyboard.latin.settings.Settings;
 
 /**
  * This class determines that the language name on the spacebar should be displayed in what format.

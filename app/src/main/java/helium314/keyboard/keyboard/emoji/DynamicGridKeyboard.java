@@ -11,22 +11,21 @@ import static helium314.keyboard.keyboard.internal.keyboard_parser.EmojiParserKt
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 
-import helium314.keyboard.latin.common.Constants;
-import helium314.keyboard.latin.common.StringUtils;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import helium314.keyboard.keyboard.Key;
-import helium314.keyboard.keyboard.Keyboard;
-import helium314.keyboard.keyboard.internal.PopupKeySpec;
-import helium314.keyboard.latin.settings.Settings;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import helium314.keyboard.keyboard.Key;
+import helium314.keyboard.keyboard.Keyboard;
+import helium314.keyboard.keyboard.internal.PopupKeySpec;
+import helium314.keyboard.latin.common.Constants;
+import helium314.keyboard.latin.common.StringUtils;
+import helium314.keyboard.latin.settings.Settings;
 
 /**
  * This is a Keyboard class where you can add keys dynamically shown in a grid layout

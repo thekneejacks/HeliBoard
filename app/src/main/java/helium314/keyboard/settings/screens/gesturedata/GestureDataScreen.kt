@@ -97,22 +97,22 @@ import helium314.keyboard.latin.utils.SuggestionResults
 import helium314.keyboard.latin.utils.Theme
 import helium314.keyboard.latin.utils.UncachedInputMethodManagerUtils
 import helium314.keyboard.latin.utils.WordData
+import helium314.keyboard.latin.utils.appendLink
 import helium314.keyboard.latin.utils.dictTestImeOption
 import helium314.keyboard.latin.utils.gestureDataActiveFacilitator
-import helium314.keyboard.latin.utils.getSecondaryLocales
-import helium314.keyboard.latin.utils.locale
-import helium314.keyboard.settings.DropDownField
-import helium314.keyboard.latin.utils.appendLink
 import helium314.keyboard.latin.utils.getKnownDictHashes
+import helium314.keyboard.latin.utils.getSecondaryLocales
 import helium314.keyboard.latin.utils.htmlToAnnotated
+import helium314.keyboard.latin.utils.locale
+import helium314.keyboard.latin.utils.previewDark
+import helium314.keyboard.settings.DropDownField
 import helium314.keyboard.settings.SettingsDestination
+import helium314.keyboard.settings.WithSmallTitle
 import helium314.keyboard.settings.dialogs.ConfirmationDialog
 import helium314.keyboard.settings.dialogs.InfoDialog
 import helium314.keyboard.settings.dialogs.ThreeButtonAlertDialog
 import helium314.keyboard.settings.initPreview
 import helium314.keyboard.settings.isWideScreen
-import helium314.keyboard.latin.utils.previewDark
-import helium314.keyboard.settings.WithSmallTitle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -120,7 +120,6 @@ import java.io.File
 import java.text.DateFormat
 import java.util.Date
 import java.util.Locale
-import kotlin.collections.plus
 import kotlin.math.pow
 import kotlin.random.Random
 

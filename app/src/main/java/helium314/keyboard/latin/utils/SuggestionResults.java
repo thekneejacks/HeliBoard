@@ -7,13 +7,14 @@
 package helium314.keyboard.latin.utils;
 
 import androidx.annotation.Nullable;
-import helium314.keyboard.latin.SuggestedWords.SuggestedWordInfo;
-import helium314.keyboard.latin.define.ProductionFlags;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.TreeSet;
+
+import helium314.keyboard.latin.SuggestedWords.SuggestedWordInfo;
+import helium314.keyboard.latin.define.ProductionFlags;
 
 /**
  * A TreeSet of SuggestedWordInfo that is bounded in size and throws everything that's smaller

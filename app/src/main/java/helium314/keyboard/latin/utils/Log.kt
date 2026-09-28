@@ -1,6 +1,7 @@
 package helium314.keyboard.latin.utils
 
 import android.os.Build
+import helium314.keyboard.latin.utils.Log.logLines
 import java.time.LocalDateTime
 import java.util.Date
 

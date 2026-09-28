@@ -9,10 +9,10 @@ package helium314.keyboard.latin.utils;
 import android.text.InputType;
 import android.text.TextUtils;
 
+import java.util.ArrayList;
+
 import helium314.keyboard.latin.common.Constants;
 import helium314.keyboard.latin.settings.SpacingAndPunctuations;
-
-import java.util.ArrayList;
 
 public final class CapsModeUtils {
     private CapsModeUtils() {

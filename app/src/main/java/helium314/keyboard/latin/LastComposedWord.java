@@ -8,11 +8,11 @@ package helium314.keyboard.latin;
 
 import android.text.TextUtils;
 
+import java.util.ArrayList;
+
 import helium314.keyboard.event.Event;
 import helium314.keyboard.latin.common.InputPointers;
 import helium314.keyboard.latin.define.DecoderSpecificConstants;
-
-import java.util.ArrayList;
 
 /**
  * This class encapsulates data about a word previously composed, but that has been

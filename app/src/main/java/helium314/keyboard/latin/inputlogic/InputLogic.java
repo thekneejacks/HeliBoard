@@ -19,31 +19,30 @@ import android.text.style.BackgroundColorSpan;
 import android.text.style.SuggestionSpan;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
-import android.view.inputmethod.CorrectionInfo;
 import android.view.inputmethod.EditorInfo;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.Locale;
+import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
+
 import helium314.keyboard.compat.AppWorkarounds;
 import helium314.keyboard.event.Event;
 import helium314.keyboard.event.InputTransaction;
-import helium314.keyboard.keyboard.Keyboard;
 import helium314.keyboard.keyboard.KeyboardElement;
 import helium314.keyboard.keyboard.KeyboardLayoutSet;
 import helium314.keyboard.keyboard.KeyboardSwitcher;
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
 import helium314.keyboard.latin.CapsMode;
-import helium314.keyboard.latin.dictionary.Dictionary;
 import helium314.keyboard.latin.DictionaryFacilitator;
-import helium314.keyboard.latin.dictionary.DictionaryFactory;
 import helium314.keyboard.latin.LastComposedWord;
 import helium314.keyboard.latin.LatinIME;
 import helium314.keyboard.latin.NgramContext;
 import helium314.keyboard.latin.RichInputConnection;
 import helium314.keyboard.latin.SingleDictionaryFacilitator;
-import helium314.keyboard.latin.Suggest;
-import helium314.keyboard.latin.Suggest.OnGetSuggestedWordsCallback;
 import helium314.keyboard.latin.SuggestedWords;
 import helium314.keyboard.latin.SuggestedWords.SuggestedWordInfo;
 import helium314.keyboard.latin.WordComposer;
@@ -53,17 +52,17 @@ import helium314.keyboard.latin.common.StringUtils;
 import helium314.keyboard.latin.common.StringUtilsKt;
 import helium314.keyboard.latin.common.SuggestionSpanUtilsKt;
 import helium314.keyboard.latin.define.DebugFlags;
+import helium314.keyboard.latin.dictionary.DictionaryFactory;
 import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.settings.SettingsValues;
 import helium314.keyboard.latin.settings.SpacingAndPunctuations;
 import helium314.keyboard.latin.suggestions.SuggestionStripViewAccessor;
-import helium314.keyboard.latin.utils.AsyncResultHolder;
+import helium314.keyboard.latin.utils.BackgroundGatheringCache;
 import helium314.keyboard.latin.utils.DictionaryInfoUtils;
 import helium314.keyboard.latin.utils.GestureDataGatheringKt;
 import helium314.keyboard.latin.utils.InputTypeUtils;
 import helium314.keyboard.latin.utils.IntentUtils;
 import helium314.keyboard.latin.utils.Log;
-import helium314.keyboard.latin.utils.BackgroundGatheringCache;
 import helium314.keyboard.latin.utils.RecapitalizeMode;
 import helium314.keyboard.latin.utils.RecapitalizeStatus;
 import helium314.keyboard.latin.utils.ScriptUtils;
@@ -71,11 +70,6 @@ import helium314.keyboard.latin.utils.StatsUtils;
 import helium314.keyboard.latin.utils.TextPlacement;
 import helium314.keyboard.latin.utils.TextRange;
 import helium314.keyboard.latin.utils.TimestampKt;
-
-import java.util.ArrayList;
-import java.util.Locale;
-import java.util.TreeSet;
-import java.util.concurrent.TimeUnit;
 
 /**
  * This class manages the input logic.
@@ -96,13 +90,12 @@ public final class InputLogic {
     private int mSpaceState;
     // Never null
     public SuggestedWords mSuggestedWords = SuggestedWords.getEmptyInstance();
-    public Suggest mSuggest; // non-final for active gesture data gathering, revert when data gathering phase is done (end of 2026 latest)
+
     public DictionaryFacilitator mDictionaryFacilitator; // non-final for active gesture data gathering, revert when data gathering phase is done (end of 2026 latest)
     private SingleDictionaryFacilitator mEmojiDictionaryFacilitator;
     public void setFacilitator(DictionaryFacilitator facilitator) { // only for active gesture data gathering, remove when data gathering phase is done (end of 2026 latest)
         if (mDictionaryFacilitator == facilitator) return;
         mDictionaryFacilitator = facilitator;
-        mSuggest = new Suggest(mDictionaryFacilitator);
     }
 
     public LastComposedWord mLastComposedWord = LastComposedWord.NOT_A_COMPOSED_WORD;
@@ -147,7 +140,6 @@ public final class InputLogic {
         mWordComposer = new WordComposer();
         mConnection = new RichInputConnection(latinIME);
         mInputLogicHandler = new InputLogicHandler(mLatinIME.mHandler, this);
-        mSuggest = new Suggest(dictionaryFacilitator);
         mDictionaryFacilitator = dictionaryFacilitator;
     }
 
@@ -867,10 +859,6 @@ public final class InputLogic {
             case KeyCode.TIMESTAMP:
                 mLatinIME.onTextInput(TimestampKt.getTimestamp(mLatinIME));
                 break;
-            case KeyCode.EMOJI_SEARCH:
-                commitTyped(sv, LastComposedWord.NOT_A_SEPARATOR);
-                mLatinIME.launchEmojiSearch();
-                break;
             case KeyCode.SEND_INTENT_ONE, KeyCode.SEND_INTENT_TWO, KeyCode.SEND_INTENT_THREE:
                 IntentUtils.handleSendIntentKey(mLatinIME, event.getKeyCode());
             case KeyCode.IME_HIDE_UI:
@@ -1044,7 +1032,6 @@ public final class InputLogic {
             final CharSequence text = mConnection.textBeforeCursorUntilLastWhitespaceOrDoubleSlash();
             final TextRange range = new TextRange(text, 0, text.length(), text.length(), false);
             isComposingWord = true;
-            restartSuggestions(range);
         }
         // TODO: remove isWordConnector() and use isUsuallyFollowedBySpace() instead.
         // See onStartBatchInput() to see how to do it.
@@ -1330,10 +1317,7 @@ public final class InputLogic {
                 //
                 // Note: restartSuggestionsOnWordTouchedByCursor is already called for normal
                 // (non-revert) backspace handling.
-                if (inputTransaction.getSettingsValues().needsToLookupSuggestions()
-                        && inputTransaction.getSettingsValues().mSpacingAndPunctuations.mCurrentLanguageHasSpaces) {
-                    restartSuggestionsOnWordTouchedByCursor(inputTransaction.getSettingsValues(), currentKeyboardScript);
-                }
+
                 return;
             }
             // todo: this is currently disabled, as it causes inconsistencies with textInput, depending whether the end
@@ -1462,9 +1446,6 @@ public final class InputLogic {
             }
             if (mConnection.hasSlowInputConnection()) {
                 mSuggestionStripViewAccessor.setNeutralSuggestionStrip();
-            } else if (inputTransaction.getSettingsValues().needsToLookupSuggestions()
-                    && inputTransaction.getSettingsValues().mSpacingAndPunctuations.mCurrentLanguageHasSpaces) {
-                restartSuggestionsOnWordTouchedByCursor(inputTransaction.getSettingsValues(), currentKeyboardScript);
             }
         }
     }
@@ -1805,127 +1786,6 @@ public final class InputLogic {
             long runTimeMillis = SystemClock.elapsedRealtime() - startTimeMillis;
             Log.d(TAG, "performUpdateSuggestionStripSync() : " + runTimeMillis + " ms to finish");
         }*/
-    }
-
-    /**
-     * Check if the cursor is touching a word. If so, restart suggestions on this word, else
-     * do nothing.
-     *
-     * @param settingsValues the current values of the settings.
-     */
-    public void restartSuggestionsOnWordTouchedByCursor(final SettingsValues settingsValues,
-            // TODO: remove this argument, put it into settingsValues
-            final String currentKeyboardScript) {
-        // HACK: We may want to special-case some apps that exhibit bad behavior in case of
-        // recorrection. This is a temporary, stopgap measure that will be removed later.
-        // TODO: remove this.
-        if (!settingsValues.mSpacingAndPunctuations.mCurrentLanguageHasSpaces
-                // If no suggestions are requested, don't try restarting suggestions.
-                || !settingsValues.needsToLookupSuggestions()
-                // If we are currently in a batch input, we must not resume suggestions, or the result
-                // of the batch input will replace the new composition. This may happen in the corner case
-                // that the app moves the cursor on its own accord during a batch input.
-                || mInputLogicHandler.isInBatchInput()
-                // If the cursor is not touching a word, or if there is a selection, return right away.
-                || mConnection.hasSelection()
-                // If we don't know the cursor location, return.
-                || mConnection.getExpectedSelectionStart() < 0) {
-            mSuggestionStripViewAccessor.setNeutralSuggestionStrip();
-            return;
-        }
-
-        updateInlineEmojiSearch();
-        if (isInlineEmojiSearchAction()) {
-            mInputLogicHandler.getSuggestedWords(() -> getSuggestedWords(SuggestedWords.INPUT_STYLE_TYPING,
-                SuggestedWords.NOT_A_SEQUENCE_NUMBER, this::doShowSuggestionsAndClearAutoCorrectionIndicator));
-            return;
-        }
-
-        if (!mConnection.isCursorTouchingWord(settingsValues.mSpacingAndPunctuations, true /* checkTextAfter */)) {
-            // Show predictions.
-            mWordComposer.setCapitalizedModeAtStartComposingTime(CapsMode.OFF);
-            mLatinIME.mHandler.postUpdateSuggestionStrip(SuggestedWords.INPUT_STYLE_RECORRECTION);
-            // "unselect" the previous text
-            mConnection.finishComposingText();
-            return;
-        }
-        final TextRange range = mConnection.getWordRangeAtCursor(settingsValues.mSpacingAndPunctuations, currentKeyboardScript);
-        if (null == range) return; // Happens if we don't have an input connection at all
-        if (range.length() <= 0) {
-            // Race condition, or touching a word in a non-supported script.
-            mLatinIME.setNeutralSuggestionStrip();
-            mConnection.finishComposingText();
-            return;
-        }
-        // If for some strange reason (editor bug or so) we measure the text before the cursor as
-        // longer than what the entire text is supposed to be, the safe thing to do is bail out.
-        if (range.mHasUrlSpans) return;
-        // If there are links, we don't resume suggestions. Making
-        // edits to a linkified text through batch commands would ruin the URL spans, and unless
-        // we take very complicated steps to preserve the whole link, we can't do things right so
-        // we just do not resume because it's safer.
-        if (!isResumableWord(settingsValues, range.mWord.toString())) {
-            mSuggestionStripViewAccessor.setNeutralSuggestionStrip();
-            // "unselect" the previous text
-            mConnection.finishComposingText();
-            return;
-        }
-        restartSuggestions(range);
-    }
-
-    private void restartSuggestions(final TextRange range) {
-        final int numberOfCharsInWordBeforeCursor = range.getNumberOfCharsInWordBeforeCursor();
-        final int expectedCursorPosition = mConnection.getExpectedSelectionStart();
-        if (numberOfCharsInWordBeforeCursor > expectedCursorPosition) return;
-        final ArrayList<SuggestedWordInfo> suggestions = new ArrayList<>();
-        final String typedWordString = range.mWord.toString();
-        final SuggestedWordInfo typedWordInfo = new SuggestedWordInfo(typedWordString,
-                "" /* prevWordsContext */, SuggestedWords.MAX_SUGGESTIONS + 1,
-                SuggestedWordInfo.KIND_TYPED, Dictionary.DICTIONARY_USER_TYPED,
-                SuggestedWordInfo.NOT_AN_INDEX /* indexOfTouchPointOfSecondWord */,
-                SuggestedWordInfo.NOT_A_CONFIDENCE /* autoCommitFirstWordConfidence */);
-        suggestions.add(typedWordInfo);
-        int i = 0;
-        for (final SuggestionSpan span : range.getSuggestionSpansAtWord()) {
-            for (final String s : span.getSuggestions()) {
-                ++i;
-                if (!TextUtils.equals(s, typedWordString)) {
-                    suggestions.add(new SuggestedWordInfo(s,
-                            "" /* prevWordsContext */, SuggestedWords.MAX_SUGGESTIONS - i,
-                            SuggestedWordInfo.KIND_RESUMED, Dictionary.DICTIONARY_RESUMED,
-                            SuggestedWordInfo.NOT_AN_INDEX /* indexOfTouchPointOfSecondWord */,
-                            SuggestedWordInfo.NOT_A_CONFIDENCE
-                                    /* autoCommitFirstWordConfidence */));
-                }
-            }
-        }
-        final int[] codePoints = StringUtils.toCodePointArray(typedWordString);
-        mWordComposer.setComposingWord(codePoints, mLatinIME.getCoordinatesForCurrentKeyboard(codePoints));
-        mWordComposer.setCursorPositionWithinWord(typedWordString.codePointCount(0, numberOfCharsInWordBeforeCursor));
-        mConnection.setComposingRegion(expectedCursorPosition - numberOfCharsInWordBeforeCursor,
-                expectedCursorPosition + range.getNumberOfCharsInWordAfterCursor());
-        if (suggestions.size() <= 1) {
-            // If there weren't any suggestion spans on this word, suggestions#size() will be 1
-            // if shouldIncludeResumedWordInSuggestions is true, 0 otherwise. In this case, we
-            // have no useful suggestions, so we will try to compute some for it instead.
-            mInputLogicHandler.getSuggestedWords(() -> getSuggestedWords(SuggestedWords.INPUT_STYLE_TYPING,
-                SuggestedWords.NOT_A_SEQUENCE_NUMBER, this::doShowSuggestionsAndClearAutoCorrectionIndicator));
-        } else {
-            // We found suggestion spans in the word. We'll create the SuggestedWords out of
-            // them, and make willAutoCorrect false. We make typedWordValid false, because the
-            // color of the word in the suggestion strip changes according to this parameter,
-            // and false gives the correct color.
-            final SuggestedWords suggestedWords = new SuggestedWords(suggestions,
-                    null /* rawSuggestions */, typedWordInfo, false /* typedWordValid */,
-                    false /* willAutoCorrect */, false /* isObsoleteSuggestions */,
-                    SuggestedWords.INPUT_STYLE_RECORRECTION, SuggestedWords.NOT_A_SEQUENCE_NUMBER);
-            doShowSuggestionsAndClearAutoCorrectionIndicator(suggestedWords);
-        }
-    }
-
-    private void doShowSuggestionsAndClearAutoCorrectionIndicator(final SuggestedWords suggestedWords) {
-        mIsAutoCorrectionIndicatorOn = false;
-        mLatinIME.mHandler.setSuggestions(suggestedWords);
     }
 
     /**
@@ -2347,9 +2207,6 @@ public final class InputLogic {
             mSpaceState = SpaceState.PHANTOM;
         keyboardSwitcher.updateShiftState(getCurrentAutoCapsState(settingsValues), getCurrentRecapitalizeState());
 
-        if (isInlineEmojiSearchAction()) {
-            searchForEmojiInline(SuggestedWords.NOT_A_SEQUENCE_NUMBER, mLatinIME::setSuggestions);
-        }
     }
 
     /**
@@ -2553,40 +2410,7 @@ public final class InputLogic {
     }
 
     // we used to provide keyboard, settingsValues and keyboardShiftMode, but every time read it from current instance anyway
-    void getSuggestedWords(final int inputStyle, final int sequenceNumber, final OnGetSuggestedWordsCallback callback) {
-        final Keyboard keyboard = KeyboardSwitcher.getInstance().getKeyboard();
-        if (keyboard == null) {
-            callback.onGetSuggestedWords(SuggestedWords.getEmptyInstance());
-            return;
-        }
-        if (inputStyle != SuggestedWords.INPUT_STYLE_UPDATE_BATCH && inputStyle != SuggestedWords.INPUT_STYLE_TAIL_BATCH
-                        && isInlineEmojiSearchAction()) {
-            searchForEmojiInline(sequenceNumber, callback);
-            return;
-        }
-        final SettingsValues settingsValues = Settings.getValues();
-        mWordComposer.adviseCapitalizedModeBeforeFetchingSuggestions(
-                getActualCapsMode(settingsValues, KeyboardSwitcher.getInstance().getKeyboardCapsMode()));
-        try {
-            SuggestedWords suggestedWords = mSuggest.getSuggestedWords(mWordComposer.copy(),
-                    getNgramContextFromNthPreviousWordForSuggestion(
-                    settingsValues.mSpacingAndPunctuations,
-                    // Get the word on which we should search the bigrams. If we are composing
-                    // a word, it's whatever is *before* the half-committed word in the buffer,
-                    // hence 2; if we aren't, we should just skip whitespace if any, so 1.
-                    mWordComposer.isComposingWord() ? 2 : 1),
-                    keyboard,
-                    settingsValues.mSettingsValuesForSuggestion,
-                    settingsValues.mAutoCorrectEnabled,
-                    inputStyle, sequenceNumber);
-            callback.onGetSuggestedWords(suggestedWords);
-        } catch (Exception e) {
-            // better go without suggestions than have the keyboard crash
-            Log.e(TAG, "Error fetching suggested words, using empty words instead", e);
-            callback.onGetSuggestedWords(SuggestedWords.getEmptyInstance());
-            KeyboardSwitcher.getInstance().showToast("Error getting suggestions", true);
-        }
-    }
+
 
     /**
      * Used as an injection point for each call of
@@ -2728,34 +2552,6 @@ public final class InputLogic {
         return internalAction != null && internalAction.getCode() == KeyCode.INLINE_EMOJI_SEARCH_DONE;
     }
 
-    private void searchForEmojiInline(int sequenceNumber, OnGetSuggestedWordsCallback callback) {
-        var input = getInlineEmojiSearchString();
-        if (StringUtils.isEmpty(input)) {
-            callback.onGetSuggestedWords(SuggestedWords.getEmptyInstance());
-            return;
-        }
-
-        var suggestions = mEmojiDictionaryFacilitator.getSuggestions(StringUtilsKt.splitOnWhitespace(input));
-        if (suggestions.isEmpty()) {
-            callback.onGetSuggestedWords(SuggestedWords.getEmptyInstance());
-            return;
-        }
-
-        var typedWordInfo = new SuggestedWordInfo(input, "", SuggestedWordInfo.MAX_SCORE, SuggestedWordInfo.KIND_TYPED,
-                                 Dictionary.DICTIONARY_USER_TYPED, SuggestedWordInfo.NOT_AN_INDEX, SuggestedWordInfo.NOT_A_CONFIDENCE);
-        var suggestedWordInfos = new ArrayList<SuggestedWordInfo>(suggestions.size() + 1);
-        suggestedWordInfos.add(typedWordInfo);
-        for (var suggestion: suggestions) {
-            if (suggestion.isEmoji()) {
-                Suggest.addDebugInfo(suggestion, input);
-                suggestedWordInfos.add(Suggest.useDefaultEmojiSkinTone(suggestion));
-            }
-        }
-        callback.onGetSuggestedWords(new SuggestedWords(suggestedWordInfos, suggestions.mRawSuggestions, typedWordInfo,
-                                     false /* typedWordValid */, false /* autoCorrectEnabled */,
-                                     false /* isObsoleteSuggestions */, SuggestedWords.INPUT_STYLE_TYPING, sequenceNumber));
-    }
-
     private void deleteTextReplacedByEmoji() {
         mConnection.finishComposingText();
         var inlineEmojiSearchString = getInlineEmojiSearchString();
@@ -2821,7 +2617,7 @@ public final class InputLogic {
     }
 
     public void updateEmojiDictionary(Locale locale) {
-        if (Settings.getValues().mInlineEmojiSearch && Settings.getValues().needsToLookupSuggestions() && ! mLatinIME.isEmojiSearch()) {
+        if (Settings.getValues().mInlineEmojiSearch && Settings.getValues().needsToLookupSuggestions()) {
             if (mEmojiDictionaryFacilitator == null || ! mEmojiDictionaryFacilitator.isForLocale(locale)) {
                 closeEmojiDictionary();
                 var dictFile = DictionaryInfoUtils.getCachedDictForLocaleAndType(locale, "emoji", mLatinIME);

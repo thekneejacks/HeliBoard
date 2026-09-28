@@ -20,7 +20,6 @@ import helium314.keyboard.accessibility.AccessibilityUtils;
 import helium314.keyboard.keyboard.MainKeyboardView;
 import helium314.keyboard.latin.common.ColorType;
 import helium314.keyboard.latin.settings.Settings;
-import helium314.keyboard.latin.suggestions.MoreSuggestionsView;
 import helium314.keyboard.latin.suggestions.SuggestionStripView;
 import helium314.keyboard.latin.utils.FloatingKeyboardUtils;
 import kotlin.Unit;
@@ -30,7 +29,6 @@ public final class InputView extends FrameLayout {
     private final Rect mInputViewRect = new Rect();
     private MainKeyboardView mMainKeyboardView;
     private KeyboardTopPaddingForwarder mKeyboardTopPaddingForwarder;
-    private MoreSuggestionsViewCanceler mMoreSuggestionsViewCanceler;
     private MotionEventForwarder<?, ?> mActiveForwarder;
 
     public InputView(final Context context, final AttributeSet attrs) {
@@ -44,8 +42,6 @@ public final class InputView extends FrameLayout {
                 findViewById(R.id.suggestion_strip_view);
         mMainKeyboardView = findViewById(R.id.keyboard_view);
         mKeyboardTopPaddingForwarder = new KeyboardTopPaddingForwarder(
-                mMainKeyboardView, suggestionStripView);
-        mMoreSuggestionsViewCanceler = new MoreSuggestionsViewCanceler(
                 mMainKeyboardView, suggestionStripView);
         ViewKt.doOnNextLayout(this, this::onNextLayout);
     }
@@ -80,12 +76,6 @@ public final class InputView extends FrameLayout {
             return true;
         }
 
-        // To cancel {@link MoreSuggestionsView}, we should intercept a touch event to
-        // {@link MainKeyboardView} and dismiss the {@link MoreSuggestionsView}.
-        if (mMoreSuggestionsViewCanceler.onInterceptTouchEvent(x, y, me)) {
-            mActiveForwarder = mMoreSuggestionsViewCanceler;
-            return true;
-        }
 
         mActiveForwarder = null;
         return false;
@@ -235,29 +225,4 @@ public final class InputView extends FrameLayout {
         }
     }
 
-    /**
-     * This class forwards {@link MotionEvent}s happened in the {@link MainKeyboardView} to
-     * {@link SuggestionStripView} when the {@link MoreSuggestionsView} is showing.
-     * {@link SuggestionStripView} dismisses {@link MoreSuggestionsView} when it receives any event
-     * outside of it.
-     */
-    private static class MoreSuggestionsViewCanceler
-            extends MotionEventForwarder<MainKeyboardView, SuggestionStripView> {
-        public MoreSuggestionsViewCanceler(final MainKeyboardView mainKeyboardView,
-                final SuggestionStripView suggestionStripView) {
-            super(mainKeyboardView, suggestionStripView);
-        }
-
-        @Override
-        protected boolean needsToForward(final int x, final int y) {
-            return mReceiverView.isShowingMoreSuggestionPanel() && mEventSendingRect.contains(x, y);
-        }
-
-        @Override
-        protected void onForwardingEvent(final MotionEvent me) {
-            if (me.getActionMasked() == MotionEvent.ACTION_DOWN) {
-                mReceiverView.dismissMoreSuggestionsPanel();
-            }
-        }
-    }
 }

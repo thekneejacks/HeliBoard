@@ -6,16 +6,16 @@
 
 package helium314.keyboard.keyboard.emoji;
 
-import helium314.keyboard.latin.utils.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import helium314.keyboard.keyboard.Keyboard;
-import helium314.keyboard.latin.R;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import helium314.keyboard.keyboard.Keyboard;
+import helium314.keyboard.latin.R;
+import helium314.keyboard.latin.utils.Log;
 
 final class EmojiPalettesAdapter extends RecyclerView.Adapter<EmojiPalettesAdapter.ViewHolder>{
     private static final String TAG = EmojiPalettesAdapter.class.getSimpleName();

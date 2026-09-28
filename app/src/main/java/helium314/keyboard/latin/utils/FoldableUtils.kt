@@ -14,8 +14,10 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
 import helium314.keyboard.latin.define.DebugFlags
+import helium314.keyboard.latin.utils.FoldableUtils.DISPLAY_FEATURES
+import helium314.keyboard.latin.utils.FoldableUtils.isFoldable
+import helium314.keyboard.latin.utils.FoldableUtils.isFolded
 import java.util.regex.Pattern
-import kotlin.text.split
 
 object FoldableUtils {
     private const val TAG = "FoldableUtils"

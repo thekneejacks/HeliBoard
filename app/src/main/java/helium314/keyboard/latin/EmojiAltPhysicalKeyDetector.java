@@ -7,18 +7,18 @@
 package helium314.keyboard.latin;
 
 import android.content.res.Resources;
-import helium314.keyboard.latin.utils.Log;
 import android.util.Pair;
 import android.view.KeyEvent;
 
 import androidx.annotation.NonNull;
 
-import helium314.keyboard.keyboard.KeyboardSwitcher;
-import helium314.keyboard.latin.settings.Settings;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+
+import helium314.keyboard.keyboard.KeyboardSwitcher;
+import helium314.keyboard.latin.settings.Settings;
+import helium314.keyboard.latin.utils.Log;
 
 /**
  * A class for detecting Emoji-Alt physical key.

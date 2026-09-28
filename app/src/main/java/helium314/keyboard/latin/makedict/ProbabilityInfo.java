@@ -7,9 +7,10 @@
 package helium314.keyboard.latin.makedict;
 
 import com.android.inputmethod.latin.BinaryDictionary;
-import helium314.keyboard.latin.utils.CombinedFormatUtils;
 
 import java.util.Arrays;
+
+import helium314.keyboard.latin.utils.CombinedFormatUtils;
 
 public final class ProbabilityInfo {
     public final int mProbability;

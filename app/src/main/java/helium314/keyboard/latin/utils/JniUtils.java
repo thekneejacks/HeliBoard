@@ -11,11 +11,11 @@ import android.app.Application;
 import android.os.Build;
 import android.text.TextUtils;
 
+import java.io.File;
+
 import helium314.keyboard.latin.App;
 import helium314.keyboard.latin.BuildConfig;
 import helium314.keyboard.latin.settings.Settings;
-
-import java.io.File;
 
 @SuppressLint("PrivateApi") // it's a fallback in try/catch
 public final class JniUtils {

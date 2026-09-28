@@ -8,15 +8,15 @@ package helium314.keyboard.latin.dictionary;
 
 import com.android.inputmethod.latin.BinaryDictionary;
 
+import java.util.ArrayList;
+import java.util.Locale;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 import helium314.keyboard.latin.NgramContext;
 import helium314.keyboard.latin.SuggestedWords.SuggestedWordInfo;
 import helium314.keyboard.latin.common.ComposedData;
 import helium314.keyboard.latin.makedict.WordProperty;
 import helium314.keyboard.latin.settings.SettingsValuesForSuggestion;
-
-import java.util.ArrayList;
-import java.util.Locale;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * This class provides binary dictionary reading operations with locking. An instance of this class

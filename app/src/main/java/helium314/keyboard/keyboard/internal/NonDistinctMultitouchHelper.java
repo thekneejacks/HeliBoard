@@ -6,13 +6,13 @@
 
 package helium314.keyboard.keyboard.internal;
 
-import helium314.keyboard.latin.utils.Log;
 import android.view.MotionEvent;
 
 import helium314.keyboard.keyboard.Key;
 import helium314.keyboard.keyboard.KeyDetector;
 import helium314.keyboard.keyboard.PointerTracker;
 import helium314.keyboard.latin.common.CoordinateUtils;
+import helium314.keyboard.latin.utils.Log;
 
 public final class NonDistinctMultitouchHelper {
     private static final String TAG = NonDistinctMultitouchHelper.class.getSimpleName();

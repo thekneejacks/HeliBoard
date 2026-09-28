@@ -6,13 +6,13 @@
 
 package helium314.keyboard.keyboard.internal;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
 import helium314.keyboard.latin.common.Constants;
 import helium314.keyboard.latin.common.StringUtils;
 import helium314.keyboard.latin.define.DebugFlags;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 /**
  * The string parser of the key specification.

@@ -8,13 +8,13 @@ package helium314.keyboard.latin.utils;
 
 import androidx.annotation.NonNull;
 
+import java.util.Arrays;
+import java.util.regex.Pattern;
+
 import helium314.keyboard.latin.NgramContext;
 import helium314.keyboard.latin.NgramContext.WordInfo;
 import helium314.keyboard.latin.define.DecoderSpecificConstants;
 import helium314.keyboard.latin.settings.SpacingAndPunctuations;
-
-import java.util.Arrays;
-import java.util.regex.Pattern;
 
 public final class NgramContextUtils {
     private NgramContextUtils() {

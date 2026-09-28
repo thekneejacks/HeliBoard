@@ -16,12 +16,6 @@ import android.os.SystemClock;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.style.CharacterStyle;
-
-import helium314.keyboard.keyboard.KeyboardSwitcher;
-import helium314.keyboard.latin.common.ConstantsKt;
-import helium314.keyboard.latin.define.DebugFlags;
-import helium314.keyboard.latin.settings.Settings;
-import helium314.keyboard.latin.utils.Log;
 import android.view.KeyEvent;
 import android.view.inputmethod.CompletionInfo;
 import android.view.inputmethod.CorrectionInfo;
@@ -36,19 +30,24 @@ import androidx.annotation.Nullable;
 import androidx.core.view.inputmethod.InputConnectionCompat;
 import androidx.core.view.inputmethod.InputContentInfoCompat;
 
+import java.util.concurrent.TimeUnit;
+
+import helium314.keyboard.keyboard.KeyboardSwitcher;
 import helium314.keyboard.latin.common.Constants;
+import helium314.keyboard.latin.common.ConstantsKt;
 import helium314.keyboard.latin.common.StringUtils;
 import helium314.keyboard.latin.common.StringUtilsKt;
 import helium314.keyboard.latin.common.UnicodeSurrogate;
+import helium314.keyboard.latin.define.DebugFlags;
 import helium314.keyboard.latin.inputlogic.PrivateCommandPerformer;
+import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.settings.SpacingAndPunctuations;
 import helium314.keyboard.latin.utils.CapsModeUtils;
 import helium314.keyboard.latin.utils.DebugLogUtils;
+import helium314.keyboard.latin.utils.Log;
 import helium314.keyboard.latin.utils.NgramContextUtils;
 import helium314.keyboard.latin.utils.StatsUtils;
 import helium314.keyboard.latin.utils.TextRange;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * Enrichment class for InputConnection to simplify interaction and add functionality.

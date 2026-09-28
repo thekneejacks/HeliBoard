@@ -8,7 +8,6 @@ import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.utils.Log
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import java.util.ArrayList
 import java.util.Locale
 
 /**

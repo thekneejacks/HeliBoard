@@ -14,13 +14,12 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Process;
-
-import helium314.keyboard.latin.utils.KtxKt;
-import helium314.keyboard.latin.utils.Log;
 import android.view.inputmethod.InputMethodManager;
 
 import helium314.keyboard.keyboard.KeyboardLayoutSet;
 import helium314.keyboard.latin.settings.Settings;
+import helium314.keyboard.latin.utils.KtxKt;
+import helium314.keyboard.latin.utils.Log;
 import helium314.keyboard.latin.utils.UncachedInputMethodManagerUtils;
 import helium314.keyboard.settings.SettingsActivity;
 

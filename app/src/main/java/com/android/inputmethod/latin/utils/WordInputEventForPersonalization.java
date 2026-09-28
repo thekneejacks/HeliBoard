@@ -6,17 +6,16 @@
 
 package com.android.inputmethod.latin.utils;
 
-import helium314.keyboard.latin.utils.Log;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 import helium314.keyboard.latin.NgramContext;
 import helium314.keyboard.latin.common.StringUtils;
 import helium314.keyboard.latin.define.DecoderSpecificConstants;
 import helium314.keyboard.latin.settings.SpacingAndPunctuations;
 import helium314.keyboard.latin.utils.DictionaryInfoUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import helium314.keyboard.latin.utils.Log;
 
 // Note: this class is used as a parameter type of a native method. You should be careful when you
 // rename this class or field name. See BinaryDictionary#addMultipleDictionaryEntriesNative().

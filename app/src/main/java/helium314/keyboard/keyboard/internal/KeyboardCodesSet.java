@@ -6,10 +6,10 @@
 
 package helium314.keyboard.keyboard.internal;
 
+import java.util.HashMap;
+
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
 import helium314.keyboard.latin.common.Constants;
-
-import java.util.HashMap;
 
 public final class KeyboardCodesSet {
     public static final String PREFIX_CODE = "!code/";

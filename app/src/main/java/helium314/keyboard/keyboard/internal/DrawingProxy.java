@@ -10,8 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import helium314.keyboard.keyboard.Key;
-import helium314.keyboard.keyboard.PopupKeysPanel;
 import helium314.keyboard.keyboard.PointerTracker;
+import helium314.keyboard.keyboard.PopupKeysPanel;
 
 public interface DrawingProxy {
     /**

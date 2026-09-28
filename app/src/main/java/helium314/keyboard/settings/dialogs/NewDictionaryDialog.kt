@@ -13,16 +13,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import helium314.keyboard.compat.locale
 import helium314.keyboard.dictionarypack.DictionaryPackConstants
-import helium314.keyboard.latin.dictionary.Dictionary
 import helium314.keyboard.latin.R
-import helium314.keyboard.latin.dictionary.ReadOnlyBinaryDictionary
+import helium314.keyboard.latin.RichInputMethodManager
 import helium314.keyboard.latin.common.LocaleUtils.constructLocale
 import helium314.keyboard.latin.common.LocaleUtils.localizedDisplayName
+import helium314.keyboard.latin.dictionary.Dictionary
+import helium314.keyboard.latin.dictionary.ReadOnlyBinaryDictionary
 import helium314.keyboard.latin.makedict.DictionaryHeader
 import helium314.keyboard.latin.utils.DictionaryInfoUtils
 import helium314.keyboard.latin.utils.ScriptUtils.script
@@ -32,9 +35,6 @@ import helium314.keyboard.settings.DropDownField
 import helium314.keyboard.settings.WithSmallTitle
 import java.io.File
 import java.util.Locale
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalResources
-import helium314.keyboard.latin.RichInputMethodManager
 
 @Composable
 fun NewDictionaryDialog(

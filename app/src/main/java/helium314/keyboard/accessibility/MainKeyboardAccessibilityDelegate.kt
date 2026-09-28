@@ -8,12 +8,17 @@ package helium314.keyboard.accessibility
 
 import android.graphics.Rect
 import android.os.SystemClock
-import helium314.keyboard.latin.utils.Log
-import android.util.SparseIntArray
 import android.view.MotionEvent
 import helium314.keyboard.accessibility.AccessibilityLongPressTimer.LongPressTimerCallback
-import helium314.keyboard.keyboard.*
+import helium314.keyboard.keyboard.Key
+import helium314.keyboard.keyboard.KeyDetector
+import helium314.keyboard.keyboard.Keyboard
+import helium314.keyboard.keyboard.KeyboardElement
+import helium314.keyboard.keyboard.KeyboardMode
+import helium314.keyboard.keyboard.MainKeyboardView
+import helium314.keyboard.keyboard.PointerTracker
 import helium314.keyboard.latin.R
+import helium314.keyboard.latin.utils.Log
 import helium314.keyboard.latin.utils.SubtypeLocaleUtils.displayName
 
 /**

@@ -8,10 +8,10 @@ package helium314.keyboard.latin.makedict;
 
 import androidx.annotation.NonNull;
 
-import helium314.keyboard.latin.define.DecoderSpecificConstants;
-
 import java.util.Date;
 import java.util.HashMap;
+
+import helium314.keyboard.latin.define.DecoderSpecificConstants;
 
 /**
  * Dictionary File Format Specification.

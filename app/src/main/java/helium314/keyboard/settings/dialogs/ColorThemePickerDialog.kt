@@ -36,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.edit
 import helium314.keyboard.keyboard.ColorSetting
 import helium314.keyboard.keyboard.KeyboardSwitcher
 import helium314.keyboard.keyboard.KeyboardTheme
@@ -45,27 +46,26 @@ import helium314.keyboard.latin.common.Links
 import helium314.keyboard.latin.common.decodeBase36
 import helium314.keyboard.latin.settings.Defaults
 import helium314.keyboard.latin.settings.Settings
+import helium314.keyboard.latin.utils.DeleteButton
+import helium314.keyboard.latin.utils.EditButton
 import helium314.keyboard.latin.utils.Log
+import helium314.keyboard.latin.utils.Theme
 import helium314.keyboard.latin.utils.getActivity
 import helium314.keyboard.latin.utils.getStringResourceOrName
 import helium314.keyboard.latin.utils.htmlToAnnotated
 import helium314.keyboard.latin.utils.prefs
+import helium314.keyboard.latin.utils.previewDark
 import helium314.keyboard.latin.utils.withHtmlLink
-import helium314.keyboard.latin.utils.DeleteButton
-import helium314.keyboard.latin.utils.EditButton
 import helium314.keyboard.settings.Setting
 import helium314.keyboard.settings.SettingsActivity
 import helium314.keyboard.settings.SettingsDestination
-import helium314.keyboard.latin.utils.Theme
-import helium314.keyboard.settings.filePicker
-import helium314.keyboard.latin.utils.previewDark
-import helium314.keyboard.settings.screens.SaveThoseColors
 import helium314.keyboard.settings.contentTextDirectionStyle
+import helium314.keyboard.settings.filePicker
+import helium314.keyboard.settings.screens.SaveThoseColors
 import kotlinx.coroutines.launch
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import java.util.EnumMap
-import androidx.core.content.edit
 
 @Composable
 fun ColorThemePickerDialog(

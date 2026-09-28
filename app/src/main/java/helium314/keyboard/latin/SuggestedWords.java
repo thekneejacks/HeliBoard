@@ -12,15 +12,15 @@ import android.view.inputmethod.CompletionInfo;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+
 import helium314.keyboard.latin.common.StringUtils;
 import helium314.keyboard.latin.common.StringUtilsKt;
 import helium314.keyboard.latin.define.DebugFlags;
 import helium314.keyboard.latin.dictionary.Dictionary;
 import helium314.keyboard.latin.settings.Settings;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 
 public class SuggestedWords {
     public static final int INDEX_OF_TYPED_WORD = 0;

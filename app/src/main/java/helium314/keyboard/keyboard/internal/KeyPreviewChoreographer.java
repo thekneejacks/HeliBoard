@@ -10,15 +10,15 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayDeque;
+import java.util.HashMap;
+
 import helium314.keyboard.keyboard.Key;
 import helium314.keyboard.latin.common.ColorType;
 import helium314.keyboard.latin.common.Colors;
 import helium314.keyboard.latin.common.CoordinateUtils;
 import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.utils.ViewLayoutUtils;
-
-import java.util.ArrayDeque;
-import java.util.HashMap;
 
 /**
  * This class controls pop up key previews. This class decides:

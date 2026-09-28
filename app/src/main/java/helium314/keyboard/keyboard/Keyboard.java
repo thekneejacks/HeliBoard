@@ -13,16 +13,16 @@ import androidx.annotation.Nullable;
 
 import com.android.inputmethod.keyboard.ProximityInfo;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import helium314.keyboard.keyboard.internal.KeyVisualAttributes;
 import helium314.keyboard.keyboard.internal.KeyboardIconsSet;
 import helium314.keyboard.keyboard.internal.KeyboardParams;
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
 import helium314.keyboard.latin.common.Constants;
 import helium314.keyboard.latin.common.CoordinateUtils;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Loads an XML description of a keyboard and stores the attributes of the keys. A keyboard

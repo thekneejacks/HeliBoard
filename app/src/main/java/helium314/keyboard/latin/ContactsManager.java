@@ -12,9 +12,6 @@ import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.provider.ContactsContract.Contacts;
 import android.text.TextUtils;
-import helium314.keyboard.latin.utils.Log;
-
-import helium314.keyboard.latin.common.Constants;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,6 +19,9 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import helium314.keyboard.latin.common.Constants;
+import helium314.keyboard.latin.utils.Log;
 
 /**
  * Manages all interactions with Contacts DB.

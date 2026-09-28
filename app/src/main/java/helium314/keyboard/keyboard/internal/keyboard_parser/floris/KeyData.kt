@@ -6,11 +6,11 @@
 package helium314.keyboard.keyboard.internal.keyboard_parser.floris
 
 import helium314.keyboard.keyboard.KeyboardElement
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 import helium314.keyboard.keyboard.KeyboardId
 import helium314.keyboard.keyboard.KeyboardMode
 import helium314.keyboard.keyboard.internal.KeyboardParams
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 // taken from FlorisBoard, small modifications
 //  popup not nullable (maybe change back, but currently that's necessary for number keys)

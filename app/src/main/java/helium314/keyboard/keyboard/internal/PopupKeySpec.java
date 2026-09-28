@@ -12,15 +12,15 @@ import android.util.SparseIntArray;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Locale;
+
 import helium314.keyboard.keyboard.Key;
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
 import helium314.keyboard.latin.common.CollectionUtils;
 import helium314.keyboard.latin.common.Constants;
 import helium314.keyboard.latin.common.StringUtils;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Locale;
 
 /**
  * The popup key specification object. The popup keys are an array of {@link PopupKeySpec}.

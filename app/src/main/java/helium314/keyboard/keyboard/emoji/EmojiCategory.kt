@@ -8,6 +8,7 @@ package helium314.keyboard.keyboard.emoji
 import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.Paint
+import androidx.core.content.edit
 import androidx.core.graphics.PaintCompat
 import helium314.keyboard.keyboard.Key
 import helium314.keyboard.keyboard.KeyboardElement
@@ -20,7 +21,6 @@ import helium314.keyboard.latin.utils.ResourceUtils
 import helium314.keyboard.latin.utils.prefs
 import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap
-import androidx.core.content.edit
 
 internal class EmojiCategory(private val context: Context, private val layoutSet: KeyboardLayoutSet, emojiPaletteViewAttr: TypedArray) {
     inner class CategoryProperties(val category: Category) {

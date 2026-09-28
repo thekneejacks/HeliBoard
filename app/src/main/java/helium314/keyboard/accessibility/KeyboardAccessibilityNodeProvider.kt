@@ -8,7 +8,6 @@ package helium314.keyboard.accessibility
 
 import android.graphics.Rect
 import android.os.Bundle
-import helium314.keyboard.latin.utils.Log
 import android.view.View
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityRecord
@@ -21,6 +20,7 @@ import helium314.keyboard.keyboard.Keyboard
 import helium314.keyboard.keyboard.KeyboardView
 import helium314.keyboard.latin.common.CoordinateUtils
 import helium314.keyboard.latin.settings.Settings
+import helium314.keyboard.latin.utils.Log
 
 /**
  * Exposes a virtual view sub-tree for [KeyboardView] and generates

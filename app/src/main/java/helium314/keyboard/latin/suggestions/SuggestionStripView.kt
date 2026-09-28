@@ -12,11 +12,8 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
-import android.text.TextUtils
 import android.util.AttributeSet
 import android.util.TypedValue
-import android.view.GestureDetector
-import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -28,20 +25,17 @@ import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.core.view.doOnNextLayout
+import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import helium314.keyboard.event.HapticEvent
-import helium314.keyboard.keyboard.KeyboardSwitcher
 import helium314.keyboard.keyboard.internal.KeyboardIconsSet
-import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode
 import helium314.keyboard.latin.AudioAndHapticFeedbackManager
-import helium314.keyboard.latin.dictionary.Dictionary
 import helium314.keyboard.latin.R
 import helium314.keyboard.latin.SuggestedWords
 import helium314.keyboard.latin.SuggestedWords.SuggestedWordInfo
 import helium314.keyboard.latin.common.ColorType
 import helium314.keyboard.latin.common.Colors
 import helium314.keyboard.latin.common.Constants
-import helium314.keyboard.latin.define.DebugFlags
 import helium314.keyboard.latin.settings.DebugSettings
 import helium314.keyboard.latin.settings.Defaults
 import helium314.keyboard.latin.settings.Settings
@@ -52,21 +46,17 @@ import helium314.keyboard.latin.utils.createToolbarKey
 import helium314.keyboard.latin.utils.dpToPx
 import helium314.keyboard.latin.utils.getEnabledToolbarKeys
 import helium314.keyboard.latin.utils.getPinnedToolbarKeys
-import helium314.keyboard.latin.utils.prefs
-import helium314.keyboard.latin.utils.removeFirst
-import helium314.keyboard.latin.utils.removePinnedKey
-import helium314.keyboard.latin.utils.setToolbarButtonsActivatedStateOnPrefChange
-import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.math.abs
-import kotlin.math.min
-import androidx.core.view.isGone
 import helium314.keyboard.latin.utils.onClickToolbarKey
 import helium314.keyboard.latin.utils.onLongClickToolbarKey
+import helium314.keyboard.latin.utils.prefs
+import helium314.keyboard.latin.utils.removePinnedKey
+import helium314.keyboard.latin.utils.setToolbarButtonsActivatedStateOnPrefChange
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.math.min
 
 @SuppressLint("InflateParams")
 class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int) :
@@ -83,7 +73,7 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
         fun onSwipeDownOnToolbar()
     }
 
-    private val moreSuggestionsContainer: View
+
     private val wordViews = ArrayList<TextView>()
     private val debugInfoViews = ArrayList<TextView>()
     private val dividerViews = ArrayList<View>()
@@ -91,7 +81,6 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
     init {
         val inflater = LayoutInflater.from(context)
         inflater.inflate(R.layout.suggestions_strip, this)
-        moreSuggestionsContainer = inflater.inflate(R.layout.more_suggestions, null)
 
         val colors = Settings.getValues().mColors
         colors.setBackground(this, ColorType.STRIP_BACKGROUND)
@@ -120,7 +109,6 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
     private val suggestionsStrip: ViewGroup = findViewById(R.id.suggestions_strip)
     private val toolbarExpandKey = findViewById<ImageButton>(R.id.suggestions_strip_toolbar_key)
     private val incognitoIcon = KeyboardIconsSet.instance.getNewDrawable(ToolbarKey.INCOGNITO.name, context)
-    private val toolbarArrowIcon = KeyboardIconsSet.instance.getNewDrawable(KeyboardIconsSet.NAME_TOOLBAR_KEY, context)
     private val defaultToolbarBackground: Drawable = toolbarExpandKey.background
     private val enabledToolKeyBackground = GradientDrawable()
     private var direction = 1 // 1 if LTR, -1 if RTL
@@ -184,34 +172,14 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
     private var startIndexOfMoreSuggestions = 0
     private var isExternalSuggestionVisible = false // Required to disable the more suggestions if other suggestions are visible
     private val layoutHelper = SuggestionStripLayoutHelper(context, attrs, defStyle, wordViews, dividerViews, debugInfoViews)
-    private val moreSuggestionsView = moreSuggestionsContainer.findViewById<MoreSuggestionsView>(R.id.more_suggestions_view).apply {
-        val slidingListener = object : SimpleOnGestureListener() {
-            override fun onScroll(down: MotionEvent?, me: MotionEvent, deltaX: Float, deltaY: Float): Boolean {
-                if (down == null) return false
-                val dy = me.y - down.y
-                val dx = me.x - down.x
 
-                if (Settings.getValues().mToolbarSwipeDownToHide && dy > 50.dpToPx(resources) && abs(dy) > abs(dx)) {
-                    listener.onSwipeDownOnToolbar()
-                    return true
-                }
-
-                return if (!isExternalSuggestionVisible && toolbarContainer.visibility != VISIBLE && deltaY > 0 && dy < (-10).dpToPx(resources)) showMoreSuggestions()
-                else false
-            }
-        }
-        gestureDetector = GestureDetector(context, slidingListener)
-    }
 
     // public stuff
 
-    val isShowingMoreSuggestionPanel get() = moreSuggestionsView.isShowingInParent
 
     /** A connection back to the input method. */
     fun setListener(newListener: Listener, inputView: View) {
         listener = newListener
-        moreSuggestionsView.listener = newListener
-        moreSuggestionsView.mainKeyboardView = inputView.findViewById(R.id.keyboard_view)
     }
 
     fun setRtl(isRtlLanguage: Boolean) {
@@ -239,17 +207,6 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
         }
 
         toolbarExpandKey.scaleX = (if (toolbarVisible) -1f else 1f) * direction
-    }
-
-    fun setSuggestions(suggestions: SuggestedWords, isRtlLanguage: Boolean) {
-        clear()
-        setRtl(isRtlLanguage)
-        suggestedWords = suggestions
-        startIndexOfMoreSuggestions = layoutHelper.layoutAndReturnStartIndexOfMoreSuggestions(
-            context, suggestedWords, suggestionsStrip, this
-        )
-        isExternalSuggestionVisible = false
-        updateKeys()
     }
 
     fun setExternalSuggestionView(view: View?, addCloseButton: Boolean) {
@@ -282,9 +239,6 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
         layoutHelper.setMoreSuggestionsHeight(remainingHeight)
     }
 
-    fun dismissMoreSuggestionsPanel() {
-        moreSuggestionsView.dismissPopupKeysPanel()
-    }
 
     // overrides: necessarily public, but not used from outside
 
@@ -304,7 +258,6 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        dismissMoreSuggestionsPanel()
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -317,49 +270,21 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
         return true
     }
 
-    override fun onInterceptTouchEvent(motionEvent: MotionEvent): Boolean {
-        // Detecting sliding up finger to show MoreSuggestionsView.
-        return moreSuggestionsView.shouldInterceptTouchEvent(motionEvent)
-    }
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(motionEvent: MotionEvent): Boolean {
-        moreSuggestionsView.touchEvent(motionEvent)
         return true
     }
 
     override fun onClick(view: View) {
-        val tag = view.tag
-        if (tag is ToolbarKey) {
             onClickToolbarKey(view) { listener.onCodeInput(it, Constants.SUGGESTION_STRIP_COORDINATE, Constants.SUGGESTION_STRIP_COORDINATE, false) }
             return
-        }
-        AudioAndHapticFeedbackManager.getInstance().performHapticAndAudioFeedback(KeyCode.NOT_SPECIFIED, this, HapticEvent.KEY_PRESS)
-        if (view === toolbarExpandKey) {
-            setToolbarVisibility(toolbarContainer.visibility != VISIBLE)
-        }
-
-        // tag for word views is set in SuggestionStripLayoutHelper (setupWordViewsTextAndColor, layoutPunctuationSuggestions)
-        if (tag is Int) {
-            if (tag >= suggestedWords.size()) {
-                return
-            }
-            val wordInfo = suggestedWords.getInfo(tag)
-            listener.pickSuggestionManually(wordInfo)
-        }
     }
 
     override fun onLongClick(view: View): Boolean {
-        if (view.tag is ToolbarKey) {
+
             onLongClickToolbarKey(view)
             return true
-        }
-        AudioAndHapticFeedbackManager.getInstance().performHapticFeedback(this, HapticEvent.KEY_LONG_PRESS)
-        return if (view is TextView && wordViews.contains(view)) {
-            onLongClickSuggestion(view)
-        } else {
-            showMoreSuggestions()
-        }
     }
 
     // actually private stuff
@@ -383,109 +308,12 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
         }
     }
 
-    @SuppressLint("ClickableViewAccessibility") // no need for View#performClick, we only return false mostly anyway
-    private fun onLongClickSuggestion(wordView: TextView): Boolean {
-        var showIcon = true
-        if (wordView.tag is Int) {
-            val index = wordView.tag as Int
-            val type = suggestedWords.getInfo(index).mSourceDict
-            if (type == Dictionary.DICTIONARY_USER_TYPED || type == Dictionary.DICTIONARY_HARDCODED)
-                showIcon = false
-        }
-        if (showIcon) {
-            val icon = KeyboardIconsSet.instance.getNewDrawable(KeyboardIconsSet.NAME_BIN, context)!!
-            Settings.getValues().mColors.setColor(icon, ColorType.REMOVE_SUGGESTION_ICON)
-            val w = icon.intrinsicWidth
-            val h = icon.intrinsicHeight
-            wordView.setCompoundDrawablesWithIntrinsicBounds(icon, null, null, null)
-            wordView.ellipsize = TextUtils.TruncateAt.END
-            val downOk = AtomicBoolean(false)
-            wordView.setOnTouchListener { _, motionEvent ->
-                if (motionEvent.action == MotionEvent.ACTION_UP && downOk.get()) {
-                    val x = motionEvent.x
-                    val y = motionEvent.y
-                    if (0 < x && x < w && 0 < y && y < h) {
-                        removeSuggestion(wordView)
-                        wordView.cancelLongPress()
-                        wordView.isPressed = false
-                        return@setOnTouchListener true
-                    }
-                } else if (motionEvent.action == MotionEvent.ACTION_DOWN) {
-                    val x = motionEvent.x
-                    val y = motionEvent.y
-                    if (0 < x && x < w && 0 < y && y < h) {
-                        downOk.set(true)
-                    }
-                }
-                false
-            }
-        }
-        if (DebugFlags.DEBUG_ENABLED && (isShowingMoreSuggestionPanel || !showMoreSuggestions())) {
-            showSourceDict(wordView)
-            return true
-        }
-        return showMoreSuggestions()
-    }
-
-    private fun showMoreSuggestions(): Boolean {
-        if (suggestedWords.size() <= startIndexOfMoreSuggestions) {
-            return false
-        }
-        if (!moreSuggestionsView.show(
-                suggestedWords, startIndexOfMoreSuggestions, moreSuggestionsContainer, layoutHelper, this
-        ))
-            return false
-        for (i in 0..<startIndexOfMoreSuggestions) {
-            wordViews[i].isPressed = false
-        }
-        return true
-    }
-
-    private fun showSourceDict(wordView: TextView) {
-        val word = wordView.text.toString()
-        val index = wordView.tag as? Int ?: return
-        if (index >= suggestedWords.size()) return
-        val info = suggestedWords.getInfo(index)
-        if (info.word != word) return
-
-        val text = info.mSourceDict.mDictType + ":" + info.mSourceDict.mLocale
-        if (isShowingMoreSuggestionPanel) {
-            moreSuggestionsView.dismissPopupKeysPanel()
-        }
-        KeyboardSwitcher.getInstance().showToast(text, true)
-    }
-
-    private fun removeSuggestion(wordView: TextView) {
-        val word = wordView.text.toString()
-        listener.removeSuggestion(word)
-        moreSuggestionsView.dismissPopupKeysPanel()
-        // show suggestions, but without the removed word
-        val suggestedWordInfos = ArrayList<SuggestedWordInfo>()
-        for (i in 0..<suggestedWords.size()) {
-            val info = suggestedWords.getInfo(i)
-            if (info.word != word) suggestedWordInfos.add(info)
-        }
-        suggestedWords.mRawSuggestions?.removeFirst { it.word == word }
-
-        val newSuggestedWords = SuggestedWords(
-            suggestedWordInfos, suggestedWords.mRawSuggestions, suggestedWords.typedWordInfo, suggestedWords.mTypedWordValid,
-            suggestedWords.mWillAutoCorrect, suggestedWords.mIsObsoleteSuggestions, suggestedWords.mInputStyle, suggestedWords.mSequenceNumber
-        )
-        setSuggestions(newSuggestedWords, direction != 1)
-        suggestionsStrip.isVisible = true
-
-        // Show the toolbar if no suggestions are left and the "Auto show toolbar" setting is enabled
-        if (this.suggestedWords.isEmpty && Settings.getValues().mAutoShowToolbar) {
-            setToolbarVisibility(true)
-        }
-    }
-
     private fun clear() {
         suggestionsStrip.removeAllViews()
         if (DEBUG_SUGGESTIONS) removeAllDebugInfoViews()
         if (!toolbarContainer.isVisible)
             suggestionsStrip.isVisible = true
-        dismissMoreSuggestionsPanel()
+
         for (word in wordViews) {
             word.setOnTouchListener(null)
         }

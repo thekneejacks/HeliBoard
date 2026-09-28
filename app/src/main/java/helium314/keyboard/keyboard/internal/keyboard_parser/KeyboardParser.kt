@@ -3,7 +3,6 @@ package helium314.keyboard.keyboard.internal.keyboard_parser
 
 import android.content.Context
 import android.content.res.Configuration
-import helium314.keyboard.latin.utils.Log
 import helium314.keyboard.keyboard.Key
 import helium314.keyboard.keyboard.Key.KeyParams
 import helium314.keyboard.keyboard.KeyboardElement
@@ -18,6 +17,7 @@ import helium314.keyboard.latin.common.isEmoji
 import helium314.keyboard.latin.define.DebugFlags
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.utils.LayoutType
+import helium314.keyboard.latin.utils.Log
 import helium314.keyboard.latin.utils.POPUP_KEYS_LAYOUT
 import helium314.keyboard.latin.utils.POPUP_KEYS_NUMBER
 import helium314.keyboard.latin.utils.replaceFirst

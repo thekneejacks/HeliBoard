@@ -12,15 +12,15 @@ import android.content.Context;
 import android.database.ContentObserver;
 import android.os.SystemClock;
 import android.provider.ContactsContract.Contacts;
-import helium314.keyboard.latin.utils.Log;
+
+import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import helium314.keyboard.latin.ContactsManager.ContactsChangedListener;
 import helium314.keyboard.latin.define.DebugFlags;
 import helium314.keyboard.latin.permissions.PermissionsUtil;
 import helium314.keyboard.latin.utils.ExecutorUtils;
-
-import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
+import helium314.keyboard.latin.utils.Log;
 
 /**
  * A content observer that listens to updates to content provider {@link Contacts#CONTENT_URI}.

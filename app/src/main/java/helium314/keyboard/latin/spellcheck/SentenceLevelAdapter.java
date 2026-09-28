@@ -11,12 +11,12 @@ import android.view.textservice.SentenceSuggestionsInfo;
 import android.view.textservice.SuggestionsInfo;
 import android.view.textservice.TextInfo;
 
+import java.util.ArrayList;
+import java.util.Locale;
+
 import helium314.keyboard.latin.common.Constants;
 import helium314.keyboard.latin.settings.SpacingAndPunctuations;
 import helium314.keyboard.latin.utils.RunInLocaleKt;
-
-import java.util.ArrayList;
-import java.util.Locale;
 
 /**
  * This code is mostly lifted directly from android.service.textservice.SpellCheckerService in

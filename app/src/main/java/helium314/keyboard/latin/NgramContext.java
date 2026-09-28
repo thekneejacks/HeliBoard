@@ -10,11 +10,11 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
-import helium314.keyboard.latin.common.StringUtils;
-import helium314.keyboard.latin.define.DecoderSpecificConstants;
-
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import helium314.keyboard.latin.common.StringUtils;
+import helium314.keyboard.latin.define.DecoderSpecificConstants;
 
 /**
  * Class to represent information of previous words. This class is used to add n-gram entries

@@ -13,7 +13,6 @@ import java.math.BigInteger
 import java.text.BreakIterator
 import java.util.Locale
 import kotlin.math.max
-import kotlin.text.indexOfFirst
 
 fun CharSequence.codePointAt(offset: Int) = Character.codePointAt(this, offset)
 fun CharSequence.codePointBefore(offset: Int) = Character.codePointBefore(this, offset)

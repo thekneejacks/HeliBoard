@@ -2,15 +2,15 @@
 
 package helium314.keyboard.latin.dictionary;
 
+import java.text.Normalizer;
+import java.util.ArrayList;
+
 import helium314.keyboard.event.HangulCombiner;
 import helium314.keyboard.latin.NgramContext;
 import helium314.keyboard.latin.SuggestedWords;
 import helium314.keyboard.latin.common.ComposedData;
 import helium314.keyboard.latin.makedict.WordProperty;
 import helium314.keyboard.latin.settings.SettingsValuesForSuggestion;
-
-import java.text.Normalizer;
-import java.util.ArrayList;
 
 /*
  * For Korean dictionary, there are too many cases of characters to store on dictionary, which makes it slow.

@@ -7,13 +7,18 @@
 package helium314.keyboard.accessibility
 
 import android.content.Context
-import android.media.AudioDeviceInfo.*
+import android.media.AudioDeviceInfo.TYPE_BLE_HEADSET
+import android.media.AudioDeviceInfo.TYPE_BLUETOOTH_A2DP
+import android.media.AudioDeviceInfo.TYPE_BLUETOOTH_SCO
+import android.media.AudioDeviceInfo.TYPE_HEARING_AID
+import android.media.AudioDeviceInfo.TYPE_USB_HEADSET
+import android.media.AudioDeviceInfo.TYPE_WIRED_HEADPHONES
+import android.media.AudioDeviceInfo.TYPE_WIRED_HEADSET
 import android.media.AudioManager
 import android.os.Build
 import android.os.SystemClock
 import android.provider.Settings
 import android.text.TextUtils
-import helium314.keyboard.latin.utils.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
@@ -23,6 +28,7 @@ import android.view.inputmethod.EditorInfo
 import helium314.keyboard.latin.R
 import helium314.keyboard.latin.SuggestedWords
 import helium314.keyboard.latin.utils.InputTypeUtils
+import helium314.keyboard.latin.utils.Log
 
 class AccessibilityUtils private constructor() {
     private lateinit var mContext: Context

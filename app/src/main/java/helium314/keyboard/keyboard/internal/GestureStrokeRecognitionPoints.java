@@ -6,14 +6,13 @@
 
 package helium314.keyboard.keyboard.internal;
 
-import helium314.keyboard.latin.settings.Settings;
-import helium314.keyboard.latin.utils.Log;
+import java.util.Locale;
 
 import helium314.keyboard.latin.common.Constants;
 import helium314.keyboard.latin.common.InputPointers;
 import helium314.keyboard.latin.common.ResizableIntArray;
-
-import java.util.Locale;
+import helium314.keyboard.latin.settings.Settings;
+import helium314.keyboard.latin.utils.Log;
 
 /**
  * This class holds event points to recognize a gesture stroke.

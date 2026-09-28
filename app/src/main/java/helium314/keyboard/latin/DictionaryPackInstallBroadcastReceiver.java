@@ -13,9 +13,9 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.net.Uri;
-import helium314.keyboard.latin.utils.Log;
 
 import helium314.keyboard.dictionarypack.DictionaryPackConstants;
+import helium314.keyboard.latin.utils.Log;
 
 /**
  * Receives broadcasts pertaining to dictionary management and takes the appropriate action.

@@ -20,9 +20,9 @@ import helium314.keyboard.latin.R
 import helium314.keyboard.latin.common.Constants.Separators
 import helium314.keyboard.latin.utils.getStringResourceOrName
 import helium314.keyboard.latin.utils.prefs
+import helium314.keyboard.settings.GetIconOrEmpty
 import helium314.keyboard.settings.Setting
 import helium314.keyboard.settings.dialogs.ReorderDialog
-import helium314.keyboard.settings.GetIconOrEmpty
 
 @Composable
 fun ReorderSwitchPreference(setting: Setting, default: String) {

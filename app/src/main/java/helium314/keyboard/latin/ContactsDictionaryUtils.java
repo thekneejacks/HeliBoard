@@ -6,10 +6,10 @@
 
 package helium314.keyboard.latin;
 
+import java.util.Locale;
+
 import helium314.keyboard.latin.common.Constants;
 import helium314.keyboard.latin.utils.ScriptUtils;
-
-import java.util.Locale;
 
 /**
  * Utility methods related contacts dictionary.

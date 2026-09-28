@@ -24,8 +24,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import helium314.keyboard.latin.utils.Theme
-import helium314.keyboard.settings.contentTextDirectionStyle
 import helium314.keyboard.latin.utils.previewDark
+import helium314.keyboard.settings.contentTextDirectionStyle
 
 /** Dialog with which to input text. OK button is only clickable if [checkTextValid] returns true. */
 @Composable

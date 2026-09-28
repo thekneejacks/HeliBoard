@@ -6,8 +6,6 @@
 
 package helium314.keyboard.event
 
-import java.util.*
-
 /**
  * A generic interface for combiners. Combiners are objects that transform chains of input events
  * into committable strings and manage feedback to show to the user on the combining state.

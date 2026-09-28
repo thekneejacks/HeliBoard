@@ -7,11 +7,11 @@
 package helium314.keyboard.accessibility
 
 import android.graphics.Rect
-import helium314.keyboard.latin.utils.Log
 import android.view.MotionEvent
 import helium314.keyboard.keyboard.KeyDetector
-import helium314.keyboard.keyboard.PopupKeysKeyboardView
 import helium314.keyboard.keyboard.PointerTracker
+import helium314.keyboard.keyboard.PopupKeysKeyboardView
+import helium314.keyboard.latin.utils.Log
 
 /**
  * This class represents a delegate that can be registered in [PopupKeysKeyboardView] to

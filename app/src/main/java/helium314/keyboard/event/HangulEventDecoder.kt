@@ -3,9 +3,8 @@
 package helium314.keyboard.event
 
 import android.view.KeyEvent
-import helium314.keyboard.latin.RichInputMethodSubtype
-
 import helium314.keyboard.event.HangulCombiner.HangulJamo
+import helium314.keyboard.latin.RichInputMethodSubtype
 
 object HangulEventDecoder {
 

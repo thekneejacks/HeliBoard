@@ -2,26 +2,20 @@
 package helium314.keyboard.latin.utils
 
 import android.content.Context
-import android.text.InputType
 import android.view.inputmethod.EditorInfo
 import com.android.inputmethod.latin.BinaryDictionary
 import helium314.keyboard.keyboard.Keyboard
 import helium314.keyboard.keyboard.KeyboardSwitcher
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode
 import helium314.keyboard.latin.BuildConfig
-import helium314.keyboard.latin.InputAttributes
 import helium314.keyboard.latin.NgramContext
-import helium314.keyboard.latin.R
 import helium314.keyboard.latin.RichInputMethodManager
 import helium314.keyboard.latin.SingleDictionaryFacilitator
 import helium314.keyboard.latin.SuggestedWords
-import helium314.keyboard.latin.SuggestedWords.SuggestedWordInfo.KIND_SHORTCUT
 import helium314.keyboard.latin.common.ComposedData
 import helium314.keyboard.latin.common.Constants
 import helium314.keyboard.latin.common.InputPointers
-import helium314.keyboard.latin.common.StringUtils
 import helium314.keyboard.latin.common.getTouchedWordRange
-import helium314.keyboard.latin.dictionary.Dictionary
 import helium314.keyboard.latin.dictionary.ReadOnlyBinaryDictionary
 import helium314.keyboard.latin.settings.Settings
 import kotlinx.coroutines.CoroutineScope
