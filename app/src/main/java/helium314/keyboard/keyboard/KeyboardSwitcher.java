@@ -123,9 +123,6 @@ public final class KeyboardSwitcher {
             settings.loadSettings(displayContext, settings.getCurrent().mLocale, settings.getCurrent().mInputAttributes);
             if (mKeyboardView != null)
                 mLatinIME.setInputView(onCreateInputView(displayContext, mIsHardwareAcceleratedDrawingEnabled));
-        } else if (mCurrentInputView != null && mLatinIME.hasSuggestionStripView()
-                    == (Settings.getValues().mToolbarMode == ToolbarMode.HIDDEN)) {
-            mLatinIME.updateSuggestionStripView(mCurrentInputView);
         }
     }
 
@@ -611,10 +608,7 @@ public final class KeyboardSwitcher {
         mLatinIME.switchToSubtype(subtype);
     }
 
-    // used for debug
-    public String getLocaleAndConfidenceInfo() {
-        return mLatinIME.getLocaleAndConfidenceInfo();
-    }
+
 
     /** Marks the theme as outdated. The theme will be reloaded next time the keyboard is shown.
      *  If the keyboard is currently showing, theme will be reloaded immediately. */
@@ -695,8 +689,6 @@ public final class KeyboardSwitcher {
             mClipboardStripScrollView.post(() -> mClipboardStripScrollView.fullScroll(HorizontalScrollView.FOCUS_RIGHT));
             mClipboardStripScrollView.setVisibility(View.VISIBLE);
             mEmojiPalettesView.setVisibility(View.GONE);
-            mClipboardHistoryView.startClipboardHistory(mLatinIME.getClipboardHistoryManager(), mKeyboardView.getKeyVisualAttribute(),
-                mLatinIME.getCurrentInputEditorInfo(), mLatinIME.mKeyboardActionListener);
             mClipboardHistoryView.setVisibility(View.VISIBLE);
         }
 

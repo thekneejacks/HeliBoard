@@ -13,7 +13,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.edit
 import helium314.keyboard.keyboard.KeyboardSwitcher
 import helium314.keyboard.latin.BuildConfig
-import helium314.keyboard.latin.DictionaryDumpBroadcastReceiver
 import helium314.keyboard.latin.DictionaryFacilitator
 import helium314.keyboard.latin.R
 import helium314.keyboard.latin.settings.DebugSettings
@@ -24,7 +23,6 @@ import helium314.keyboard.latin.utils.previewDark
 import helium314.keyboard.settings.SearchSettingsScreen
 import helium314.keyboard.settings.Setting
 import helium314.keyboard.settings.initPreview
-import helium314.keyboard.settings.preferences.Preference
 import helium314.keyboard.settings.preferences.PreferenceCategory
 import helium314.keyboard.settings.preferences.SwitchPreference
 
@@ -94,20 +92,7 @@ private fun createDebugSettings(context: Context) = listOf(
     Setting(context, DebugSettings.PREF_SLIDING_KEY_INPUT_PREVIEW, R.string.sliding_key_input_preview, R.string.sliding_key_input_preview_summary) { def ->
         SwitchPreference(def, Defaults.PREF_SLIDING_KEY_INPUT_PREVIEW)
     },
-) + DictionaryFacilitator.DYNAMIC_DICTIONARY_TYPES.map { type ->
-    Setting(context, DebugSettings.PREF_KEY_DUMP_DICT_PREFIX + type, R.string.button_default) {
-        val ctx = LocalContext.current
-        Preference(
-            name = "Dump $type dictionary",
-            onClick = {
-                val intent = Intent(DictionaryDumpBroadcastReceiver.DICTIONARY_DUMP_INTENT_ACTION)
-                intent.setPackage(context.packageName)
-                intent.putExtra(DictionaryDumpBroadcastReceiver.DICTIONARY_NAME_KEY, type)
-                ctx.sendBroadcast(intent)
-            }
-        )
-    }
-}
+)
 
 @Preview
 @Composable

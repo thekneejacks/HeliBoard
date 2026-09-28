@@ -109,14 +109,12 @@ class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inp
             KeyCode.TOGGLE_INCOGNITO_MODE -> {
                 settings.toggleAlwaysIncognitoMode()
                 BackgroundGatheringCache.clear()
-                latinIME.setGestureDataGatheringMode(latinIME.currentInputEditorInfo, false)
                 return
             }
             KeyCode.BACKGROUND_GATHERING -> {
                 if (BackgroundGatheringCache.isEmpty) {
                     // only enable, no toggle
                     GestureDataGatheringSettings.setBackgroundGatheringEnabled(latinIME.prefs(), true)
-                    latinIME.setGestureDataGatheringMode(latinIME.currentInputEditorInfo, false)
                 } else {
                     if (GestureDataGatheringSettings.isDiscardByDefault(latinIME))
                         BackgroundGatheringCache.save(latinIME)
@@ -128,7 +126,6 @@ class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inp
             KeyCode.BACKGROUND_GATHERING_TEMP_OFF -> {
                 GestureDataGatheringSettings.tempDisableBackgroundGathering(latinIME.prefs())
                 BackgroundGatheringCache.clear()
-                latinIME.setGestureDataGatheringMode(latinIME.currentInputEditorInfo, false)
                 return
             }
         }

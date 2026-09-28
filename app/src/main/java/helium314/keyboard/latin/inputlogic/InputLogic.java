@@ -6,8 +6,6 @@
 
 package helium314.keyboard.latin.inputlogic;
 
-import static helium314.keyboard.latin.common.SuggestionSpanUtilsKt.getTextWithSuggestionSpan;
-
 import android.graphics.Color;
 import android.os.Build;
 import android.os.SystemClock;
@@ -27,7 +25,6 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.TreeSet;
-import java.util.concurrent.TimeUnit;
 
 import helium314.keyboard.compat.AppWorkarounds;
 import helium314.keyboard.event.Event;
@@ -37,12 +34,10 @@ import helium314.keyboard.keyboard.KeyboardLayoutSet;
 import helium314.keyboard.keyboard.KeyboardSwitcher;
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
 import helium314.keyboard.latin.CapsMode;
-import helium314.keyboard.latin.DictionaryFacilitator;
 import helium314.keyboard.latin.LastComposedWord;
 import helium314.keyboard.latin.LatinIME;
 import helium314.keyboard.latin.NgramContext;
 import helium314.keyboard.latin.RichInputConnection;
-import helium314.keyboard.latin.SingleDictionaryFacilitator;
 import helium314.keyboard.latin.SuggestedWords;
 import helium314.keyboard.latin.SuggestedWords.SuggestedWordInfo;
 import helium314.keyboard.latin.WordComposer;
@@ -52,13 +47,10 @@ import helium314.keyboard.latin.common.StringUtils;
 import helium314.keyboard.latin.common.StringUtilsKt;
 import helium314.keyboard.latin.common.SuggestionSpanUtilsKt;
 import helium314.keyboard.latin.define.DebugFlags;
-import helium314.keyboard.latin.dictionary.DictionaryFactory;
 import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.settings.SettingsValues;
 import helium314.keyboard.latin.settings.SpacingAndPunctuations;
-import helium314.keyboard.latin.suggestions.SuggestionStripViewAccessor;
 import helium314.keyboard.latin.utils.BackgroundGatheringCache;
-import helium314.keyboard.latin.utils.DictionaryInfoUtils;
 import helium314.keyboard.latin.utils.GestureDataGatheringKt;
 import helium314.keyboard.latin.utils.InputTypeUtils;
 import helium314.keyboard.latin.utils.IntentUtils;
@@ -77,26 +69,18 @@ import helium314.keyboard.latin.utils.TimestampKt;
 public final class InputLogic {
     private static final String TAG = InputLogic.class.getSimpleName();
     private static final char INLINE_EMOJI_SEARCH_MARKER = ':';
-    private static final int[] EMPTY_CODE_POINTS = new int[0];
 
     // TODO : Remove this member when we can.
     final LatinIME mLatinIME;
-    private final SuggestionStripViewAccessor mSuggestionStripViewAccessor;
 
-    @NonNull private final InputLogicHandler mInputLogicHandler;
+    @NonNull
+    private final InputLogicHandler mInputLogicHandler;
 
     // TODO : make all these fields private as soon as possible.
     // Current space state of the input method. This can be any of the above constants.
     private int mSpaceState;
     // Never null
     public SuggestedWords mSuggestedWords = SuggestedWords.getEmptyInstance();
-
-    public DictionaryFacilitator mDictionaryFacilitator; // non-final for active gesture data gathering, revert when data gathering phase is done (end of 2026 latest)
-    private SingleDictionaryFacilitator mEmojiDictionaryFacilitator;
-    public void setFacilitator(DictionaryFacilitator facilitator) { // only for active gesture data gathering, remove when data gathering phase is done (end of 2026 latest)
-        if (mDictionaryFacilitator == facilitator) return;
-        mDictionaryFacilitator = facilitator;
-    }
 
     public LastComposedWord mLastComposedWord = LastComposedWord.NOT_A_COMPOSED_WORD;
     // This has package visibility so it can be accessed from InputLogicHandler.
@@ -125,22 +109,11 @@ public final class InputLogic {
 
     private long mCursorMoveExpectedUntil = 0L;
 
-    /**
-     * Create a new instance of the input logic.
-     * @param latinIME the instance of the parent LatinIME. We should remove this when we can.
-     * @param suggestionStripViewAccessor an object to access the suggestion strip view.
-     * @param dictionaryFacilitator facilitator for getting suggestions and updating user history
-     * dictionary.
-     */
-    public InputLogic(final LatinIME latinIME,
-            final SuggestionStripViewAccessor suggestionStripViewAccessor,
-            final DictionaryFacilitator dictionaryFacilitator) {
+    public InputLogic(final LatinIME latinIME) {
         mLatinIME = latinIME;
-        mSuggestionStripViewAccessor = suggestionStripViewAccessor;
         mWordComposer = new WordComposer();
         mConnection = new RichInputConnection(latinIME);
         mInputLogicHandler = new InputLogicHandler(mLatinIME.mHandler, this);
-        mDictionaryFacilitator = dictionaryFacilitator;
     }
 
     /**
@@ -148,7 +121,7 @@ public final class InputLogic {
      * <p>
      * Call this when input starts or restarts in some editor (typically, in onStartInputView).
      *
-     * @param combiningSpec the combining spec string for this subtype (from extra value)
+     * @param combiningSpec  the combining spec string for this subtype (from extra value)
      * @param settingsValues the current settings values
      */
     public void startInput(final String combiningSpec, final SettingsValues settingsValues) {
@@ -167,7 +140,6 @@ public final class InputLogic {
         mSpaceState = SpaceState.NONE;
         mRecapitalizeStatus.disable(); // Do not perform recapitalize until the cursor is moved once
         mCurrentlyPressedHardwareKeys.clear();
-        mSuggestedWords = SuggestedWords.getEmptyInstance();
         // In some cases (e.g. after rotation of the device, or when scrolling the text before bringing up keyboard)
         // editorInfo.initialSelStart is not the actual cursor position, so we try using some heuristics to find the correct position.
         mConnection.tryFixIncorrectCursorPosition();
@@ -179,7 +151,8 @@ public final class InputLogic {
 
     /**
      * Call this when the subtype changes.
-     * @param combiningSpec the spec string for the combining rules
+     *
+     * @param combiningSpec  the spec string for the combining rules
      * @param settingsValues the current settings values
      */
     public void onSubtypeChanged(final String combiningSpec, final SettingsValues settingsValues) {
@@ -189,6 +162,7 @@ public final class InputLogic {
 
     /**
      * Call this when the orientation changes.
+     *
      * @param settingsValues the current values of the settings.
      */
     public void onOrientationChange(final SettingsValues settingsValues) {
@@ -224,14 +198,12 @@ public final class InputLogic {
      * some additional keys for example.
      *
      * @param settingsValues the current values of the settings.
-     * @param event the input event containing the data.
+     * @param event          the input event containing the data.
      * @return the complete transaction object
      */
     public InputTransaction onTextInput(SettingsValues settingsValues, Event event, CapsMode keyboardCapsMode, LatinIME.UIHandler handler) {
         String rawText = event.getTextToCommit().toString();
-        InputTransaction inputTransaction = new InputTransaction(settingsValues, event,
-                SystemClock.uptimeMillis(), mSpaceState,
-                getActualCapsMode(settingsValues, keyboardCapsMode));
+        InputTransaction inputTransaction = new InputTransaction(settingsValues, event, SystemClock.uptimeMillis(), mSpaceState, getActualCapsMode(settingsValues, keyboardCapsMode));
         mConnection.beginBatchEdit();
         if (GestureDataGatheringKt.useBackgroundGathering && mConnection.hasSelection())
             BackgroundGatheringCache.INSTANCE.onEditSelection(mConnection.getSelectedText(0), mConnection.getTextBeforeCursor(40, 0), mConnection.getTextAfterCursor(40, 0));
@@ -243,12 +215,8 @@ public final class InputLogic {
                 // stop composing, otherwise the text will end up at the end of the current word
                 mConnection.finishComposingText();
                 resetComposingState(false);
-            } else {
-                commitCurrentAutoCorrection(settingsValues, rawText, handler);
-                addToHistoryIfEmoji(rawText, settingsValues); // add emoji after committing text
             }
         } else {
-            addToHistoryIfEmoji(rawText, settingsValues); // add emoji before resetting, otherwise lastComposedWord is empty
             resetComposingState(true /* alsoResetLastComposedWord */);
         }
         handler.postUpdateSuggestionStrip(SuggestedWords.INPUT_STYLE_TYPING);
@@ -269,96 +237,8 @@ public final class InputLogic {
     }
 
     /**
-     * A suggestion was picked from the suggestion strip.
-     * @param settingsValues the current values of the settings.
-     * @param suggestionInfo the suggestion info.
-     * @param keyboardCapsMode the shift state of the keyboard, as returned by
-     *     {@link helium314.keyboard.keyboard.KeyboardSwitcher#getKeyboardCapsMode()}
-     * @return the complete transaction object
+     * indicates that the next selection update is expected to be a cursor move (though not needed for arrow keys)
      */
-    // Called from {@link SuggestionStripView} through the {@link SuggestionStripView#Listener}
-    // interface
-    public InputTransaction onPickSuggestionManually(SettingsValues settingsValues, SuggestedWordInfo suggestionInfo,
-            CapsMode keyboardCapsMode, String currentKeyboardScript, LatinIME.UIHandler handler) {
-        if (isInlineEmojiSearchAction()) {
-            deleteTextReplacedByEmoji();
-        }
-
-        SuggestedWords suggestedWords = mSuggestedWords;
-        String suggestion = suggestionInfo.mWord;
-        // If this is a punctuation picked from the suggestion strip, pass it to onCodeInput
-        if (suggestion.length() == 1 && suggestedWords.isPunctuationSuggestions()) {
-            // We still want to log a suggestion click.
-            StatsUtils.onPickSuggestionManually(mSuggestedWords, suggestionInfo, mDictionaryFacilitator);
-            // Word separators are suggested before the user inputs something.
-            // Rely on onCodeInput to do the complicated swapping/stripping logic consistently.
-            Event event = Event.createPunctuationSuggestionPickedEvent(suggestionInfo);
-            return onCodeInput(settingsValues, event, keyboardCapsMode, currentKeyboardScript, handler);
-        }
-        if (GestureDataGatheringKt.useBackgroundGathering) {
-            if (mWordComposer.isBatchMode())
-                // should only happen selecting different suggestion for gesture typed word
-                BackgroundGatheringCache.INSTANCE.onPickSuggestionAfterGesturing(suggestionInfo, mWordComposer.getTypedWord());
-            else
-                BackgroundGatheringCache.INSTANCE.onPickSuggestion(suggestionInfo, mWordComposer.getTypedWord());
-        }
-
-        Event event = Event.createSuggestionPickedEvent(suggestionInfo);
-        InputTransaction inputTransaction = new InputTransaction(settingsValues, event,
-            SystemClock.uptimeMillis(), mSpaceState, keyboardCapsMode);
-        // Manual pick affects the contents of the editor, so we take note of this. It's important
-        // for the sequence of language switching.
-        inputTransaction.setDidAffectContents();
-        mConnection.beginBatchEdit();
-        if (SpaceState.PHANTOM == mSpaceState && suggestion.length() > 0
-                // In the batch input mode, a manually picked suggested word should just replace
-                // the current batch input text and there is no need for a phantom space.
-                && !mWordComposer.isBatchMode()
-                // when a commit was reverted and user chose a different suggestion, we don't want
-                // to insert a space before the picked word
-                && !mJustRevertedACommit) {
-            final int firstChar = Character.codePointAt(suggestion, 0);
-            if (!settingsValues.isWordSeparator(firstChar)
-                    || settingsValues.isUsuallyPrecededBySpace(firstChar)) {
-                insertAutomaticSpaceIfOptionsAndTextAllow(settingsValues);
-            }
-        }
-        mJustRevertedACommit = false;
-
-        // TODO: We should not need the following branch. We should be able to take the same
-        // code path as for other kinds, use commitChosenWord, and do everything normally. We will
-        // however need to reset the suggestion strip right away, because we know we can't take
-        // the risk of calling commitCompletion twice because we don't know how the app will react.
-        if (suggestionInfo.isKindOf(SuggestedWordInfo.KIND_APP_DEFINED)) {
-            mSuggestedWords = SuggestedWords.getEmptyInstance();
-            mSuggestionStripViewAccessor.setNeutralSuggestionStrip();
-            inputTransaction.requireShiftUpdate(InputTransaction.SHIFT_UPDATE_NOW);
-            resetComposingState(true /* alsoResetLastComposedWord */);
-            mConnection.commitCompletion(suggestionInfo.mApplicationSpecifiedCompletionInfo);
-            mConnection.endBatchEdit();
-            return inputTransaction;
-        }
-
-        commitChosenWord(settingsValues, suggestion, LastComposedWord.COMMIT_TYPE_MANUAL_PICK, LastComposedWord.NOT_A_SEPARATOR);
-        mConnection.endBatchEdit();
-        // Don't allow cancellation of manual pick
-        mLastComposedWord.deactivate();
-        // Space state must be updated before calling updateShiftState
-        if (settingsValues.mAutospaceAfterSuggestion)
-            mSpaceState = SpaceState.PHANTOM;
-        inputTransaction.requireShiftUpdate(InputTransaction.SHIFT_UPDATE_NOW);
-        setInlineEmojiSearchAction(false);
-
-        // If we're not showing the "Touch again to save", then update the suggestion strip.
-        // That's going to be predictions (or punctuation suggestions), so INPUT_STYLE_NONE.
-        handler.postUpdateSuggestionStrip(SuggestedWords.INPUT_STYLE_NONE);
-
-        StatsUtils.onPickSuggestionManually(mSuggestedWords, suggestionInfo, mDictionaryFacilitator);
-        StatsUtils.onWordCommitSuggestionPickedManually(suggestionInfo.mWord, mWordComposer.isBatchMode());
-        return inputTransaction;
-    }
-
-    /** indicates that the next selection update is expected to be a cursor move (though not needed for arrow keys) */
     public void setExpectCursorMove() {
         mCursorMoveExpectedUntil = SystemClock.elapsedRealtime() + 500;
     }
@@ -373,15 +253,15 @@ public final class InputLogic {
      * Consider an update to the cursor position. Evaluate whether this update has happened as
      * part of normal typing or whether it was an explicit cursor move by the user. In any case,
      * do the necessary adjustments.
-     * @param oldSelStart old selection start
-     * @param oldSelEnd old selection end
-     * @param newSelStart new selection start
-     * @param newSelEnd new selection end
+     *
+     * @param oldSelStart    old selection start
+     * @param oldSelEnd      old selection end
+     * @param newSelStart    new selection start
+     * @param newSelEnd      new selection end
      * @param settingsValues the current values of the settings.
      * @return whether the cursor has moved as a result of user interaction.
      */
-    public boolean onUpdateSelection(int oldSelStart, int oldSelEnd, int newSelStart,
-             int newSelEnd, int composingSpanStart, int composingSpanEnd, SettingsValues settingsValues) {
+    public boolean onUpdateSelection(int oldSelStart, int oldSelEnd, int newSelStart, int newSelEnd, int composingSpanStart, int composingSpanEnd, SettingsValues settingsValues) {
         boolean expectCursorMove = mightBeExpectedCursorMove(); // reset the timer
         if (mConnection.isBelatedExpectedUpdate(oldSelStart, newSelStart, oldSelEnd, newSelEnd, composingSpanStart, composingSpanEnd)) {
             // return whether we expect a user-initiated explicit cursor move (i.e. not as result of other input, but e.g. space swipe)
@@ -401,9 +281,8 @@ public final class InputLogic {
         // state-related special processing to kick in.
         mSpaceState = SpaceState.NONE;
 
-        final boolean selectionChangedOrSafeToReset =
-                oldSelStart != newSelStart || oldSelEnd != newSelEnd // selection changed
-                || !mWordComposer.isComposingWord(); // safe to reset
+        final boolean selectionChangedOrSafeToReset = oldSelStart != newSelStart || oldSelEnd != newSelEnd // selection changed
+            || !mWordComposer.isComposingWord(); // safe to reset
         final boolean hasOrHadSelection = (oldSelStart != oldSelEnd || newSelStart != newSelEnd);
         final int moveAmount = newSelStart - oldSelStart;
         // As an added small gift from the framework, it happens upon rotation when there
@@ -414,9 +293,7 @@ public final class InputLogic {
         // should be true, but that is if the framework had taken that wrong cursor position
         // into account, which means we have to reset the entire composing state whenever there
         // is or was a selection regardless of whether it changed or not.
-        if (hasOrHadSelection || !settingsValues.needsToLookupSuggestions()
-                || (selectionChangedOrSafeToReset
-                        && !mWordComposer.moveCursorByAndReturnIfInsideComposingWord(moveAmount))) {
+        if (hasOrHadSelection || !settingsValues.needsToLookupSuggestions() || (selectionChangedOrSafeToReset && !mWordComposer.moveCursorByAndReturnIfInsideComposingWord(moveAmount))) {
             // If we are composing a word and moving the cursor, we would want to set a
             // suggestion span for recorrection to work correctly. Unfortunately, that
             // would involve the keyboard committing some new text, which would move the
@@ -434,17 +311,12 @@ public final class InputLogic {
             resetEntireInputState(newSelStart, newSelEnd, false /* clearSuggestionStrip */);
             // If the user is in the middle of correcting a word, we should learn it before moving
             // the cursor away.
-            if (!TextUtils.isEmpty(mWordBeingCorrectedByCursor)) {
-                performAdditionToUserHistoryDictionary(settingsValues, mWordBeingCorrectedByCursor,
-                        NgramContext.EMPTY_PREV_WORDS_INFO);
-            }
         } else {
             // resetEntireInputState calls resetCachesUponCursorMove, but forcing the
             // composition to end. But in all cases where we don't reset the entire input
             // state, we still want to tell the rich input connection about the new cursor
             // position so that it can update its caches.
-            mConnection.resetCachesUponCursorMoveAndReturnSuccess(
-                    newSelStart, newSelEnd, false /* shouldFinishComposition */);
+            mConnection.resetCachesUponCursorMoveAndReturnSuccess(newSelStart, newSelEnd, false /* shouldFinishComposition */);
         }
 
         // The cursor has been moved : we now accept to perform recapitalization
@@ -468,14 +340,13 @@ public final class InputLogic {
      * Typically, this is called whenever a key is pressed on the software keyboard. This is not
      * the entry point for gesture input; see the onBatchInput* family of functions for this.
      *
-     * @param settingsValues the current settings values.
-     * @param event the event to handle.
+     * @param settingsValues   the current settings values.
+     * @param event            the event to handle.
      * @param keyboardCapsMode the current shift mode of the keyboard, as returned by
-     *     {@link helium314.keyboard.keyboard.KeyboardSwitcher#getKeyboardCapsMode()}
+     *                         {@link helium314.keyboard.keyboard.KeyboardSwitcher#getKeyboardCapsMode()}
      * @return the complete transaction object
      */
-    public InputTransaction onCodeInput(SettingsValues settingsValues, @NonNull Event event,
-            CapsMode keyboardCapsMode, String currentKeyboardScript, LatinIME.UIHandler handler) {
+    public InputTransaction onCodeInput(SettingsValues settingsValues, @NonNull Event event, CapsMode keyboardCapsMode, String currentKeyboardScript, LatinIME.UIHandler handler) {
         mWordBeingCorrectedByCursor = null;
         mJustRevertedACommit = false;
 
@@ -485,11 +356,8 @@ public final class InputLogic {
             BackgroundGatheringCache.INSTANCE.onEditWord(mWordComposer.getTypedWord());
 
         Event processedEvent = mWordComposer.processEvent(event);
-        InputTransaction inputTransaction = new InputTransaction(settingsValues,
-                processedEvent, SystemClock.uptimeMillis(), mSpaceState,
-                getActualCapsMode(settingsValues, keyboardCapsMode));
-        if (processedEvent.getKeyCode() != KeyCode.DELETE
-                || inputTransaction.getTimestamp() > mLastKeyTime + Constants.LONG_PRESS_MILLISECONDS) {
+        InputTransaction inputTransaction = new InputTransaction(settingsValues, processedEvent, SystemClock.uptimeMillis(), mSpaceState, getActualCapsMode(settingsValues, keyboardCapsMode));
+        if (processedEvent.getKeyCode() != KeyCode.DELETE || inputTransaction.getTimestamp() > mLastKeyTime + Constants.LONG_PRESS_MILLISECONDS) {
             mDeleteCount = 0;
         }
         mLastKeyTime = inputTransaction.getTimestamp();
@@ -518,17 +386,10 @@ public final class InputLogic {
         }
         // Try to record the word being corrected when the user enters a word character or
         // the backspace key.
-        if (!mConnection.hasSlowInputConnection() && !mWordComposer.isComposingWord()
-                && (settingsValues.isWordCodePoint(processedEvent.getCodePoint())
-                    || processedEvent.getKeyCode() == KeyCode.DELETE)
-                ) {
+        if (!mConnection.hasSlowInputConnection() && !mWordComposer.isComposingWord() && (settingsValues.isWordCodePoint(processedEvent.getCodePoint()) || processedEvent.getKeyCode() == KeyCode.DELETE)) {
             mWordBeingCorrectedByCursor = getWordAtCursor(settingsValues, currentKeyboardScript);
         }
-        if (!inputTransaction.didAutoCorrect() && processedEvent.getKeyCode() != KeyCode.SHIFT
-                && processedEvent.getKeyCode() != KeyCode.CAPS_LOCK
-                && processedEvent.getKeyCode() != KeyCode.SYMBOL_ALPHA
-                && processedEvent.getKeyCode() != KeyCode.ALPHA
-                && processedEvent.getKeyCode() != KeyCode.SYMBOL)
+        if (!inputTransaction.didAutoCorrect() && processedEvent.getKeyCode() != KeyCode.SHIFT && processedEvent.getKeyCode() != KeyCode.CAPS_LOCK && processedEvent.getKeyCode() != KeyCode.SYMBOL_ALPHA && processedEvent.getKeyCode() != KeyCode.ALPHA && processedEvent.getKeyCode() != KeyCode.SYMBOL)
             mLastComposedWord.deactivate();
         if (KeyCode.DELETE != processedEvent.getKeyCode()) {
             mEnteredText = null;
@@ -537,8 +398,7 @@ public final class InputLogic {
         return inputTransaction;
     }
 
-    public void onStartBatchInput(final SettingsValues settingsValues,
-            final KeyboardSwitcher keyboardSwitcher, final LatinIME.UIHandler handler) {
+    public void onStartBatchInput(final SettingsValues settingsValues, final KeyboardSwitcher keyboardSwitcher, final LatinIME.UIHandler handler) {
         mWordBeingCorrectedByCursor = null;
         mInputLogicHandler.onStartBatchInput();
         handler.showGesturePreviewAndSetSuggestions(SuggestedWords.getEmptyBatchInstance(), false);
@@ -556,9 +416,8 @@ public final class InputLogic {
                 // If we are in the middle of a recorrection, we need to commit the recorrection
                 // first so that we can insert the batch input at the current cursor position.
                 // We also need to unlearn the original word that is now being corrected.
-                unlearnWord(mWordComposer.getTypedWord(), settingsValues, DictionaryFacilitator.UnlearnEvent.BACKSPACE);
                 resetEntireInputState(mConnection.getExpectedSelectionStart(), mConnection.getExpectedSelectionEnd(), true);
-            } else if (mWordComposer.isSingleLetter() && ! isInlineEmojiSearchAction()) {
+            } else if (mWordComposer.isSingleLetter() && !isInlineEmojiSearchAction()) {
                 // We auto-correct the previous (typed, not gestured) string iff it's one character
                 // long. The reason for this is, even in the middle of gesture typing, you'll still
                 // tap one-letter words and you want them auto-corrected (typically, "i" in English
@@ -566,8 +425,7 @@ public final class InputLogic {
                 // tapping probably is that the word you intend to type is not in the dictionary,
                 // so we do not attempt to correct, on the assumption that if that was a dictionary
                 // word, the user would probably have gestured instead.
-                commitCurrentAutoCorrection(settingsValues, LastComposedWord.NOT_A_SEPARATOR,
-                        handler);
+                //commitCurrentAutoCorrection(settingsValues, LastComposedWord.NOT_A_SEPARATOR, handler);
             } else {
                 commitTyped(settingsValues, LastComposedWord.NOT_A_SEPARATOR);
             }
@@ -578,18 +436,15 @@ public final class InputLogic {
                 mWordComposer.setRejectedBatchModeSuggestion(selectedText.toString());
         }
         final int codePointBeforeCursor = mConnection.getCodePointBeforeCursor();
-        if (Character.isLetterOrDigit(codePointBeforeCursor)
-                || settingsValues.isUsuallyFollowedBySpace(codePointBeforeCursor)) {
+        if (Character.isLetterOrDigit(codePointBeforeCursor) || settingsValues.isUsuallyFollowedBySpace(codePointBeforeCursor)) {
             // autoShiftHasBeenOverridden is weird
             // before switching CapsMode to enum, it was CapsMode != autoCapsState
             // autoCapsState is 0 (off), 0x1000, 0x2000, 0x4000 or a combination
             // old CapsMode was 0 (off), 1, 3, 5, 7
             // meaning both were incompatible, and the check was just returning whether both were 0
             // todo: maybe adjust this?
-            boolean autoShiftHasBeenOverridden =
-                (keyboardSwitcher.getKeyboardCapsMode() == CapsMode.OFF) != (getCurrentAutoCapsState(settingsValues) == 0);
-            if (settingsValues.mAutospaceBeforeGestureTyping)
-                mSpaceState = SpaceState.PHANTOM; // influences autoCapsState
+            boolean autoShiftHasBeenOverridden = (keyboardSwitcher.getKeyboardCapsMode() == CapsMode.OFF) != (getCurrentAutoCapsState(settingsValues) == 0);
+            if (settingsValues.mAutospaceBeforeGestureTyping) mSpaceState = SpaceState.PHANTOM; // influences autoCapsState
             if (!autoShiftHasBeenOverridden) {
                 // When we change the space state, we need to update the shift state of the
                 // keyboard unless it has been overridden manually. This is happening for example
@@ -600,8 +455,7 @@ public final class InputLogic {
             }
         }
         mConnection.endBatchEdit();
-        mWordComposer.setCapitalizedModeAtStartComposingTime(
-                getActualCapsMode(settingsValues, keyboardSwitcher.getKeyboardCapsMode()));
+        mWordComposer.setCapitalizedModeAtStartComposingTime(getActualCapsMode(settingsValues, keyboardSwitcher.getKeyboardCapsMode()));
     }
 
     /* The sequence number member is only used in onUpdateBatchInput. It is increased each time
@@ -619,6 +473,7 @@ public final class InputLogic {
      * earlier sequence number.
      */
     private int mAutoCommitSequenceNumber = 1;
+
     public void onUpdateBatchInput(final InputPointers batchPointers) {
         mInputLogicHandler.onUpdateBatchInput(batchPointers, mAutoCommitSequenceNumber);
     }
@@ -630,38 +485,9 @@ public final class InputLogic {
 
     public void onCancelBatchInput(final LatinIME.UIHandler handler) {
         mInputLogicHandler.onCancelBatchInput();
-        handler.showGesturePreviewAndSetSuggestions(
-                SuggestedWords.getEmptyInstance(), true /* dismissGestureFloatingPreviewText */);
+        handler.showGesturePreviewAndSetSuggestions(SuggestedWords.getEmptyInstance(), true /* dismissGestureFloatingPreviewText */);
     }
 
-    // TODO: on the long term, this method should become private, but it will be difficult.
-    // Especially, how do we deal with InputMethodService.onDisplayCompletions?
-    public void setSuggestedWords(final SuggestedWords suggestedWords) {
-        if (!suggestedWords.isEmpty()) {
-            final SuggestedWordInfo suggestedWordInfo;
-            if (suggestedWords.mWillAutoCorrect) {
-                suggestedWordInfo = suggestedWords.getInfo(SuggestedWords.INDEX_OF_AUTO_CORRECTION);
-            } else {
-                // We can't use suggestedWords.getWord(SuggestedWords.INDEX_OF_TYPED_WORD)
-                // because it may differ from mWordComposer.mTypedWord.
-                suggestedWordInfo = suggestedWords.mTypedWordInfo;
-            }
-            mWordComposer.setAutoCorrection(suggestedWordInfo);
-        }
-        mSuggestedWords = suggestedWords;
-        final boolean newAutoCorrectionIndicator = suggestedWords.mWillAutoCorrect;
-
-        // Put a blue underline to a word in TextView which will be auto-corrected.
-        if (mIsAutoCorrectionIndicatorOn != newAutoCorrectionIndicator && mWordComposer.isComposingWord()) {
-            mIsAutoCorrectionIndicatorOn = newAutoCorrectionIndicator;
-            final CharSequence textWithUnderline = getTextWithUnderline(mWordComposer.getTypedWord());
-            // TODO: when called from an updateSuggestionStrip() call that results from a posted
-            // message, this is called outside any batch edit. Potentially, this may result in some
-            // janky flickering of the screen, although the display speed makes it unlikely in
-            // the practice.
-            setComposingTextInternal(textWithUnderline, 1);
-        }
-    }
 
     /**
      * Handle a consumed event.
@@ -669,7 +495,7 @@ public final class InputLogic {
      * Consumed events represent events that have already been consumed, typically by the
      * combining chain.
      *
-     * @param event The event to handle.
+     * @param event            The event to handle.
      * @param inputTransaction The transaction in progress.
      */
     private void handleConsumedEvent(final Event event, final InputTransaction inputTransaction) {
@@ -686,10 +512,7 @@ public final class InputLogic {
             // insert space automatically, but skip it if the next character is punctuation (. , ; : ! ?) or word connector.
             final int codePoint = event.getCodePoint();
             final SettingsValues settingsValues = inputTransaction.getSettingsValues();
-            if (SpaceState.PHANTOM == inputTransaction.getSpaceState()
-                    && "bn_khipro".equals(mWordComposer.getCombiningSpec())
-                    && !settingsValues.isWordConnector(codePoint)
-                    && !settingsValues.isUsuallyFollowedBySpace(codePoint)) {
+            if (SpaceState.PHANTOM == inputTransaction.getSpaceState() && "bn_khipro".equals(mWordComposer.getCombiningSpec()) && !settingsValues.isWordConnector(codePoint) && !settingsValues.isUsuallyFollowedBySpace(codePoint)) {
                 insertAutomaticSpaceIfOptionsAndTextAllow(settingsValues);
                 mSpaceState = SpaceState.NONE;
             }
@@ -708,7 +531,7 @@ public final class InputLogic {
      * manage keyboard-related stuff like shift, language switch, settings, layout switch, or
      * any key that results in multiple code points like the ".com" key.
      *
-     * @param event The event to handle.
+     * @param event            The event to handle.
      * @param inputTransaction The transaction in progress.
      */
     private void handleFunctionalEvent(Event event, InputTransaction inputTransaction, String currentKeyboardScript, LatinIME.UIHandler handler) {
@@ -735,14 +558,12 @@ public final class InputLogic {
                 performRecapitalization(sv);
                 inputTransaction.requireShiftUpdate(InputTransaction.SHIFT_UPDATE_NOW);
                 inputTransaction.setRequiresUpdateSuggestions();
-                if (mSpaceState == SpaceState.PHANTOM && sv.mShiftRemovesAutospace)
-                    mSpaceState = SpaceState.NONE;
+                if (mSpaceState == SpaceState.PHANTOM && sv.mShiftRemovesAutospace) mSpaceState = SpaceState.NONE;
                 break;
             }
             case KeyCode.CAPS_LOCK: {
                 var keyboard = KeyboardSwitcher.getInstance().getKeyboard();
-                if (keyboard == null || keyboard.mId.getElement().isAlphabet())
-                    inputTransaction.setRequiresUpdateSuggestions();
+                if (keyboard == null || keyboard.mId.getElement().isAlphabet()) inputTransaction.setRequiresUpdateSuggestions();
                 break;
             }
             case KeyCode.SETTINGS:
@@ -770,8 +591,7 @@ public final class InputLogic {
                 break;
             case KeyCode.SHIFT_ENTER:
                 // todo: try using sendDownUpKeyEventWithMetaState() and remove the key code maybe
-                final Event tmpEvent = Event.createSoftwareKeypressEvent(Constants.CODE_ENTER,
-                        keyCode, 0, event.getX(), event.getY(), event.isKeyRepeat());
+                final Event tmpEvent = Event.createSoftwareKeypressEvent(Constants.CODE_ENTER, keyCode, 0, event.getX(), event.getY(), event.isKeyRepeat());
                 handleNonSpecialCharacterEvent(tmpEvent, inputTransaction, handler);
                 // Shift + Enter is treated as a functional key but it results in adding a new
                 // line, so that does affect the contents of the editor.
@@ -795,28 +615,20 @@ public final class InputLogic {
             case KeyCode.CLIPBOARD_COPY_ALL:
                 mConnection.copyText(false);
                 break;
-            case KeyCode.CLIPBOARD_CLEAR_HISTORY:
-                mLatinIME.getClipboardHistoryManager().clearHistory();
-                break;
             case KeyCode.CLIPBOARD_CUT:
                 if (mConnection.hasSelection()) {
                     mConnection.copyText(true);
                     // fake delete keypress to remove the text
-                    final Event backspaceEvent = Event.createSoftwareKeypressEvent(KeyCode.DELETE, 0,
-                            event.getX(), event.getY(), event.isKeyRepeat());
+                    final Event backspaceEvent = Event.createSoftwareKeypressEvent(KeyCode.DELETE, 0, event.getX(), event.getY(), event.isKeyRepeat());
                     handleBackspaceEvent(backspaceEvent, inputTransaction, currentKeyboardScript);
                     inputTransaction.setDidAffectContents();
                 }
                 break;
             case KeyCode.WORD_LEFT:
-                sendDownUpKeyEventWithMetaState(
-                    ScriptUtils.isScriptRtl(currentKeyboardScript) ? KeyEvent.KEYCODE_DPAD_RIGHT : KeyEvent.KEYCODE_DPAD_LEFT,
-                    KeyEvent.META_CTRL_ON | event.getMetaState());
+                sendDownUpKeyEventWithMetaState(ScriptUtils.isScriptRtl(currentKeyboardScript) ? KeyEvent.KEYCODE_DPAD_RIGHT : KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.META_CTRL_ON | event.getMetaState());
                 break;
             case KeyCode.WORD_RIGHT:
-                sendDownUpKeyEventWithMetaState(
-                    ScriptUtils.isScriptRtl(currentKeyboardScript) ? KeyEvent.KEYCODE_DPAD_LEFT : KeyEvent.KEYCODE_DPAD_RIGHT,
-                    KeyEvent.META_CTRL_ON | event.getMetaState());
+                sendDownUpKeyEventWithMetaState(ScriptUtils.isScriptRtl(currentKeyboardScript) ? KeyEvent.KEYCODE_DPAD_LEFT : KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.META_CTRL_ON | event.getMetaState());
                 break;
             case KeyCode.MOVE_START_OF_PAGE:
                 final int selectionEnd1 = mConnection.getExpectedSelectionEnd();
@@ -882,11 +694,7 @@ public final class InputLogic {
             default:
                 if (KeyCode.INSTANCE.isModifier(keyCode))
                     return; // continuation of previous switch case above, but modifiers are held in a separate place
-                final int keyEventCode = keyCode > 0
-                    ? keyCode
-                    : event.getCodePoint() >= 0
-                        ? KeyCode.codePointToKeyEventCode(event.getCodePoint())
-                        : KeyCode.keyCodeToKeyEventCode(keyCode);
+                final int keyEventCode = keyCode > 0 ? keyCode : event.getCodePoint() >= 0 ? KeyCode.codePointToKeyEventCode(event.getCodePoint()) : KeyCode.keyCodeToKeyEventCode(keyCode);
                 if (keyEventCode != KeyEvent.KEYCODE_UNKNOWN) {
                     sendDownUpKeyEventWithMetaState(keyEventCode, event.getMetaState());
                     return;
@@ -900,9 +708,8 @@ public final class InputLogic {
                     return;
                 }
                 // unknown event
-                Log.e(TAG, "unknown event, key code: "+keyCode+", codepoint "+event.getCodePoint()+", meta: "+event.getMetaState());
-                if (DebugFlags.DEBUG_ENABLED)
-                    throw new RuntimeException("Unknown event");
+                Log.e(TAG, "unknown event, key code: " + keyCode + ", codepoint " + event.getCodePoint() + ", meta: " + event.getMetaState());
+                if (DebugFlags.DEBUG_ENABLED) throw new RuntimeException("Unknown event");
         }
     }
 
@@ -912,7 +719,7 @@ public final class InputLogic {
      * These events are generally events that cause input, but in some cases they may do other
      * things like trigger an editor action.
      *
-     * @param event The event to handle.
+     * @param event            The event to handle.
      * @param inputTransaction The transaction in progress.
      */
     private void handleNonFunctionalEvent(final Event event, final InputTransaction inputTransaction, final LatinIME.UIHandler handler) {
@@ -951,12 +758,10 @@ public final class InputLogic {
      * manage keyboard-related stuff like shift, language switch, settings, layout switch, or
      * any key that results in multiple code points like the ".com" key.
      *
-     * @param event The event to handle.
+     * @param event            The event to handle.
      * @param inputTransaction The transaction in progress.
      */
-    private void handleNonSpecialCharacterEvent(final Event event,
-            final InputTransaction inputTransaction,
-            final LatinIME.UIHandler handler) {
+    private void handleNonSpecialCharacterEvent(final Event event, final InputTransaction inputTransaction, final LatinIME.UIHandler handler) {
         final int codePoint = event.getCodePoint();
         mSpaceState = SpaceState.NONE;
         final SettingsValues sv = inputTransaction.getSettingsValues();
@@ -975,26 +780,19 @@ public final class InputLogic {
         //  otherwise it would work too, but whenever a separator is entered, the word is not selected
         //  until the next character is entered, and the word is added to history
         //  -> the changing selection would be confusing, and adding partial URLs to history is probably bad
-        if (Character.getType(codePoint) == Character.OTHER_SYMBOL
-                || (Character.getType(codePoint) == Character.UNASSIGNED && StringUtils.mightBeEmoji(codePoint)) // outdated java doesn't detect some emojis
-                || (sv.isWordSeparator(codePoint)
-                    && (Character.isWhitespace(codePoint) // whitespace is always a separator
-                        || !textBeforeCursorMayBeUrlOrSimilar(sv, false) // if text before is not URL or similar, it's a separator
-                        || (codePoint == '/' && mWordComposer.lastChar() == '/') // break composing at 2 consecutive slashes
-                    )
-                )
-        ) {
+        if (Character.getType(codePoint) == Character.OTHER_SYMBOL || (Character.getType(codePoint) == Character.UNASSIGNED && StringUtils.mightBeEmoji(codePoint)) // outdated java doesn't detect some emojis
+            || (sv.isWordSeparator(codePoint) && (Character.isWhitespace(codePoint) // whitespace is always a separator
+            || !textBeforeCursorMayBeUrlOrSimilar(sv, false) // if text before is not URL or similar, it's a separator
+            || (codePoint == '/' && mWordComposer.lastChar() == '/') // break composing at 2 consecutive slashes
+        ))) {
             handleSeparatorEvent(event, inputTransaction, handler);
-            addToHistoryIfEmoji(StringUtils.newSingleCodePointString(codePoint), sv);
         } else {
             if (SpaceState.PHANTOM == inputTransaction.getSpaceState()) {
                 if (mWordComposer.isCursorFrontOrMiddleOfComposingWord()) {
                     // If we are in the middle of a recorrection, we need to commit the recorrection
                     // first so that we can insert the character at the current cursor position.
                     // We also need to unlearn the original word that is now being corrected.
-                    unlearnWord(mWordComposer.getTypedWord(), sv, DictionaryFacilitator.UnlearnEvent.BACKSPACE);
-                    resetEntireInputState(mConnection.getExpectedSelectionStart(),
-                            mConnection.getExpectedSelectionEnd(), true /* clearSuggestionStrip */);
+                    resetEntireInputState(mConnection.getExpectedSelectionStart(), mConnection.getExpectedSelectionEnd(), true /* clearSuggestionStrip */);
                 } else {
                     commitTyped(sv, LastComposedWord.NOT_A_SEPARATOR);
                 }
@@ -1005,12 +803,12 @@ public final class InputLogic {
 
     /**
      * Handle a non-separator.
-     * @param event The event to handle.
-     * @param settingsValues The current settings values.
+     *
+     * @param event            The event to handle.
+     * @param settingsValues   The current settings values.
      * @param inputTransaction The transaction in progress.
      */
-    private void handleNonSeparatorEvent(final Event event, final SettingsValues settingsValues,
-            final InputTransaction inputTransaction) {
+    private void handleNonSeparatorEvent(final Event event, final SettingsValues settingsValues, final InputTransaction inputTransaction) {
         final int codePoint = event.getCodePoint();
         // TODO: refactor this method to stop flipping isComposingWord around all the time, and
         // make it shorter (possibly cut into several pieces). Also factor
@@ -1021,23 +819,18 @@ public final class InputLogic {
 
         // if we continue directly after a sometimesWordConnector, restart suggestions for the whole word
         // (only with URL detection and suggestions enabled)
-        if (settingsValues.mUrlDetectionEnabled && settingsValues.needsToLookupSuggestions()
-                && !isComposingWord && SpaceState.NONE == inputTransaction.getSpaceState()
-                && settingsValues.mSpacingAndPunctuations.isSometimesWordConnector(mConnection.getCodePointBeforeCursor())
-                // but not if there are two consecutive sometimesWordConnectors (e.g. "...bla")
-                && !settingsValues.mSpacingAndPunctuations.isSometimesWordConnector(mConnection.getCharBeforeBeforeCursor())
-                // and not if there is no letter before the separator
-                && mConnection.hasLetterBeforeLastSpaceBeforeCursor()
-        ) {
+        if (settingsValues.mUrlDetectionEnabled && settingsValues.needsToLookupSuggestions() && !isComposingWord && SpaceState.NONE == inputTransaction.getSpaceState() && settingsValues.mSpacingAndPunctuations.isSometimesWordConnector(mConnection.getCodePointBeforeCursor())
+            // but not if there are two consecutive sometimesWordConnectors (e.g. "...bla")
+            && !settingsValues.mSpacingAndPunctuations.isSometimesWordConnector(mConnection.getCharBeforeBeforeCursor())
+            // and not if there is no letter before the separator
+            && mConnection.hasLetterBeforeLastSpaceBeforeCursor()) {
             final CharSequence text = mConnection.textBeforeCursorUntilLastWhitespaceOrDoubleSlash();
             final TextRange range = new TextRange(text, 0, text.length(), text.length(), false);
             isComposingWord = true;
         }
         // TODO: remove isWordConnector() and use isUsuallyFollowedBySpace() instead.
         // See onStartBatchInput() to see how to do it.
-        if (SpaceState.PHANTOM == inputTransaction.getSpaceState()
-                && !settingsValues.isWordConnector(codePoint)
-                && !settingsValues.isUsuallyFollowedBySpace(codePoint) // only relevant in rare cases
+        if (SpaceState.PHANTOM == inputTransaction.getSpaceState() && !settingsValues.isWordConnector(codePoint) && !settingsValues.isUsuallyFollowedBySpace(codePoint) // only relevant in rare cases
         ) {
             if (isComposingWord) {
                 // Sanity check
@@ -1056,7 +849,7 @@ public final class InputLogic {
             // If we are in the middle of a recorrection, we need to commit the recorrection
             // first so that we can insert the character at the current cursor position.
             // We also need to unlearn the original word that is now being corrected.
-            unlearnWord(mWordComposer.getTypedWord(), inputTransaction.getSettingsValues(), DictionaryFacilitator.UnlearnEvent.BACKSPACE);
+
             resetEntireInputState(mConnection.getExpectedSelectionStart(), mConnection.getExpectedSelectionEnd(), true);
             isComposingWord = false;
         }
@@ -1065,22 +858,19 @@ public final class InputLogic {
         // tests is important for good performance.
         // We only start composing if we're not already composing.
         if (!isComposingWord
-        // We only start composing if this is a word code point. Essentially that means it's a
-        // a letter or a word connector.
-                && settingsValues.isWordCodePoint(codePoint)
-        // We never go into composing state if suggestions are not requested.
-                && settingsValues.needsToLookupSuggestions() &&
-        // In languages with spaces, we only start composing a word when we are not already
-        // in the middle or at the end of a word. In languages without spaces, the above conditions are sufficient.
-        // NOTE: If the InputConnection is slow, we skip the text-after-cursor check since it
-        // can incur a very expensive getTextAfterCursor() lookup, potentially making the
-        // keyboard UI slow and non-responsive.
-        // TODO: Cache the text after the cursor so we don't need to go to the InputConnection
-        // each time. We are already doing this for getTextBeforeCursor().
-                (!settingsValues.mSpacingAndPunctuations.mCurrentLanguageHasSpaces
-                        || !mConnection.isCursorTouchingWord(settingsValues.mSpacingAndPunctuations,
-                                !mConnection.hasSlowInputConnection() /* checkTextAfter */)
-                        || isCursorAtStartOrAfterSeparator(settingsValues))) {
+            // We only start composing if this is a word code point. Essentially that means it's a
+            // a letter or a word connector.
+            && settingsValues.isWordCodePoint(codePoint)
+            // We never go into composing state if suggestions are not requested.
+            && settingsValues.needsToLookupSuggestions() &&
+            // In languages with spaces, we only start composing a word when we are not already
+            // in the middle or at the end of a word. In languages without spaces, the above conditions are sufficient.
+            // NOTE: If the InputConnection is slow, we skip the text-after-cursor check since it
+            // can incur a very expensive getTextAfterCursor() lookup, potentially making the
+            // keyboard UI slow and non-responsive.
+            // TODO: Cache the text after the cursor so we don't need to go to the InputConnection
+            // each time. We are already doing this for getTextBeforeCursor().
+            (!settingsValues.mSpacingAndPunctuations.mCurrentLanguageHasSpaces || !mConnection.isCursorTouchingWord(settingsValues.mSpacingAndPunctuations, !mConnection.hasSlowInputConnection() /* checkTextAfter */) || isCursorAtStartOrAfterSeparator(settingsValues))) {
             // Reset entirely the composing state anyway, then start composing a new word unless
             // the character is a word connector. The idea here is, word connectors are not
             // separators and they should be treated as normal characters, except in the first
@@ -1093,7 +883,6 @@ public final class InputLogic {
             resetComposingState(false /* alsoResetLastComposedWord */);
         }
 
-        enterInlineEmojiSearchIfNeeded(codePoint, settingsValues);
 
         if (isComposingWord) {
             mWordComposer.applyProcessedEvent(event);
@@ -1107,8 +896,7 @@ public final class InputLogic {
 
             if (swapWeakSpace && trySwapSwapperAndSpace(event, inputTransaction)) {
                 mSpaceState = SpaceState.WEAK;
-            } else if ((settingsValues.mInputAttributes.mInputType & InputType.TYPE_MASK_CLASS) != InputType.TYPE_CLASS_TEXT
-                    && codePoint >= '0' && codePoint <= '9') {
+            } else if ((settingsValues.mInputAttributes.mInputType & InputType.TYPE_MASK_CLASS) != InputType.TYPE_CLASS_TEXT && codePoint >= '0' && codePoint <= '9') {
                 // weird issue when committing text: https://github.com/HeliBorg/HeliBoard/issues/585
                 // but at the same time we don't always want to do it for numbers because it might interfere with url detection
                 // todo: consider always using sendDownUpKeyEvent for non-text-inputType
@@ -1122,39 +910,34 @@ public final class InputLogic {
 
     private boolean isCursorAtStartOrAfterSeparator(SettingsValues settingsValues) {
         var codePointBeforeCursor = mConnection.getCodePointBeforeCursor();
-        return codePointBeforeCursor == Constants.NOT_A_CODE
-                || settingsValues.mSpacingAndPunctuations.isWordSeparator(codePointBeforeCursor);
+        return codePointBeforeCursor == Constants.NOT_A_CODE || settingsValues.mSpacingAndPunctuations.isWordSeparator(codePointBeforeCursor);
     }
 
     /**
      * Handle input of a separator code point.
-     * @param event The event to handle.
+     *
+     * @param event            The event to handle.
      * @param inputTransaction The transaction in progress.
      */
-    private void handleSeparatorEvent(final Event event, final InputTransaction inputTransaction,
-            final LatinIME.UIHandler handler) {
+    private void handleSeparatorEvent(final Event event, final InputTransaction inputTransaction, final LatinIME.UIHandler handler) {
         final int codePoint = event.getCodePoint();
         final SettingsValues settingsValues = inputTransaction.getSettingsValues();
         final boolean wasComposingWord = mWordComposer.isComposingWord();
         // We avoid sending spaces in languages without spaces if we were composing.
-        final boolean shouldAvoidSendingCode = Constants.CODE_SPACE == codePoint
-                && !settingsValues.mSpacingAndPunctuations.mCurrentLanguageHasSpaces
-                && wasComposingWord;
+        final boolean shouldAvoidSendingCode = Constants.CODE_SPACE == codePoint && !settingsValues.mSpacingAndPunctuations.mCurrentLanguageHasSpaces && wasComposingWord;
 
         if (mWordComposer.isCursorFrontOrMiddleOfComposingWord()) {
             // If we are in the middle of a recorrection, we need to commit the recorrection
             // first so that we can insert the separator at the current cursor position.
             // We also need to unlearn the original word that is now being corrected.
-            unlearnWord(mWordComposer.getTypedWord(), inputTransaction.getSettingsValues(), DictionaryFacilitator.UnlearnEvent.BACKSPACE);
-            resetEntireInputState(mConnection.getExpectedSelectionStart(),
-                    mConnection.getExpectedSelectionEnd(), true /* clearSuggestionStrip */);
+
+            resetEntireInputState(mConnection.getExpectedSelectionStart(), mConnection.getExpectedSelectionEnd(), true /* clearSuggestionStrip */);
         }
         // isComposingWord() may have changed since we stored wasComposing
         if (mWordComposer.isComposingWord()) {
-            if (settingsValues.mAutoCorrectEnabled && ! isInlineEmojiSearchAction()) {
-                final String separator = shouldAvoidSendingCode ? LastComposedWord.NOT_A_SEPARATOR
-                        : StringUtils.newSingleCodePointString(codePoint);
-                commitCurrentAutoCorrection(settingsValues, separator, handler);
+            if (settingsValues.mAutoCorrectEnabled && !isInlineEmojiSearchAction()) {
+                final String separator = shouldAvoidSendingCode ? LastComposedWord.NOT_A_SEPARATOR : StringUtils.newSingleCodePointString(codePoint);
+                //commitCurrentAutoCorrection(settingsValues, separator, handler);
                 inputTransaction.setDidAutoCorrect();
             } else {
                 commitTyped(settingsValues, StringUtils.newSingleCodePointString(codePoint));
@@ -1163,8 +946,7 @@ public final class InputLogic {
 
         final boolean swapWeakSpace = tryStripSpaceAndReturnWhetherShouldSwapInstead(event, inputTransaction);
 
-        final boolean isInsideDoubleQuoteOrAfterDigit = Constants.CODE_DOUBLE_QUOTE == codePoint
-                && mConnection.isInsideDoubleQuoteOrAfterDigit();
+        final boolean isInsideDoubleQuoteOrAfterDigit = Constants.CODE_DOUBLE_QUOTE == codePoint && mConnection.isInsideDoubleQuoteOrAfterDigit();
 
         final boolean needsPrecedingSpace;
         if (SpaceState.PHANTOM != inputTransaction.getSpaceState()) {
@@ -1173,9 +955,7 @@ public final class InputLogic {
             // Double quotes behave like they are usually preceded by space iff we are
             // not inside a double quote or after a digit.
             needsPrecedingSpace = !isInsideDoubleQuoteOrAfterDigit;
-        } else if (settingsValues.mSpacingAndPunctuations.isClusteringSymbol(codePoint)
-                && settingsValues.mSpacingAndPunctuations.isClusteringSymbol(
-                        mConnection.getCodePointBeforeCursor())) {
+        } else if (settingsValues.mSpacingAndPunctuations.isClusteringSymbol(codePoint) && settingsValues.mSpacingAndPunctuations.isClusteringSymbol(mConnection.getCodePointBeforeCursor())) {
             needsPrecedingSpace = false;
         } else {
             needsPrecedingSpace = settingsValues.isUsuallyPrecededBySpace(codePoint) || StringUtilsKt.isEmoji(codePoint);
@@ -1191,8 +971,7 @@ public final class InputLogic {
             StatsUtils.onDoubleSpacePeriod();
         } else if (swapWeakSpace && trySwapSwapperAndSpace(event, inputTransaction)) {
             mSpaceState = SpaceState.SWAP_PUNCTUATION;
-            mSuggestionStripViewAccessor.setNeutralSuggestionStrip();
-        } else if (Constants.CODE_SPACE == codePoint) {
+        } /*else if (Constants.CODE_SPACE == codePoint) {
             if (!mSuggestedWords.isPunctuationSuggestions()) {
                 mSpaceState = SpaceState.WEAK;
             }
@@ -1205,9 +984,8 @@ public final class InputLogic {
             if (!shouldAvoidSendingCode) {
                 mConnection.commitCodePoint(codePoint);
             }
-        } else {
-            if (SpaceState.PHANTOM == inputTransaction.getSpaceState()
-                    && (settingsValues.isUsuallyFollowedBySpace(codePoint) || isInsideDoubleQuoteOrAfterDigit)) {
+        } */else {
+            if (SpaceState.PHANTOM == inputTransaction.getSpaceState() && (settingsValues.isUsuallyFollowedBySpace(codePoint) || isInsideDoubleQuoteOrAfterDigit)) {
                 // If we are in phantom space state, and the user presses a separator, we want to
                 // stay in phantom space state so that the next keypress has a chance to add the
                 // space. For example, if I type "Good dat", pick "day" from the suggestion strip
@@ -1227,23 +1005,16 @@ public final class InputLogic {
                 // setting phantom space state after ending a sentence with a non-word.
                 // A double quote behaves like it's usually followed by space if we're inside
                 // a double quote.
-                if (wasComposingWord
-                        && settingsValues.mAutospaceAfterPunctuation
-                        && (settingsValues.isUsuallyFollowedBySpace(codePoint) || isInsideDoubleQuoteOrAfterDigit)) {
+                if (wasComposingWord && settingsValues.mAutospaceAfterPunctuation && (settingsValues.isUsuallyFollowedBySpace(codePoint) || isInsideDoubleQuoteOrAfterDigit)) {
                     mSpaceState = SpaceState.PHANTOM;
                 }
             }
 
-            enterInlineEmojiSearchIfNeeded(codePoint, settingsValues);
 
             mConnection.commitCodePoint(codePoint);
 
             if (isInlineEmojiSearchAction()) {
                 inputTransaction.setRequiresUpdateSuggestions();
-            } else {
-                // Set punctuation right away. onUpdateSelection will fire but tests whether it is
-                // already displayed or not, so it's okay.
-                mSuggestionStripViewAccessor.setNeutralSuggestionStrip();
             }
         }
 
@@ -1252,11 +1023,11 @@ public final class InputLogic {
 
     /**
      * Handle a press on the backspace key.
-     * @param event The event to handle.
+     *
+     * @param event            The event to handle.
      * @param inputTransaction The transaction in progress.
      */
-    private void handleBackspaceEvent(final Event event, final InputTransaction inputTransaction,
-            final String currentKeyboardScript) {
+    private void handleBackspaceEvent(final Event event, final InputTransaction inputTransaction, final String currentKeyboardScript) {
         mSpaceState = SpaceState.NONE;
         mDeleteCount++;
 
@@ -1267,18 +1038,15 @@ public final class InputLogic {
         // shift state should be updated, so if this is a key repeat, we update after a small delay.
         // Then again, even in the case of a key repeat, if the cursor is at start of text, it
         // can't go any further back, so we can update right away even if it's a key repeat.
-        final int shiftUpdateKind = event.isKeyRepeat() && mConnection.getExpectedSelectionStart() > 0
-                ? InputTransaction.SHIFT_UPDATE_LATER
-                : InputTransaction.SHIFT_UPDATE_NOW;
+        final int shiftUpdateKind = event.isKeyRepeat() && mConnection.getExpectedSelectionStart() > 0 ? InputTransaction.SHIFT_UPDATE_LATER : InputTransaction.SHIFT_UPDATE_NOW;
         inputTransaction.requireShiftUpdate(shiftUpdateKind);
 
         if (mWordComposer.isCursorFrontOrMiddleOfComposingWord()) {
             // If we are in the middle of a recorrection, we need to commit the recorrection
             // first so that we can remove the character at the current cursor position.
             // We also need to unlearn the original word that is now being corrected.
-            unlearnWord(mWordComposer.getTypedWord(), inputTransaction.getSettingsValues(), DictionaryFacilitator.UnlearnEvent.BACKSPACE);
-            resetEntireInputState(mConnection.getExpectedSelectionStart(),
-                    mConnection.getExpectedSelectionEnd(), true /* clearSuggestionStrip */);
+
+            resetEntireInputState(mConnection.getExpectedSelectionStart(), mConnection.getExpectedSelectionEnd(), true /* clearSuggestionStrip */);
             // When we exit this if-clause, mWordComposer.isComposingWord() will return false.
         }
         if (mWordComposer.isComposingWord()) {
@@ -1288,9 +1056,6 @@ public final class InputLogic {
                     BackgroundGatheringCache.INSTANCE.onRejectedSuggestion(rejectedSuggestion);
                 mWordComposer.reset();
                 mWordComposer.setRejectedBatchModeSuggestion(rejectedSuggestion);
-                if (!TextUtils.isEmpty(rejectedSuggestion)) {
-                    unlearnWord(rejectedSuggestion, inputTransaction.getSettingsValues(), DictionaryFacilitator.UnlearnEvent.REJECTION);
-                }
                 StatsUtils.onBackspaceWordDelete(rejectedSuggestion.length());
             } else {
                 if (GestureDataGatheringKt.useBackgroundGathering)
@@ -1364,19 +1129,15 @@ public final class InputLogic {
                 // We also need to unlearn the selected text.
                 final CharSequence selection = mConnection.getSelectedText(0 /* 0 for no styles */);
                 if (!TextUtils.isEmpty(selection)) {
-                    unlearnWord(selection.toString(), inputTransaction.getSettingsValues(), DictionaryFacilitator.UnlearnEvent.BACKSPACE);
                     hasUnlearnedWordBeingDeleted = true;
                 }
-                final int numCharsDeleted = mConnection.getExpectedSelectionEnd()
-                        - mConnection.getExpectedSelectionStart();
-                mConnection.setSelection(mConnection.getExpectedSelectionEnd(),
-                        mConnection.getExpectedSelectionEnd());
+                final int numCharsDeleted = mConnection.getExpectedSelectionEnd() - mConnection.getExpectedSelectionStart();
+                mConnection.setSelection(mConnection.getExpectedSelectionEnd(), mConnection.getExpectedSelectionEnd());
                 mConnection.deleteTextBeforeCursor(numCharsDeleted);
                 StatsUtils.onBackspaceSelectedText(numCharsDeleted);
             } else {
                 // There is no selection, just delete one character.
-                if (inputTransaction.getSettingsValues().mInputAttributes.isTypeNull()
-                        || Constants.NOT_A_CURSOR_POSITION == mConnection.getExpectedSelectionEnd()) {
+                if (inputTransaction.getSettingsValues().mInputAttributes.isTypeNull() || Constants.NOT_A_CURSOR_POSITION == mConnection.getExpectedSelectionEnd()) {
                     // There are three possible reasons to send a key event: either the field has
                     // type TYPE_NULL, in which case the keyboard should send events, or we are
                     // running in backward compatibility mode, or we don't know the cursor position.
@@ -1394,8 +1155,7 @@ public final class InputLogic {
                         // If this is an accelerated (i.e., double) deletion, then we need to
                         // consider unlearning here because we may have already reached
                         // the previous word, and will lose it after next deletion.
-                        hasUnlearnedWordBeingDeleted |= unlearnWordBeingDeleted(
-                                inputTransaction.getSettingsValues(), currentKeyboardScript);
+                        hasUnlearnedWordBeingDeleted |= unlearnWordBeingDeleted(inputTransaction.getSettingsValues(), currentKeyboardScript);
                         sendDownUpKeyEvent(KeyEvent.KEYCODE_DEL);
                         totalDeletedLength++;
                     }
@@ -1412,8 +1172,7 @@ public final class InputLogic {
                         //  To make this more interesting, web browsers, and apps that are basically
                         // browsers under the hood, in too many cases don't understand "deleteSurroundingText".
                         // So we try to send a backspace keypress instead.
-                        if ((getCurrentInputEditorInfo().inputType & InputType.TYPE_MASK_VARIATION)
-                                == InputType.TYPE_TEXT_VARIATION_WEB_EDIT_TEXT)
+                        if ((getCurrentInputEditorInfo().inputType & InputType.TYPE_MASK_VARIATION) == InputType.TYPE_TEXT_VARIATION_WEB_EDIT_TEXT)
                             sendDownUpKeyEvent(KeyEvent.KEYCODE_DEL);
                         else mConnection.deleteTextBeforeCursor(1);
                         // TODO: Add a new StatsUtils method onBackspaceWhenNoText()
@@ -1426,10 +1185,8 @@ public final class InputLogic {
                         // If this is an accelerated (i.e., double) deletion, then we need to
                         // consider unlearning here because we may have already reached
                         // the previous word, and will lose it after next deletion.
-                        hasUnlearnedWordBeingDeleted |= unlearnWordBeingDeleted(
-                                inputTransaction.getSettingsValues(), currentKeyboardScript);
-                        final int codePointBeforeCursorToDeleteAgain =
-                                mConnection.getCodePointBeforeCursor();
+                        hasUnlearnedWordBeingDeleted |= unlearnWordBeingDeleted(inputTransaction.getSettingsValues(), currentKeyboardScript);
+                        final int codePointBeforeCursorToDeleteAgain = mConnection.getCodePointBeforeCursor();
                         if (codePointBeforeCursorToDeleteAgain != Constants.NOT_A_CODE) {
                             int lengthToDeleteAgain = mConnection.getCharCountToDeleteBeforeCursor();
                             mConnection.deleteTextBeforeCursor(lengthToDeleteAgain);
@@ -1441,19 +1198,13 @@ public final class InputLogic {
             }
             if (!hasUnlearnedWordBeingDeleted) {
                 // Consider unlearning the word being deleted (if we have not done so already).
-                unlearnWordBeingDeleted(
-                        inputTransaction.getSettingsValues(), currentKeyboardScript);
-            }
-            if (mConnection.hasSlowInputConnection()) {
-                mSuggestionStripViewAccessor.setNeutralSuggestionStrip();
+                unlearnWordBeingDeleted(inputTransaction.getSettingsValues(), currentKeyboardScript);
             }
         }
     }
 
     String getWordAtCursor(final SettingsValues settingsValues, final String currentKeyboardScript) {
-        if (!mConnection.hasSelection()
-                && settingsValues.needsToLookupSuggestions()
-                && settingsValues.mSpacingAndPunctuations.mCurrentLanguageHasSpaces) {
+        if (!mConnection.hasSelection() && settingsValues.needsToLookupSuggestions() && settingsValues.mSpacingAndPunctuations.mCurrentLanguageHasSpaces) {
             final TextRange range = mConnection.getWordRangeAtCursor(settingsValues.mSpacingAndPunctuations, currentKeyboardScript);
             if (range != null) {
                 return range.mWord.toString();
@@ -1462,8 +1213,7 @@ public final class InputLogic {
         return "";
     }
 
-    boolean unlearnWordBeingDeleted(
-            final SettingsValues settingsValues, final String currentKeyboardScript) {
+    boolean unlearnWordBeingDeleted(final SettingsValues settingsValues, final String currentKeyboardScript) {
         if (mConnection.hasSlowInputConnection()) {
             // TODO: Refactor unlearning so that it does not incur any extra calls
             // to the InputConnection. That way it can still be performed on a slow
@@ -1477,17 +1227,10 @@ public final class InputLogic {
         if (!mConnection.isCursorFollowedByWordCharacter(settingsValues.mSpacingAndPunctuations)) {
             final String wordBeingDeleted = getWordAtCursor(settingsValues, currentKeyboardScript);
             if (!TextUtils.isEmpty(wordBeingDeleted)) {
-                unlearnWord(wordBeingDeleted, settingsValues, DictionaryFacilitator.UnlearnEvent.BACKSPACE);
                 return true;
             }
         }
         return false;
-    }
-
-    void unlearnWord(String word, SettingsValues settingsValues, DictionaryFacilitator.UnlearnEvent event) {
-        NgramContext ngramContext = mConnection.getNgramContextFromNthPreviousWord(settingsValues.mSpacingAndPunctuations, 2);
-        long timeStampInSeconds = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis());
-        mDictionaryFacilitator.unlearnFromUserHistory(word, ngramContext, timeStampInSeconds, event);
     }
 
     /**
@@ -1502,12 +1245,12 @@ public final class InputLogic {
      * <p>
      * This method will check that there are two characters before the cursor and that the first
      * one is a space before it does the actual swapping.
-     * @param event The event to handle.
+     *
+     * @param event            The event to handle.
      * @param inputTransaction The transaction in progress.
      * @return true if the swap has been performed, false if it was prevented by preliminary checks.
      */
-    private boolean trySwapSwapperAndSpace(final Event event,
-            final InputTransaction inputTransaction) {
+    private boolean trySwapSwapperAndSpace(final Event event, final InputTransaction inputTransaction) {
         final int codePointBeforeCursor = mConnection.getCodePointBeforeCursor();
         if (Constants.CODE_SPACE != codePointBeforeCursor) {
             return false;
@@ -1525,23 +1268,19 @@ public final class InputLogic {
      * @param inputTransaction The transaction in progress.
      * @return whether we should swap the space instead of removing it.
      */
-    private boolean tryStripSpaceAndReturnWhetherShouldSwapInstead(final Event event,
-            final InputTransaction inputTransaction) {
+    private boolean tryStripSpaceAndReturnWhetherShouldSwapInstead(final Event event, final InputTransaction inputTransaction) {
         final int codePoint = event.getCodePoint();
-        if (codePoint == INLINE_EMOJI_SEARCH_MARKER && mEmojiDictionaryFacilitator != null) {
+        /*if (codePoint == INLINE_EMOJI_SEARCH_MARKER && mEmojiDictionaryFacilitator != null) {
             // Avoid interfering with inline emoji search
             return false;
-        }
+        }*/
 
         final boolean isFromSuggestionStrip = event.isSuggestionStripPress();
-        if (Constants.CODE_ENTER == codePoint &&
-                SpaceState.SWAP_PUNCTUATION == inputTransaction.getSpaceState()) {
+        if (Constants.CODE_ENTER == codePoint && SpaceState.SWAP_PUNCTUATION == inputTransaction.getSpaceState()) {
             mConnection.removeTrailingSpace();
             return false;
         }
-        if ((SpaceState.WEAK == inputTransaction.getSpaceState()
-                || SpaceState.SWAP_PUNCTUATION == inputTransaction.getSpaceState())
-                && isFromSuggestionStrip) {
+        if ((SpaceState.WEAK == inputTransaction.getSpaceState() || SpaceState.SWAP_PUNCTUATION == inputTransaction.getSpaceState()) && isFromSuggestionStrip) {
             if (inputTransaction.getSettingsValues().isUsuallyPrecededBySpace(codePoint)) {
                 return false;
             }
@@ -1562,8 +1301,7 @@ public final class InputLogic {
     }
 
     public boolean isDoubleSpacePeriodCountdownActive(final InputTransaction inputTransaction) {
-        return inputTransaction.getTimestamp() - mDoubleSpacePeriodCountdownStart
-                < inputTransaction.getSettingsValues().mDoubleSpacePeriodTimeout;
+        return inputTransaction.getTimestamp() - mDoubleSpacePeriodCountdownStart < inputTransaction.getSettingsValues().mDoubleSpacePeriodTimeout;
     }
 
     /**
@@ -1578,17 +1316,14 @@ public final class InputLogic {
      * these conditions are fulfilled, this method applies the transformation and returns true.
      * Otherwise, it does nothing and returns false.
      *
-     * @param event The event to handle.
+     * @param event            The event to handle.
      * @param inputTransaction The transaction in progress.
      * @return true if we applied the double-space-to-period transformation, false otherwise.
      */
-    private boolean tryPerformDoubleSpacePeriod(final Event event,
-            final InputTransaction inputTransaction) {
+    private boolean tryPerformDoubleSpacePeriod(final Event event, final InputTransaction inputTransaction) {
         // Check the setting, the typed character and the countdown. If any of the conditions is
         // not fulfilled, return false.
-        if (!inputTransaction.getSettingsValues().mUseDoubleSpacePeriod
-                || Constants.CODE_SPACE != event.getCodePoint()
-                || !isDoubleSpacePeriodCountdownActive(inputTransaction)) {
+        if (!inputTransaction.getSettingsValues().mUseDoubleSpacePeriod || Constants.CODE_SPACE != event.getCodePoint() || !isDoubleSpacePeriodCountdownActive(inputTransaction)) {
             return false;
         }
         // We only do this when we see one space and an accepted code point before the cursor.
@@ -1602,14 +1337,11 @@ public final class InputLogic {
         }
         // We know there is a space in pos -1, and we have at least two chars. If we have only two
         // chars, isSurrogatePairs can't return true as charAt(1) is a space, so this is fine.
-        final int firstCodePoint = Character.isSurrogatePair(lastTwo.charAt(0), lastTwo.charAt(1))
-                        ? Character.codePointAt(lastTwo, length - 3)
-                        : lastTwo.charAt(length - 2);
+        final int firstCodePoint = Character.isSurrogatePair(lastTwo.charAt(0), lastTwo.charAt(1)) ? Character.codePointAt(lastTwo, length - 3) : lastTwo.charAt(length - 2);
         if (canBeFollowedByDoubleSpacePeriod(firstCodePoint)) {
             cancelDoubleSpacePeriodCountdown();
             mConnection.deleteTextBeforeCursor(1);
-            final String textToInsert = inputTransaction.getSettingsValues().mSpacingAndPunctuations
-                    .mSentenceSeparatorAndSpace;
+            final String textToInsert = inputTransaction.getSettingsValues().mSpacingAndPunctuations.mSentenceSeparatorAndSpace;
             mConnection.commitText(textToInsert, 1);
             inputTransaction.requireShiftUpdate(InputTransaction.SHIFT_UPDATE_NOW);
             inputTransaction.setRequiresUpdateSuggestions();
@@ -1632,20 +1364,12 @@ public final class InputLogic {
     private static boolean canBeFollowedByDoubleSpacePeriod(final int codePoint) {
         // TODO: This should probably be a blacklist rather than a whitelist.
         // TODO: This should probably be language-dependant...
-        return Character.isLetterOrDigit(codePoint)
-                || codePoint == Constants.CODE_SINGLE_QUOTE
-                || codePoint == Constants.CODE_DOUBLE_QUOTE
-                || codePoint == Constants.CODE_CLOSING_PARENTHESIS
-                || codePoint == Constants.CODE_CLOSING_SQUARE_BRACKET
-                || codePoint == Constants.CODE_CLOSING_CURLY_BRACKET
-                || codePoint == Constants.CODE_CLOSING_ANGLE_BRACKET
-                || codePoint == Constants.CODE_PLUS
-                || codePoint == Constants.CODE_PERCENT
-                || Character.getType(codePoint) == Character.OTHER_SYMBOL;
+        return Character.isLetterOrDigit(codePoint) || codePoint == Constants.CODE_SINGLE_QUOTE || codePoint == Constants.CODE_DOUBLE_QUOTE || codePoint == Constants.CODE_CLOSING_PARENTHESIS || codePoint == Constants.CODE_CLOSING_SQUARE_BRACKET || codePoint == Constants.CODE_CLOSING_CURLY_BRACKET || codePoint == Constants.CODE_CLOSING_ANGLE_BRACKET || codePoint == Constants.CODE_PLUS || codePoint == Constants.CODE_PERCENT || Character.getType(codePoint) == Character.OTHER_SYMBOL;
     }
 
     /**
      * Performs a recapitalization event.
+     *
      * @param settingsValues The current settings values.
      */
     private void performRecapitalization(SettingsValues settingsValues) {
@@ -1655,19 +1379,16 @@ public final class InputLogic {
         int selectionStart = mConnection.getExpectedSelectionStart();
         int selectionEnd = mConnection.getExpectedSelectionEnd();
         int numCharsSelected = selectionEnd - selectionStart;
-        if (numCharsSelected > Constants.MAX_CHARACTERS_FOR_RECAPITALIZATION
-                || numCharsSelected < -Constants.MAX_CHARACTERS_FOR_RECAPITALIZATION) {
+        if (numCharsSelected > Constants.MAX_CHARACTERS_FOR_RECAPITALIZATION || numCharsSelected < -Constants.MAX_CHARACTERS_FOR_RECAPITALIZATION) {
             // We bail out if we have too many characters for performance reasons. We don't want
             // to suck possibly multiple-megabyte data.
             return;
         }
         // If we have a recapitalize in progress, use it; otherwise, start a new one.
-        if (!mRecapitalizeStatus.isStarted()
-                || !mRecapitalizeStatus.isSetAt(selectionStart, selectionEnd)) {
+        if (!mRecapitalizeStatus.isStarted() || !mRecapitalizeStatus.isSetAt(selectionStart, selectionEnd)) {
             CharSequence selectedText = mConnection.getSelectedText(0 /* flags, 0 for no styles */);
             if (TextUtils.isEmpty(selectedText)) return; // Race condition with the input connection
-            mRecapitalizeStatus.start(selectedText.toString(), selectionStart, settingsValues.mLocale,
-                    settingsValues.mSpacingAndPunctuations.mSortedWordSeparators);
+            mRecapitalizeStatus.start(selectedText.toString(), selectionStart, settingsValues.mLocale, settingsValues.mSpacingAndPunctuations.mSortedWordSeparators);
         }
         mConnection.finishComposingText();
         mRecapitalizeStatus.rotate();
@@ -1678,20 +1399,18 @@ public final class InputLogic {
         mConnection.setSelection(replacement.startPosition, replacement.endPosition());
     }
 
-    private void performAdditionToUserHistoryDictionary(final SettingsValues settingsValues,
-            final String suggestion, @NonNull final NgramContext ngramContext) {
+    /*private void performAdditionToUserHistoryDictionary(final SettingsValues settingsValues, final String suggestion, @NonNull final NgramContext ngramContext) {
         // For addition to user history we want suggestions (even if just for autocorrect) or a gestured word.
         // That's to avoid unintended additions in some sensitive fields, or fields that
         // expect to receive non-words.
-        if ((!settingsValues.needsToLookupSuggestions() && !mWordComposer.isBatchMode()) || TextUtils.isEmpty(suggestion))
-            return;
+        if ((!settingsValues.needsToLookupSuggestions() && !mWordComposer.isBatchMode()) || TextUtils.isEmpty(suggestion)) return;
         boolean wasAutoCapitalized = mWordComposer.wasAutoCapitalized() && !mWordComposer.isMostlyCaps();
         String word = StringUtilsKt.stripTrailingSeparatorsAndConnectors(suggestion, settingsValues.mSpacingAndPunctuations);
         //if (settingsValues.mIncognitoModeEnabled) {
-            // don't add to history, but still adjust confidences
-            // otherwise incognito input fields can be very annoying when the wrong language is active
-            mDictionaryFacilitator.adjustConfidences(word, wasAutoCapitalized);
-            return;
+        // don't add to history, but still adjust confidences
+        // otherwise incognito input fields can be very annoying when the wrong language is active
+
+        return;
         /*}
         if (mConnection.hasSlowInputConnection()) {
             // Since we don't unlearn when the user backspaces on a slow InputConnection,
@@ -1703,10 +1422,10 @@ public final class InputLogic {
         }
         final int timeStampInSeconds = (int)TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis());
         mDictionaryFacilitator.addToUserHistory(word, wasAutoCapitalized, ngramContext,
-                timeStampInSeconds, settingsValues.mBlockPotentiallyOffensive);*/
-    }
+                timeStampInSeconds, settingsValues.mBlockPotentiallyOffensive);
+    }*/
 
-    private void addToHistoryIfEmoji(final String text, final SettingsValues settingsValues) {
+    /*private void addToHistoryIfEmoji(final String text, final SettingsValues settingsValues) {
         /*if (mLastComposedWord == LastComposedWord.NOT_A_COMPOSED_WORD // we want a last composed word, also to avoid storing consecutive emojis
             || mWordComposer.isComposingWord() // emoji will be part of the word in this case, better do nothing
             || !settingsValues.mBigramPredictionEnabled // this is only for next word suggestions, so they need to be enabled
@@ -1724,11 +1443,11 @@ public final class InputLogic {
             mConnection.getNgramContextFromNthPreviousWord(settingsValues.mSpacingAndPunctuations, 2),
             (int) TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()),
             settingsValues.mBlockPotentiallyOffensive
-        );*/
+        );
         return;
-    }
+    }*/
 
-    public void performUpdateSuggestionStripSync(final SettingsValues settingsValues, final int inputStyle) {
+    /*public void performUpdateSuggestionStripSync(final SettingsValues settingsValues, final int inputStyle) {
         long startTimeMillis = 0;
         if (DebugFlags.DEBUG_ENABLED) {
             startTimeMillis = SystemClock.elapsedRealtime();
@@ -1736,57 +1455,13 @@ public final class InputLogic {
         }
         // Check if we have a suggestion engine attached.
         //if (!settingsValues.needsToLookupSuggestions()) {
-            if (mWordComposer.isComposingWord()) {
-                Log.w(TAG, "Called updateSuggestionsOrPredictions but suggestions were not "
-                        + "requested!");
-            }
-            // Clear the suggestions strip.
-            mSuggestionStripViewAccessor.setSuggestions(SuggestedWords.getEmptyInstance());
-            return;
-        //}
-
-        /*if (!mWordComposer.isComposingWord() && !settingsValues.mBigramPredictionEnabled) {
-            mSuggestionStripViewAccessor.setNeutralSuggestionStrip();
-            return;
+        if (mWordComposer.isComposingWord()) {
+            Log.w(TAG, "Called updateSuggestionsOrPredictions but suggestions were not " + "requested!");
         }
-
-        /*final AsyncResultHolder<SuggestedWords> holder = new AsyncResultHolder<>("Suggest");
-        mInputLogicHandler.getSuggestedWords(() -> getSuggestedWords(
-            inputStyle, SuggestedWords.NOT_A_SEQUENCE_NUMBER,
-            suggestedWords -> {
-                final String typedWordString = mWordComposer.getTypedWord();
-                final SuggestedWordInfo typedWordInfo = new SuggestedWordInfo(
-                    typedWordString, "", SuggestedWordInfo.MAX_SCORE, SuggestedWordInfo.KIND_TYPED,
-                    Dictionary.DICTIONARY_USER_TYPED, SuggestedWordInfo.NOT_AN_INDEX, SuggestedWordInfo.NOT_A_CONFIDENCE
-                );
-                // Show new suggestions if we have at least one. Otherwise keep the old
-                // suggestions with the new typed word. Exception: if the length of the
-                // typed word is <= 1 (after a deletion typically) we clear old suggestions.
-                if (suggestedWords.size() > 1 || typedWordString.length() <= 1) {
-                    holder.set(suggestedWords);
-                } else {
-                    holder.set(retrieveOlderSuggestions(typedWordInfo, mSuggestedWords));
-                }
-            }
-        ));*/
-        // This line may cause the current thread to wait.
-        /*final SuggestedWords suggestedWords = holder.get(null,
-                Constants.GET_SUGGESTED_WORDS_TIMEOUT);
-        if (suggestedWords != null) {
-            // Prefer clipboard suggestions (if available and setting is enabled) over beginning of sentence predictions.
-            if (!(suggestedWords.mInputStyle == SuggestedWords.INPUT_STYLE_BEGINNING_OF_SENTENCE_PREDICTION
-                    && mLatinIME.tryShowClipboardSuggestion())) {
-                mSuggestionStripViewAccessor.setSuggestions(suggestedWords);
-            }
-            if (!suggestedWords.isEmpty() && settingsValues.mSuggestionsEnabled && isInlineEmojiSearchAction()) {
-                mSuggestionStripViewAccessor.showSuggestionStrip();
-            }
-        }
-        if (DebugFlags.DEBUG_ENABLED) {
-            long runTimeMillis = SystemClock.elapsedRealtime() - startTimeMillis;
-            Log.d(TAG, "performUpdateSuggestionStripSync() : " + runTimeMillis + " ms to finish");
-        }*/
-    }
+        // Clear the suggestions strip.
+        mSuggestionStripViewAccessor.setSuggestions(SuggestedWords.getEmptyInstance());
+        return;
+    }*/
 
     /**
      * Reverts a previous commit with auto-correction.
@@ -1813,24 +1488,17 @@ public final class InputLogic {
             if (mWordComposer.isComposingWord()) {
                 throw new RuntimeException("revertCommit, but we are composing a word");
             }
-            final CharSequence wordBeforeCursor =
-                    mConnection.getTextBeforeCursor(deleteLength, 0).subSequence(0, cancelLength);
+            final CharSequence wordBeforeCursor = mConnection.getTextBeforeCursor(deleteLength, 0).subSequence(0, cancelLength);
             if (!TextUtils.equals(committedWord, wordBeforeCursor)) {
-                throw new RuntimeException("revertCommit check failed: we thought we were "
-                        + "reverting \"" + committedWord
-                        + "\", but before the cursor we found \"" + wordBeforeCursor + "\"");
+                throw new RuntimeException("revertCommit check failed: we thought we were " + "reverting \"" + committedWord + "\", but before the cursor we found \"" + wordBeforeCursor + "\"");
             }
         }
         mConnection.deleteTextBeforeCursor(deleteLength);
-        if (!TextUtils.isEmpty(committedWord)) {
-            unlearnWord(committedWordString, inputTransaction.getSettingsValues(), DictionaryFacilitator.UnlearnEvent.REVERT);
-        }
-        final String stringToCommit = originallyTypedWord +
-                (usePhantomSpace ? "" : separatorString);
+
+        final String stringToCommit = originallyTypedWord + (usePhantomSpace ? "" : separatorString);
         final SpannableString textToCommit = new SpannableString(stringToCommit);
         if (committedWord instanceof SpannableString committedWordWithSuggestionSpans) {
-            final Object[] spans = committedWordWithSuggestionSpans.getSpans(0,
-                    committedWord.length(), Object.class);
+            final Object[] spans = committedWordWithSuggestionSpans.getSpans(0, committedWord.length(), Object.class);
             final int lastCharIndex = textToCommit.length() - 1;
             // We will collect all suggestions in the following array.
             final ArrayList<String> suggestions = new ArrayList<>();
@@ -1852,9 +1520,7 @@ public final class InputLogic {
                 }
             }
             // Add the suggestion list to the list of suggestions.
-            textToCommit.setSpan(new SuggestionSpan(mLatinIME, inputTransaction.getSettingsValues().mLocale,
-                    suggestions.toArray(new String[0]), 0, null),
-                    0, lastCharIndex, 0);
+            textToCommit.setSpan(new SuggestionSpan(mLatinIME, inputTransaction.getSettingsValues().mLocale, suggestions.toArray(new String[0]), 0, null), 0, lastCharIndex, 0);
         }
 
         if (inputTransaction.getSettingsValues().mSpacingAndPunctuations.mCurrentLanguageHasSpaces) {
@@ -1879,9 +1545,10 @@ public final class InputLogic {
 
     /**
      * Factor in auto-caps and manual caps and compute the current caps mode.
-     * @param settingsValues the current settings values.
+     *
+     * @param settingsValues   the current settings values.
      * @param keyboardCapsMode the current shift mode of the keyboard. See
-     *   KeyboardSwitcher#getKeyboardShiftMode() for possible values.
+     *                         KeyboardSwitcher#getKeyboardShiftMode() for possible values.
      * @return the actual caps mode the keyboard is in right now.
      */
     private CapsMode getActualCapsMode(SettingsValues settingsValues, CapsMode keyboardCapsMode) {
@@ -1917,15 +1584,12 @@ public final class InputLogic {
         final int inputType = ei.inputType;
         // Warning: this depends on mSpaceState, which may not be the most current value. If
         // mSpaceState gets updated later, whoever called this may need to be told about it.
-        return mConnection.getCursorCapsMode(inputType, settingsValues.mSpacingAndPunctuations,
-                SpaceState.PHANTOM == mSpaceState);
+        return mConnection.getCursorCapsMode(inputType, settingsValues.mSpacingAndPunctuations, SpaceState.PHANTOM == mSpaceState);
     }
 
     @Nullable
     public RecapitalizeMode getCurrentRecapitalizeState() {
-        if (!mRecapitalizeStatus.isStarted()
-                || !mRecapitalizeStatus.isSetAt(mConnection.getExpectedSelectionStart(),
-                        mConnection.getExpectedSelectionEnd())) {
+        if (!mRecapitalizeStatus.isStarted() || !mRecapitalizeStatus.isSetAt(mConnection.getExpectedSelectionStart(), mConnection.getExpectedSelectionEnd())) {
             // Not recapitalizing at the moment
             return null;
         }
@@ -1942,12 +1606,12 @@ public final class InputLogic {
     /**
      * Get n-gram context from the nth previous word before the cursor as context
      * for the suggestion process.
+     *
      * @param spacingAndPunctuations the current spacing and punctuations settings.
-     * @param nthPreviousWord reverse index of the word to get (1-indexed)
+     * @param nthPreviousWord        reverse index of the word to get (1-indexed)
      * @return the information of previous words
      */
-    public NgramContext getNgramContextFromNthPreviousWordForSuggestion(
-            final SpacingAndPunctuations spacingAndPunctuations, final int nthPreviousWord) {
+    public NgramContext getNgramContextFromNthPreviousWordForSuggestion(final SpacingAndPunctuations spacingAndPunctuations, final int nthPreviousWord) {
         if (spacingAndPunctuations.mCurrentLanguageHasSpaces) {
             // If we are typing in a language with spaces we can just look up the previous
             // word information from textview.
@@ -1966,14 +1630,12 @@ public final class InputLogic {
      * nuances: check the code for details).
      *
      * @param settings the current values of the settings.
-     * @param word the word to evaluate.
+     * @param word     the word to evaluate.
      * @return whether it's fine to resume suggestions on this word.
      */
     private static boolean isResumableWord(final SettingsValues settings, final String word) {
         final int firstCodePoint = word.codePointAt(0);
-        return settings.isWordCodePoint(firstCodePoint)
-                && Constants.CODE_SINGLE_QUOTE != firstCodePoint
-                && Constants.CODE_DASH != firstCodePoint;
+        return settings.isWordCodePoint(firstCodePoint) && Constants.CODE_SINGLE_QUOTE != firstCodePoint && Constants.CODE_DASH != firstCodePoint;
     }
 
     /**
@@ -1997,8 +1659,7 @@ public final class InputLogic {
      * @return the text to actually send to the editor
      */
     private String performSpecificTldProcessingOnTextInput(final String text) {
-        if (text.length() <= 1 || text.charAt(0) != Constants.CODE_PERIOD
-                || !Character.isLetter(text.charAt(1))) {
+        if (text.length() <= 1 || text.charAt(0) != Constants.CODE_PERIOD || !Character.isLetter(text.charAt(1))) {
             // Not a tld: do nothing.
             return text;
         }
@@ -2026,18 +1687,14 @@ public final class InputLogic {
      * This will clear the composing word, reset the last composed word, clear the suggestion
      * strip and tell the input connection about it so that it can refresh its caches.
      *
-     * @param newSelStart the new selection start, in java characters.
-     * @param newSelEnd the new selection end, in java characters.
+     * @param newSelStart          the new selection start, in java characters.
+     * @param newSelEnd            the new selection end, in java characters.
      * @param clearSuggestionStrip whether this method should clear the suggestion strip.
      */
     // TODO: how is this different from startInput ?!
-    private void resetEntireInputState(final int newSelStart, final int newSelEnd,
-            final boolean clearSuggestionStrip) {
+    private void resetEntireInputState(final int newSelStart, final int newSelEnd, final boolean clearSuggestionStrip) {
         final boolean shouldFinishComposition = mWordComposer.isComposingWord();
         resetComposingState(true /* alsoResetLastComposedWord */);
-        if (clearSuggestionStrip) {
-            mSuggestionStripViewAccessor.setNeutralSuggestionStrip();
-        }
         mConnection.resetCachesUponCursorMoveAndReturnSuccess(newSelStart, newSelEnd, shouldFinishComposition);
     }
 
@@ -2060,31 +1717,18 @@ public final class InputLogic {
      * Make a {@link helium314.keyboard.latin.SuggestedWords} object containing a typed word
      * and obsolete suggestions.
      * See {@link helium314.keyboard.latin.SuggestedWords#getTypedWordAndPreviousSuggestions(
-     *      SuggestedWordInfo, helium314.keyboard.latin.SuggestedWords)}.
-     * @param typedWordInfo The typed word as a SuggestedWordInfo.
+     *SuggestedWordInfo, helium314.keyboard.latin.SuggestedWords)}.
+     *
+     * @param typedWordInfo          The typed word as a SuggestedWordInfo.
      * @param previousSuggestedWords The previously suggested words.
      * @return Obsolete suggestions with the newly typed word.
      */
-    static SuggestedWords retrieveOlderSuggestions(final SuggestedWordInfo typedWordInfo,
-            final SuggestedWords previousSuggestedWords) {
-        final SuggestedWords oldSuggestedWords = previousSuggestedWords.isPunctuationSuggestions()
-                ? SuggestedWords.getEmptyInstance() : previousSuggestedWords;
-        final ArrayList<SuggestedWords.SuggestedWordInfo> typedWordAndPreviousSuggestions =
-                SuggestedWords.getTypedWordAndPreviousSuggestions(typedWordInfo, oldSuggestedWords);
-        return new SuggestedWords(typedWordAndPreviousSuggestions, null /* rawSuggestions */,
-                typedWordInfo, false /* typedWordValid */, false /* hasAutoCorrectionCandidate */,
-                true /* isObsoleteSuggestions */, oldSuggestedWords.mInputStyle,
-                SuggestedWords.NOT_A_SEQUENCE_NUMBER);
+    static SuggestedWords retrieveOlderSuggestions(final SuggestedWordInfo typedWordInfo, final SuggestedWords previousSuggestedWords) {
+        final SuggestedWords oldSuggestedWords = previousSuggestedWords.isPunctuationSuggestions() ? SuggestedWords.getEmptyInstance() : previousSuggestedWords;
+        final ArrayList<SuggestedWords.SuggestedWordInfo> typedWordAndPreviousSuggestions = SuggestedWords.getTypedWordAndPreviousSuggestions(typedWordInfo, oldSuggestedWords);
+        return new SuggestedWords(typedWordAndPreviousSuggestions, null /* rawSuggestions */, typedWordInfo, false /* typedWordValid */, false /* hasAutoCorrectionCandidate */, true /* isObsoleteSuggestions */, oldSuggestedWords.mInputStyle, SuggestedWords.NOT_A_SEQUENCE_NUMBER);
     }
 
-    /**
-     * @return the current {@link Locale} of the {@link #mDictionaryFacilitator} if available. Otherwise
-     * {@link Locale#ROOT}.
-     */
-    @NonNull
-    private Locale getDictionaryFacilitatorLocale() {
-        return mDictionaryFacilitator != null ? mDictionaryFacilitator.getCurrentLocale() : Locale.ROOT;
-    }
 
     /**
      * Gets a chunk of text with or the auto-correction indicator underline span as appropriate.
@@ -2106,10 +1750,7 @@ public final class InputLogic {
     // TODO: Shouldn't this go in some *Utils class instead?
     private CharSequence getTextWithUnderline(final String text) {
         // TODO: Locale should be determined based on context and the text given.
-        return mIsAutoCorrectionIndicatorOn
-                ? SuggestionSpanUtilsKt.getTextWithAutoCorrectionIndicatorUnderline(
-                        mLatinIME, text, getDictionaryFacilitatorLocale())
-                : text;
+        return mIsAutoCorrectionIndicatorOn ? SuggestionSpanUtilsKt.getTextWithAutoCorrectionIndicatorUnderline(mLatinIME, text, Locale.ROOT) : text;
     }
 
     /**
@@ -2132,17 +1773,13 @@ public final class InputLogic {
      * the text view because it goes through a different, asynchronous binder. Also, batch edits
      * are ignored for key events. Use the normal software input methods instead.
      *
-     * @param keyCode the key code to send inside the key event.
+     * @param keyCode   the key code to send inside the key event.
      * @param metaState the meta state to send inside the key event, e.g. KeyEvent.META_CTRL_ON
      */
     public void sendDownUpKeyEventWithMetaState(final int keyCode, final int metaState) {
         final long eventTime = SystemClock.uptimeMillis();
-        mConnection.sendKeyEvent(new KeyEvent(eventTime, eventTime,
-                KeyEvent.ACTION_DOWN, keyCode, 0, metaState, KeyCharacterMap.VIRTUAL_KEYBOARD, 0,
-                KeyEvent.FLAG_SOFT_KEYBOARD | KeyEvent.FLAG_KEEP_TOUCH_MODE));
-        mConnection.sendKeyEvent(new KeyEvent(SystemClock.uptimeMillis(), eventTime,
-                KeyEvent.ACTION_UP, keyCode, 0, metaState, KeyCharacterMap.VIRTUAL_KEYBOARD, 0,
-                KeyEvent.FLAG_SOFT_KEYBOARD | KeyEvent.FLAG_KEEP_TOUCH_MODE));
+        mConnection.sendKeyEvent(new KeyEvent(eventTime, eventTime, KeyEvent.ACTION_DOWN, keyCode, 0, metaState, KeyCharacterMap.VIRTUAL_KEYBOARD, 0, KeyEvent.FLAG_SOFT_KEYBOARD | KeyEvent.FLAG_KEEP_TOUCH_MODE));
+        mConnection.sendKeyEvent(new KeyEvent(SystemClock.uptimeMillis(), eventTime, KeyEvent.ACTION_UP, keyCode, 0, metaState, KeyCharacterMap.VIRTUAL_KEYBOARD, 0, KeyEvent.FLAG_SOFT_KEYBOARD | KeyEvent.FLAG_KEEP_TOUCH_MODE));
     }
 
     /**
@@ -2154,12 +1791,8 @@ public final class InputLogic {
      * @param settingsValues the current values of the settings.
      */
     private void insertAutomaticSpaceIfOptionsAndTextAllow(final SettingsValues settingsValues) {
-        if (settingsValues.shouldInsertSpacesAutomatically()
-                && settingsValues.mSpacingAndPunctuations.mCurrentLanguageHasSpaces
-                && !textBeforeCursorMayBeUrlOrSimilar(settingsValues, true)
-                && !mConnection.textBeforeCursorLooksLikeURL() // adding this check to textBeforeCursorMayBeUrlOrSimilar might not be wanted for word continuation (see effect on unit tests)
-                && !(mConnection.getCodePointBeforeCursor() == Constants.CODE_PERIOD && mConnection.wordBeforeCursorMayBeEmail())
-        ) {
+        if (settingsValues.shouldInsertSpacesAutomatically() && settingsValues.mSpacingAndPunctuations.mCurrentLanguageHasSpaces && !textBeforeCursorMayBeUrlOrSimilar(settingsValues, true) && !mConnection.textBeforeCursorLooksLikeURL() // adding this check to textBeforeCursorMayBeUrlOrSimilar might not be wanted for word continuation (see effect on unit tests)
+            && !(mConnection.getCodePointBeforeCursor() == Constants.CODE_PERIOD && mConnection.wordBeforeCursorMayBeEmail())) {
             mConnection.commitCodePoint(Constants.CODE_SPACE);
             // todo: why not remove phantom space state?
         }
@@ -2168,27 +1801,25 @@ public final class InputLogic {
     private boolean textBeforeCursorMayBeUrlOrSimilar(final SettingsValues settingsValues, final Boolean forAutoSpace) {
         // URL / mail field and no space -> may be URL
         if (InputTypeUtils.isUriOrEmailType(settingsValues.mInputAttributes.mInputType) &&
-                // we never want to commit the first part of the url, but we want to insert autospace if text might be a normal word
-                (forAutoSpace ? mConnection.nonWordCodePointAndNoSpaceBeforeCursor(settingsValues.mSpacingAndPunctuations) // avoid detecting URL if it could be a word
-                : !mConnection.spaceBeforeCursor()))
-            return true;
+            // we never want to commit the first part of the url, but we want to insert autospace if text might be a normal word
+            (forAutoSpace ? mConnection.nonWordCodePointAndNoSpaceBeforeCursor(settingsValues.mSpacingAndPunctuations) // avoid detecting URL if it could be a word
+                          : !mConnection.spaceBeforeCursor())) return true;
         // already contains a SometimesWordConnector -> may be URL (not so sure, only do with detection enabled
         if (settingsValues.mUrlDetectionEnabled && settingsValues.mSpacingAndPunctuations.containsSometimesWordConnector(mWordComposer.getTypedWord()))
             return true;
         // "://" before typed word -> very much looks like URL
         final CharSequence textBeforeCursor = mConnection.getTextBeforeCursor(mWordComposer.getTypedWord().length() + 3, 0);
-        if (textBeforeCursor != null && textBeforeCursor.toString().startsWith("://"))
-            return true;
+        if (textBeforeCursor != null && textBeforeCursor.toString().startsWith("://")) return true;
         return false;
     }
 
     /**
      * Do the final processing after a batch input has ended. This commits the word to the editor.
+     *
      * @param settingsValues the current values of the settings.
      * @param suggestedWords suggestedWords to use.
      */
-    public void onUpdateTailBatchInputCompleted(final SettingsValues settingsValues,
-            final SuggestedWords suggestedWords, final KeyboardSwitcher keyboardSwitcher) {
+    public void onUpdateTailBatchInputCompleted(final SettingsValues settingsValues, final SuggestedWords suggestedWords, final KeyboardSwitcher keyboardSwitcher) {
         final String batchInputText = suggestedWords.isEmpty() ? null : suggestedWords.getWord(0);
         if (TextUtils.isEmpty(batchInputText)) {
             return;
@@ -2199,12 +1830,10 @@ public final class InputLogic {
             mSpaceState = SpaceState.NONE;
         }
         mWordComposer.setBatchInputWord(batchInputText);
-        enterInlineEmojiSearchIfNeeded(batchInputText.codePointAt(0), settingsValues);
         setComposingTextInternal(batchInputText, 1);
         mConnection.endBatchEdit();
         // Space state must be updated before calling updateShiftState
-        if (settingsValues.mAutospaceAfterGestureTyping)
-            mSpaceState = SpaceState.PHANTOM;
+        if (settingsValues.mAutospaceAfterGestureTyping) mSpaceState = SpaceState.PHANTOM;
         keyboardSwitcher.updateShiftState(getCurrentAutoCapsState(settingsValues), getCurrentRecapitalizeState());
 
     }
@@ -2221,7 +1850,7 @@ public final class InputLogic {
      * user presses the Send button for an SMS, we don't auto-correct as that would be unexpected.
      * In this case, `separatorString' is set to NOT_A_SEPARATOR.
      *
-     * @param settingsValues the current values of the settings.
+     * @param settingsValues  the current values of the settings.
      * @param separatorString the separator that's causing the commit, or NOT_A_SEPARATOR if none.
      */
     public void commitTyped(final SettingsValues settingsValues, final String separatorString) {
@@ -2235,75 +1864,14 @@ public final class InputLogic {
     }
 
     /**
-     * Commit the current auto-correction.
-     * <p>
-     * This will commit the best guess of the keyboard regarding what the user meant by typing
-     * the currently composing word. The IME computes suggestions and assigns a confidence score
-     * to each of them; when it's confident enough in one suggestion, it replaces the typed string
-     * by this suggestion at commit time. When it's not confident enough, or when it has no
-     * suggestions, or when the settings or environment does not allow for auto-correction, then
-     * this method just commits the typed string.
-     * Note that if suggestions are currently being computed in the background, this method will
-     * block until the computation returns. This is necessary for consistency (it would be very
-     * strange if pressing space would commit a different word depending on how fast you press).
-     *
-     * @param settingsValues the current value of the settings.
-     * @param separator the separator that's causing the commit to happen.
-     */
-    private void commitCurrentAutoCorrection(final SettingsValues settingsValues,
-            final String separator, final LatinIME.UIHandler handler) {
-        // Complete any pending suggestions query first
-        if (handler.hasPendingUpdateSuggestions()) {
-            handler.cancelUpdateSuggestionStrip();
-            // To know the input style here, we should retrieve the in-flight "update suggestions"
-            // message and read its arg1 member here. However, the Handler class does not let
-            // us retrieve this message, so we can't do that. But in fact, we notice that
-            // we only ever come here when the input style was typing. In the case of batch
-            // input, we update the suggestions synchronously when the tail batch comes. Likewise
-            // for application-specified completions. As for recorrections, we never auto-correct,
-            // so we don't come here either. Hence, the input style is necessarily
-            // INPUT_STYLE_TYPING.
-            performUpdateSuggestionStripSync(settingsValues, SuggestedWords.INPUT_STYLE_TYPING);
-        }
-        //final SuggestedWordInfo autoCorrectionOrNull = mWordComposer.getAutoCorrectionOrNull();
-        final String typedWord = mWordComposer.getTypedWord();
-        //final String stringToCommit = (autoCorrectionOrNull != null) ? autoCorrectionOrNull.mWord : typedWord;
-        //final String stringToCommit = typedWord;
-        //if (stringToCommit != null) {
-            final boolean isBatchMode = mWordComposer.isBatchMode();
-            commitChosenWord(settingsValues, typedWord, LastComposedWord.COMMIT_TYPE_DECIDED_WORD, separator);
-            /*if (!typedWord.equals(stringToCommit)) {
-                // This will make the correction flash for a short while as a visual clue
-                // to the user that auto-correction happened. It has no other effect; in particular
-                // note that this won't affect the text inside the text field AT ALL: it only makes
-                // the segment of text starting at the supplied index and running for the length
-                // of the auto-correction flash. At this moment, the "typedWord" argument is
-                // ignored by TextView.
-                mConnection.commitCorrection(new CorrectionInfo(
-                        mConnection.getExpectedSelectionEnd() - stringToCommit.length(),
-                        typedWord, stringToCommit));
-                final String prevWordsContext = (autoCorrectionOrNull != null)
-                        ? autoCorrectionOrNull.mPrevWordsContext
-                        : "";
-                StatsUtils.onAutoCorrection(typedWord, stringToCommit, isBatchMode,
-                        mDictionaryFacilitator, prevWordsContext);
-                StatsUtils.onWordCommitAutoCorrect(stringToCommit, isBatchMode);
-            } else {*/
-                StatsUtils.onWordCommitUserTyped(typedWord, isBatchMode);
-            //}
-        //}
-    }
-
-    /**
      * Commits the chosen word to the text field and saves it for later retrieval.
      *
-     * @param settingsValues the current values of the settings.
-     * @param chosenWord the word we want to commit.
-     * @param commitType the type of the commit, as one of LastComposedWord.COMMIT_TYPE_*
+     * @param settingsValues  the current values of the settings.
+     * @param chosenWord      the word we want to commit.
+     * @param commitType      the type of the commit, as one of LastComposedWord.COMMIT_TYPE_*
      * @param separatorString the separator that's causing the commit, or NOT_A_SEPARATOR if none.
      */
-    private void commitChosenWord(final SettingsValues settingsValues, final String chosenWord,
-            final int commitType, final String separatorString) {
+    private void commitChosenWord(final SettingsValues settingsValues, final String chosenWord, final int commitType, final String separatorString) {
         long startTimeMillis = 0;
         if (DebugFlags.DEBUG_ENABLED) {
             startTimeMillis = SystemClock.elapsedRealtime();
@@ -2311,41 +1879,34 @@ public final class InputLogic {
         }
         // essentially reverted https://github.com/lineageos/android_packages_inputmethods_LatinIME/commit/ee6de1466bc98e27bd414c9a7451f2aee3f9e721
         // can't find any drawback (performance, neither when setting nor when reading)
-        final CharSequence chosenWordWithSuggestions = getTextWithSuggestionSpan(mLatinIME, chosenWord,
-                mSuggestedWords, getDictionaryFacilitatorLocale());
         if (DebugFlags.DEBUG_ENABLED) {
             long runTimeMillis = SystemClock.elapsedRealtime() - startTimeMillis;
-            Log.d(TAG, "commitChosenWord() : " + runTimeMillis + " ms to run "
-                    + "SuggestionSpanUtils.getTextWithSuggestionSpan()");
+            Log.d(TAG, "commitChosenWord() : " + runTimeMillis + " ms to run " + "SuggestionSpanUtils.getTextWithSuggestionSpan()");
             startTimeMillis = SystemClock.elapsedRealtime();
         }
         // When we are composing word, get n-gram context from the 2nd previous word because the
         // 1st previous word is the word to be committed. Otherwise get n-gram context from the 1st
         // previous word.
-        final NgramContext ngramContext = mConnection.getNgramContextFromNthPreviousWord(
-                settingsValues.mSpacingAndPunctuations, mWordComposer.isComposingWord() ? 2 : 1);
+        final NgramContext ngramContext = mConnection.getNgramContextFromNthPreviousWord(settingsValues.mSpacingAndPunctuations, mWordComposer.isComposingWord() ? 2 : 1);
         if (DebugFlags.DEBUG_ENABLED) {
             long runTimeMillis = SystemClock.elapsedRealtime() - startTimeMillis;
-            Log.d(TAG, "commitChosenWord() : " + runTimeMillis + " ms to run "
-                    + "Connection.getNgramContextFromNthPreviousWord()");
+            Log.d(TAG, "commitChosenWord() : " + runTimeMillis + " ms to run " + "Connection.getNgramContextFromNthPreviousWord()");
             Log.d(TAG, "commitChosenWord() : NgramContext = " + ngramContext);
             startTimeMillis = SystemClock.elapsedRealtime();
         }
-        mConnection.commitText(chosenWordWithSuggestions, 1);
+        mConnection.commitText(chosenWord, 1);
         if (DebugFlags.DEBUG_ENABLED) {
             long runTimeMillis = SystemClock.elapsedRealtime() - startTimeMillis;
-            Log.d(TAG, "commitChosenWord() : " + runTimeMillis + " ms to run "
-                    + "Connection.commitText");
+            Log.d(TAG, "commitChosenWord() : " + runTimeMillis + " ms to run " + "Connection.commitText");
             startTimeMillis = SystemClock.elapsedRealtime();
         }
         // Add the word to the user history dictionary
-        performAdditionToUserHistoryDictionary(settingsValues, chosenWord, ngramContext);
+        /*performAdditionToUserHistoryDictionary(settingsValues, chosenWord, ngramContext);
         if (DebugFlags.DEBUG_ENABLED) {
             long runTimeMillis = SystemClock.elapsedRealtime() - startTimeMillis;
-            Log.d(TAG, "commitChosenWord() : " + runTimeMillis + " ms to run "
-                    + "performAdditionToUserHistoryDictionary()");
+            Log.d(TAG, "commitChosenWord() : " + runTimeMillis + " ms to run " + "performAdditionToUserHistoryDictionary()");
             startTimeMillis = SystemClock.elapsedRealtime();
-        }
+        }*/
         // TODO: figure out here if this is an auto-correct or if the best word is actually
         // what user typed. Note: currently this is done much later in
         // LastComposedWord#didCommitTypedWord by string equality of the remembered
@@ -2353,15 +1914,14 @@ public final class InputLogic {
         mLastComposedWord = mWordComposer.commitWord(commitType, chosenWord, separatorString, ngramContext);
         if (DebugFlags.DEBUG_ENABLED) {
             long runTimeMillis = SystemClock.elapsedRealtime() - startTimeMillis;
-            Log.d(TAG, "commitChosenWord() : " + runTimeMillis + " ms to run "
-                    + "WordComposer.commitWord()");
+            Log.d(TAG, "commitChosenWord() : " + runTimeMillis + " ms to run " + "WordComposer.commitWord()");
         }
     }
 
     /**
-     *  Wraps the selected text into the codepoints. If the same codepoints are
-     *  already present before and after the selection, they are removed instead.
-     *  (unfortunately Android long-press selection may select one of those codepoints, so unwrap may not work well)
+     * Wraps the selected text into the codepoints. If the same codepoints are
+     * already present before and after the selection, they are removed instead.
+     * (unfortunately Android long-press selection may select one of those codepoints, so unwrap may not work well)
      */
     private void wrapSelection(final int start, final int end) {
         final CharSequence selected = mConnection.getSelectedText(0);
@@ -2385,16 +1945,12 @@ public final class InputLogic {
      * We only retry up to 5 times before giving up.
      *
      * @param tryResumeSuggestions Whether we should resume suggestions or not.
-     * @param remainingTries How many times we may try again before giving up.
+     * @param remainingTries       How many times we may try again before giving up.
      * @return whether true if the caches were successfully reset, false otherwise.
      */
-    public boolean retryResetCachesAndReturnSuccess(final boolean tryResumeSuggestions,
-            final int remainingTries, final LatinIME.UIHandler handler) {
-        final boolean shouldFinishComposition = mConnection.hasSelection()
-                || !mConnection.isCursorPositionKnown();
-        if (!mConnection.resetCachesUponCursorMoveAndReturnSuccess(
-                mConnection.getExpectedSelectionStart(), mConnection.getExpectedSelectionEnd(),
-                shouldFinishComposition)) {
+    public boolean retryResetCachesAndReturnSuccess(final boolean tryResumeSuggestions, final int remainingTries, final LatinIME.UIHandler handler) {
+        final boolean shouldFinishComposition = mConnection.hasSelection() || !mConnection.isCursorPositionKnown();
+        if (!mConnection.resetCachesUponCursorMoveAndReturnSuccess(mConnection.getExpectedSelectionStart(), mConnection.getExpectedSelectionEnd(), shouldFinishComposition)) {
             if (0 < remainingTries) {
                 handler.postResetCaches(tryResumeSuggestions, remainingTries - 1);
                 return false;
@@ -2421,13 +1977,11 @@ public final class InputLogic {
      * use this method whenever possible.<p>
      * <p>TODO: Should we move this mechanism to {@link RichInputConnection}?</p>
      *
-     * @param newComposingText the composing text to be set
+     * @param newComposingText  the composing text to be set
      * @param newCursorPosition the new cursor position
      */
-    private void setComposingTextInternal(final CharSequence newComposingText,
-            final int newCursorPosition) {
-        setComposingTextInternalWithBackgroundColor(newComposingText, newCursorPosition,
-                Color.TRANSPARENT, newComposingText.length());
+    private void setComposingTextInternal(final CharSequence newComposingText, final int newCursorPosition) {
+        setComposingTextInternalWithBackgroundColor(newComposingText, newCursorPosition, Color.TRANSPARENT, newComposingText.length());
     }
 
     /**
@@ -2439,15 +1993,14 @@ public final class InputLogic {
      * of them at the same time.</p>
      * <p>TODO: Should we move this method to {@link RichInputConnection}?</p>
      *
-     * @param newComposingText the composing text to be set
+     * @param newComposingText  the composing text to be set
      * @param newCursorPosition the new cursor position
-     * @param backgroundColor the background color to be set to the composing text. Set
-     * {@link Color#TRANSPARENT} to disable the background color.
+     * @param backgroundColor   the background color to be set to the composing text. Set
+     *                          {@link Color#TRANSPARENT} to disable the background color.
      * @param coloredTextLength the length of text, in Java chars, which should be rendered with
-     * the given background color.
+     *                          the given background color.
      */
-    private void setComposingTextInternalWithBackgroundColor(final CharSequence newComposingText,
-            final int newCursorPosition, final int backgroundColor, final int coloredTextLength) {
+    private void setComposingTextInternalWithBackgroundColor(final CharSequence newComposingText, final int newCursorPosition, final int backgroundColor, final int coloredTextLength) {
         final CharSequence composingTextToBeSet;
         if (backgroundColor == Color.TRANSPARENT) {
             composingTextToBeSet = newComposingText;
@@ -2466,6 +2019,7 @@ public final class InputLogic {
     /**
      * Gets an object allowing private IME commands to be sent to the
      * underlying editor.
+     *
      * @return An object for sending private commands to the underlying editor.
      */
     public PrivateCommandPerformer getPrivateCommandPerformer() {
@@ -2476,12 +2030,12 @@ public final class InputLogic {
      * Gets the expected index of the first char of the composing span within the editor's text.
      * Returns a negative value in case there appears to be no valid composing span.
      *
+     * @return The expected index in Java chars of the first char of the composing span.
      * @see #getComposingLength()
      * @see RichInputConnection#hasSelection()
      * @see RichInputConnection#isCursorPositionKnown()
      * @see RichInputConnection#getExpectedSelectionStart()
      * @see RichInputConnection#getExpectedSelectionEnd()
-     * @return The expected index in Java chars of the first char of the composing span.
      */
     // TODO: try and see if we can get rid of this method. Ideally the users of this class should
     // never need to know this.
@@ -2495,8 +2049,9 @@ public final class InputLogic {
     /**
      * Gets the expected length in Java chars of the composing span.
      * May be 0 if there is no valid composing span.
-     * @see #getComposingStart()
+     *
      * @return The expected length of the composing span.
+     * @see #getComposingStart()
      */
     // TODO: try and see if we can get rid of this method. Ideally the users of this class should
     // never need to know this.
@@ -2519,30 +2074,14 @@ public final class InputLogic {
         else sendDownUpKeyEvent(KeyEvent.KEYCODE_PASTE);
     }
 
-    private void enterInlineEmojiSearchIfNeeded(int codePoint, SettingsValues settingsValues) {
-        if (mEmojiDictionaryFacilitator == null || isInlineEmojiSearchAction()) {
-            return;
-        }
-
-        if (isStartOfInlineEmojiSearch(codePoint, mConnection.getCodePointBeforeCursor(), mConnection.getCharBeforeBeforeCursor(),
-                                       settingsValues)) {
-            if (mWordComposer.isBatchMode())
-                // when entering inline emoji search with glide typing, the action is not set when the word is added
-                // this means we don't detect inline search mode, so we remove to word now
-                BackgroundGatheringCache.INSTANCE.removeLast(mWordComposer.getTypedWord());
-            setInlineEmojiSearchAction(true);
-        }
-    }
 
     private void updateInlineEmojiSearch() {
-        setInlineEmojiSearchAction(getInlineEmojiSearchString() != null);
+        setInlineEmojiSearchAction(false);
     }
 
     private void setInlineEmojiSearchAction(boolean on) {
         if (on != isInlineEmojiSearchAction()) {
-            KeyboardSwitcher.getInstance().loadKeyboard(mLatinIME.getCurrentInputEditorInfo(), Settings.getValues(),
-                            mLatinIME.getCurrentAutoCapsState(), mLatinIME.getCurrentRecapitalizeState(),
-                            on? new KeyboardLayoutSet.InternalAction(KeyCode.INLINE_EMOJI_SEARCH_DONE,"!icon/close_history") : null);
+            KeyboardSwitcher.getInstance().loadKeyboard(mLatinIME.getCurrentInputEditorInfo(), Settings.getValues(), mLatinIME.getCurrentAutoCapsState(), mLatinIME.getCurrentRecapitalizeState(), on ? new KeyboardLayoutSet.InternalAction(KeyCode.INLINE_EMOJI_SEARCH_DONE, "!icon/close_history") : null);
         }
     }
 
@@ -2550,24 +2089,6 @@ public final class InputLogic {
         var keyboard = KeyboardSwitcher.getInstance().getKeyboard();
         var internalAction = keyboard != null ? keyboard.mId.getInternalAction() : null;
         return internalAction != null && internalAction.getCode() == KeyCode.INLINE_EMOJI_SEARCH_DONE;
-    }
-
-    private void deleteTextReplacedByEmoji() {
-        mConnection.finishComposingText();
-        var inlineEmojiSearchString = getInlineEmojiSearchString();
-        if (inlineEmojiSearchString != null) {
-            mConnection.deleteTextBeforeCursor(inlineEmojiSearchString.length() + 1);
-        } else {
-            Log.e("inlineEmojiSearch", "Inconsistent state - inlineEmojiSearchString is null");
-        }
-    }
-
-    private String getInlineEmojiSearchString() {
-        if (mEmojiDictionaryFacilitator == null) {
-            return null;
-        }
-
-        return getInlineEmojiSearchString(mConnection.getTextBeforeCursor(50, 0));
     }
 
     /**
@@ -2590,7 +2111,7 @@ public final class InputLogic {
             return null;
         }
 
-        if (markerIndex > 0 && ! isValidInlineEmojiSearchPreviousChar(text.codePointAt(markerIndex - 1), Settings.getValues())) {
+        if (markerIndex > 0 && !isValidInlineEmojiSearchPreviousChar(text.codePointAt(markerIndex - 1), Settings.getValues())) {
             return null;
         }
 
@@ -2606,33 +2127,12 @@ public final class InputLogic {
     }
 
     // public for testing
-    public static boolean isStartOfInlineEmojiSearch(int codePoint, int codePointBeforeCursor, int charBeforeBeforeCursor,
-                                                      SettingsValues settingsValues) {
-        return codePointBeforeCursor == INLINE_EMOJI_SEARCH_MARKER && codePoint != INLINE_EMOJI_SEARCH_MARKER
-                && ! Character.isWhitespace(codePoint) && isValidInlineEmojiSearchPreviousChar(charBeforeBeforeCursor, settingsValues);
+    public static boolean isStartOfInlineEmojiSearch(int codePoint, int codePointBeforeCursor, int charBeforeBeforeCursor, SettingsValues settingsValues) {
+        return codePointBeforeCursor == INLINE_EMOJI_SEARCH_MARKER && codePoint != INLINE_EMOJI_SEARCH_MARKER && !Character.isWhitespace(codePoint) && isValidInlineEmojiSearchPreviousChar(charBeforeBeforeCursor, settingsValues);
     }
 
     private static boolean isValidInlineEmojiSearchPreviousChar(int charBeforeBeforeCursor, SettingsValues settingsValues) {
-        return ! Character.isDigit(charBeforeBeforeCursor) && ! settingsValues.isWordCodePoint(charBeforeBeforeCursor);
+        return !Character.isDigit(charBeforeBeforeCursor) && !settingsValues.isWordCodePoint(charBeforeBeforeCursor);
     }
 
-    public void updateEmojiDictionary(Locale locale) {
-        if (Settings.getValues().mInlineEmojiSearch && Settings.getValues().needsToLookupSuggestions()) {
-            if (mEmojiDictionaryFacilitator == null || ! mEmojiDictionaryFacilitator.isForLocale(locale)) {
-                closeEmojiDictionary();
-                var dictFile = DictionaryInfoUtils.getCachedDictForLocaleAndType(locale, "emoji", mLatinIME);
-                var dictionary = dictFile != null? DictionaryFactory.getDictionary(dictFile, locale) : null;
-                mEmojiDictionaryFacilitator = dictionary != null? new SingleDictionaryFacilitator(dictionary) : null;
-            }
-        } else {
-            closeEmojiDictionary();
-        }
-    }
-
-    private void closeEmojiDictionary() {
-        if (mEmojiDictionaryFacilitator != null) {
-            mEmojiDictionaryFacilitator.closeDictionaries();
-            mEmojiDictionaryFacilitator = null;
-        }
-    }
 }

@@ -66,9 +66,7 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
     interface Listener {
         //fun pickSuggestionManually(word: SuggestedWordInfo?)
         fun onCodeInput(primaryCode: Int, x: Int, y: Int, isKeyRepeat: Boolean)
-        fun removeSuggestion(word: String?)
-        fun removeExternalSuggestions()
-        fun onSwipeDownOnToolbar()
+
     }
 
 
@@ -215,13 +213,13 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
             wrapper.addView(view)
             suggestionsStrip.addView(wrapper)
 
-            val closeButton = createToolbarKey(context, ToolbarKey.CLOSE_HISTORY)
+            /*val closeButton = createToolbarKey(context, ToolbarKey.CLOSE_HISTORY)
             closeButton.layoutParams = toolbarKeyLayoutParams
             setupKey(closeButton, Settings.getValues().mColors)
             closeButton.setOnClickListener {
                 listener.removeExternalSuggestions()
             }
-            suggestionsStrip.addView(closeButton)
+            suggestionsStrip.addView(closeButton)*/
         } else {
             suggestionsStrip.addView(view)
         }

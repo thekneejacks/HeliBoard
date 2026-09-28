@@ -253,8 +253,7 @@ class ClipboardHistoryManager(
         dontShowCurrentSuggestion = true
         val csv = clipboardSuggestionView ?: return
         if (csv.parent != null && !csv.isGone) {
-            // clipboard view is shown ->
-            latinIME.setNeutralSuggestionStrip()
+            // clipboard view is shown -> )
             latinIME.mHandler.postResumeSuggestions(false)
         }
         csv.isGone = true
