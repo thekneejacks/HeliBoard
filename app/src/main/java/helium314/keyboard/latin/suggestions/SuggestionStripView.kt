@@ -31,8 +31,6 @@ import helium314.keyboard.event.HapticEvent
 import helium314.keyboard.keyboard.internal.KeyboardIconsSet
 import helium314.keyboard.latin.AudioAndHapticFeedbackManager
 import helium314.keyboard.latin.R
-import helium314.keyboard.latin.SuggestedWords
-import helium314.keyboard.latin.SuggestedWords.SuggestedWordInfo
 import helium314.keyboard.latin.common.ColorType
 import helium314.keyboard.latin.common.Colors
 import helium314.keyboard.latin.common.Constants
@@ -66,7 +64,7 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, R.attr.suggestionStripViewStyle)
 
     interface Listener {
-        fun pickSuggestionManually(word: SuggestedWordInfo?)
+        //fun pickSuggestionManually(word: SuggestedWordInfo?)
         fun onCodeInput(primaryCode: Int, x: Int, y: Int, isKeyRepeat: Boolean)
         fun removeSuggestion(word: String?)
         fun removeExternalSuggestions()
@@ -84,20 +82,18 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
 
         val colors = Settings.getValues().mColors
         colors.setBackground(this, ColorType.STRIP_BACKGROUND)
-        repeat(SuggestedWords.MAX_SUGGESTIONS) {
-            val word = TextView(context, null, R.attr.suggestionWordStyle)
-            word.contentDescription = resources.getString(R.string.spoken_empty_suggestion)
-            word.setOnClickListener(this)
-            word.setOnLongClickListener(this)
-            colors.setBackground(word, ColorType.STRIP_BACKGROUND)
-            wordViews.add(word)
-            val divider = inflater.inflate(R.layout.suggestion_divider, null)
-            dividerViews.add(divider)
-            val info = TextView(context, null, R.attr.suggestionWordStyle)
-            info.setTextColor(colors.get(ColorType.KEY_TEXT))
-            info.setTextSize(TypedValue.COMPLEX_UNIT_DIP, DEBUG_INFO_TEXT_SIZE_IN_DIP)
-            debugInfoViews.add(info)
-        }
+        val word = TextView(context, null, R.attr.suggestionWordStyle)
+        word.contentDescription = resources.getString(R.string.spoken_empty_suggestion)
+        word.setOnClickListener(this)
+        word.setOnLongClickListener(this)
+        colors.setBackground(word, ColorType.STRIP_BACKGROUND)
+        wordViews.add(word)
+        val divider = inflater.inflate(R.layout.suggestion_divider, null)
+        dividerViews.add(divider)
+        val info = TextView(context, null, R.attr.suggestionWordStyle)
+        info.setTextColor(colors.get(ColorType.KEY_TEXT))
+        info.setTextSize(TypedValue.COMPLEX_UNIT_DIP, DEBUG_INFO_TEXT_SIZE_IN_DIP)
+        debugInfoViews.add(info)
 
         DEBUG_SUGGESTIONS = context.prefs().getBoolean(DebugSettings.PREF_SHOW_SUGGESTION_INFOS, Defaults.PREF_SHOW_SUGGESTION_INFOS)
     }
@@ -168,8 +164,6 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
     }
 
     private lateinit var listener: Listener
-    private var suggestedWords = SuggestedWords.getEmptyInstance()
-    private var startIndexOfMoreSuggestions = 0
     private var isExternalSuggestionVisible = false // Required to disable the more suggestions if other suggestions are visible
     private val layoutHelper = SuggestionStripLayoutHelper(context, attrs, defStyle, wordViews, dividerViews, debugInfoViews)
 

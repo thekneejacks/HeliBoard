@@ -65,7 +65,6 @@ import helium314.keyboard.keyboard.MainKeyboardView;
 import helium314.keyboard.keyboard.emoji.EmojiPalettesView;
 import helium314.keyboard.keyboard.internal.KeyboardIconsSet;
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
-import helium314.keyboard.latin.SuggestedWords.SuggestedWordInfo;
 import helium314.keyboard.latin.common.ColorType;
 import helium314.keyboard.latin.common.Constants;
 import helium314.keyboard.latin.common.CoordinateUtils;
@@ -1522,15 +1521,7 @@ public class LatinIME extends InputMethodService implements
 
     // Called from {@link SuggestionStripView} through the {@link SuggestionStripView#Listener}
     // interface
-    @Override
-    public void pickSuggestionManually(final SuggestedWordInfo suggestionInfo) {
-        final InputTransaction completeInputTransaction = mInputLogic.onPickSuggestionManually(
-                mSettings.getCurrent(), suggestionInfo,
-                mKeyboardSwitcher.getKeyboardCapsMode(),
-                mKeyboardSwitcher.getCurrentKeyboardScript(),
-                mHandler);
-        updateStateAfterInputTransaction(completeInputTransaction);
-    }
+
 
     /**
      *  Checks if a recent clipboard suggestion is available. If available, it is set in suggestion strip.
