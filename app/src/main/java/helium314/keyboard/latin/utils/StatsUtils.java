@@ -8,9 +8,7 @@ package helium314.keyboard.latin.utils;
 
 import android.view.inputmethod.InputMethodSubtype;
 
-import helium314.keyboard.latin.DictionaryFacilitator;
 import helium314.keyboard.latin.RichInputMethodManager;
-import helium314.keyboard.latin.SuggestedWords;
 import helium314.keyboard.latin.settings.SettingsValues;
 
 @SuppressWarnings("unused")
@@ -24,10 +22,6 @@ public final class StatsUtils {
             RichInputMethodManager richImm) {
     }
 
-    public static void onPickSuggestionManually(final SuggestedWords suggestedWords,
-            final SuggestedWords.SuggestedWordInfo suggestionInfo,
-            final DictionaryFacilitator dictionaryFacilitator) {
-    }
 
     public static void onBackspaceWordDelete(int wordLength) {
     }
@@ -57,11 +51,6 @@ public final class StatsUtils {
     }
 
     public static void onStartInputView(int inputType, int displayOrientation, boolean restarting) {
-    }
-
-    public static void onAutoCorrection(final String typedWord, final String autoCorrectionWord,
-            final boolean isBatchInput, final DictionaryFacilitator dictionaryFacilitator,
-            final String prevWordsContext) {
     }
 
     public static void onWordCommitUserTyped(final String commitWord, final boolean isBatchMode) {

@@ -13,7 +13,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.edit
 import helium314.keyboard.keyboard.KeyboardSwitcher
 import helium314.keyboard.latin.BuildConfig
-import helium314.keyboard.latin.DictionaryFacilitator
 import helium314.keyboard.latin.R
 import helium314.keyboard.latin.settings.DebugSettings
 import helium314.keyboard.latin.settings.Defaults
@@ -39,7 +38,7 @@ fun DebugScreen(
         DebugSettings.PREF_FORCE_NON_DISTINCT_MULTITOUCH,
         DebugSettings.PREF_SLIDING_KEY_INPUT_PREVIEW,
         R.string.prefs_dump_dynamic_dicts
-    ) + DictionaryFacilitator.DYNAMIC_DICTIONARY_TYPES.map { DebugSettings.PREF_KEY_DUMP_DICT_PREFIX + it }
+    )
     SearchSettingsScreen(
         onClickBack = {
             if (needsRestart) {

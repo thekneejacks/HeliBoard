@@ -11,8 +11,6 @@ import android.view.inputmethod.EditorInfo;
 import java.util.Locale;
 
 import helium314.keyboard.keyboard.Keyboard;
-import helium314.keyboard.latin.DictionaryFacilitator;
-import helium314.keyboard.latin.SuggestedWords;
 import helium314.keyboard.latin.common.InputPointers;
 import helium314.keyboard.latin.inputlogic.PrivateCommandPerformer;
 
@@ -50,10 +48,5 @@ public class GestureConsumer {
     }
 
     public void onGestureCompleted(final InputPointers inputPointers) {
-    }
-
-    public void onImeSuggestionsProcessed(final SuggestedWords suggestedWords,
-            final int composingStart, final int composingLength,
-            final DictionaryFacilitator dictionaryFacilitator) {
     }
 }

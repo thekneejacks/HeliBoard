@@ -328,15 +328,13 @@ public final class EmojiPageKeyboardView extends KeyboardView implements
 
     private PopupKeysPanel showDescription(Key key) {
         mDescriptionView.setVisibility(GONE);
-        var description = mEmojiViewCallback.getDescription(key.getLabel());
-        if (description == null) {
-            return null;
-        }
+        return null;
 
-        mDescriptionView.setText(description);
+
+       /* mDescriptionView.setText(description);
         mDescriptionView.setKeyDrawParams(key, getKeyDrawParams());
         mDescriptionView.setVisibility(VISIBLE);
-        return mDescriptionView;
+        return mDescriptionView;*/
     }
 
     private void registerPress(final Key key) {
