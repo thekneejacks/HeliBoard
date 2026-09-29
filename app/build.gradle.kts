@@ -120,7 +120,7 @@ dependencies {
     implementation("androidx.core:core-ktx:1.17.0") // 1.18.0 requires minSdk 23
     //implementation("androidx.recyclerview:recyclerview:1.4.0")
     //implementation("androidx.autofill:autofill:1.3.0")
-    implementation("androidx.viewpager2:viewpager2:1.1.0")
+    //implementation("androidx.viewpager2:viewpager2:1.1.0")
 
     // kotlin
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
@@ -134,7 +134,7 @@ dependencies {
     "debugNoMinifyImplementation"("androidx.compose.ui:ui-tooling")
     implementation("androidx.navigation:navigation-compose:2.9.8")
     implementation("sh.calvin.reorderable:reorderable:3.1.0") // for easier re-ordering
-    implementation("com.github.skydoves:colorpicker-compose:1.1.3") // for user-defined colors, newer requires minSdk 23
+    //implementation("com.github.skydoves:colorpicker-compose:1.1.3") // for user-defined colors, newer requires minSdk 23
 
     // test
     testImplementation(kotlin("test"))
