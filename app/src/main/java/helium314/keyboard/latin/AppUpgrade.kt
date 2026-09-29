@@ -4,8 +4,6 @@ package helium314.keyboard.latin
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.core.content.edit
-import helium314.keyboard.compat.isDeviceLocked
-import helium314.keyboard.compat.isUserLocked
 import helium314.keyboard.keyboard.ColorSetting
 import helium314.keyboard.keyboard.KeyboardTheme
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode.checkAndConvertCode
@@ -15,7 +13,6 @@ import helium314.keyboard.latin.common.Constants.Subtype.ExtraValue
 import helium314.keyboard.latin.common.LocaleUtils.constructLocale
 import helium314.keyboard.latin.common.StringUtils
 import helium314.keyboard.latin.common.encodeBase36
-import helium314.keyboard.latin.database.ClipboardDao
 import helium314.keyboard.latin.settings.Defaults
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.settings.SettingsSubtype
@@ -26,7 +23,6 @@ import helium314.keyboard.latin.utils.JsonUtils
 import helium314.keyboard.latin.utils.LayoutType
 import helium314.keyboard.latin.utils.LayoutType.Companion.folder
 import helium314.keyboard.latin.utils.LayoutUtilsCustom
-import helium314.keyboard.latin.utils.Log
 import helium314.keyboard.latin.utils.ScriptUtils.SCRIPT_LATIN
 import helium314.keyboard.latin.utils.ScriptUtils.script
 import helium314.keyboard.latin.utils.SubtypeSettings
@@ -37,12 +33,9 @@ import helium314.keyboard.latin.utils.getResourceSubtypes
 import helium314.keyboard.latin.utils.locale
 import helium314.keyboard.latin.utils.mainLayoutNameOrQwerty
 import helium314.keyboard.latin.utils.prefs
-import helium314.keyboard.latin.utils.protectedPrefs
 import helium314.keyboard.latin.utils.upgradeToolbarPrefs
 import helium314.keyboard.latin.utils.writeCustomKeyCodes
 import helium314.keyboard.settings.screens.colorPrefsAndResIds
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 import java.io.File
 import java.util.EnumMap
 
@@ -51,27 +44,6 @@ fun checkVersionUpgrade(context: Context) {
     val oldVersion = prefs.getInt(Settings.PREF_VERSION_CODE, 0)
     if (oldVersion != BuildConfig.VERSION_CODE)
         AppUpgrade.onUpgrade(context)
-}
-
-fun transferOldPinnedClips(context: Context) {
-    @Serializable
-    data class OldClipboardHistoryEntry (
-        var timeStamp: Long,
-        val content: String,
-        var isPinned: Boolean = false
-    )
-    if (isUserLocked(context) || isDeviceLocked(context)) return
-    try {
-        val pinnedClipString = context.protectedPrefs().getString("pinned_clips", "")
-        if (pinnedClipString.isNullOrBlank())
-            return
-        val pinnedClips: List<OldClipboardHistoryEntry> = Json.decodeFromString(pinnedClipString)
-        val dao = ClipboardDao.getInstance(context) ?: return
-        pinnedClips.forEach { dao.addClip(it.timeStamp, it.isPinned, it.content) }
-        context.protectedPrefs().edit { remove("pinned_clips") }
-    } catch (e: Throwable) {
-        Log.e("upgrade", "error transferring old pinned clips", e)
-    }
 }
 
 private object AppUpgrade {

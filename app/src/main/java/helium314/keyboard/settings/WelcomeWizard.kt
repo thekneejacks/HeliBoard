@@ -231,7 +231,7 @@ fun WelcomeWizard(
 @Composable
 fun Step0(onClick: () -> Unit) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Image(painterResource(R.drawable.setup_welcome_image), null)
+        //Image(painterResource(R.drawable.setup_welcome_image), null)
         Row(Modifier.clickable { onClick() }
             .padding(top = 4.dp, start = 4.dp, end = 4.dp)
             //.background(color = MaterialTheme.colorScheme.primary)

@@ -22,7 +22,6 @@ import helium314.keyboard.latin.checkVersionUpgrade
 import helium314.keyboard.latin.common.FileUtils
 import helium314.keyboard.latin.database.Database
 import helium314.keyboard.latin.settings.Settings
-import helium314.keyboard.latin.transferOldPinnedClips
 import helium314.keyboard.latin.utils.DeviceProtectedUtils
 import helium314.keyboard.latin.utils.ExecutorUtils
 import helium314.keyboard.latin.utils.LayoutUtilsCustom
@@ -267,7 +266,7 @@ private fun restoreLauncher(onError: (String) -> Unit): ManagedActivityResultLau
         }
         wait.await()
         checkVersionUpgrade(ctx)
-        transferOldPinnedClips(ctx)
+        //transferOldPinnedClips(ctx)
         Settings.getInstance().startListener()
         SubtypeSettings.reloadEnabledSubtypes(ctx)
         LayoutUtilsCustom.onLayoutFileChanged()
