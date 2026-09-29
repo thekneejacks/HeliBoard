@@ -27,9 +27,7 @@ import android.widget.TextView
 import androidx.core.view.doOnNextLayout
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
-import helium314.keyboard.event.HapticEvent
 import helium314.keyboard.keyboard.internal.KeyboardIconsSet
-import helium314.keyboard.latin.AudioAndHapticFeedbackManager
 import helium314.keyboard.latin.R
 import helium314.keyboard.latin.common.ColorType
 import helium314.keyboard.latin.common.Colors
@@ -161,8 +159,6 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
     }
 
     private lateinit var listener: Listener
-    private var isExternalSuggestionVisible = false // Required to disable the more suggestions if other suggestions are visible
-    private val layoutHelper = SuggestionStripLayoutHelper(context, attrs, defStyle, wordViews, dividerViews, debugInfoViews)
 
 
     // public stuff
@@ -198,10 +194,6 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
         }
 
         toolbarExpandKey.scaleX = (if (toolbarVisible) -1f else 1f) * direction
-    }
-
-    fun setMoreSuggestionsHeight(remainingHeight: Int) {
-        layoutHelper.setMoreSuggestionsHeight(remainingHeight)
     }
 
 
@@ -259,7 +251,6 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
         if (!Settings.getValues().mQuickPinToolbarKeys || view.parent === pinnedKeys) {
             onLongClickToolbarKey(view) { code, isRepeat -> listener.onCodeInput(code, Constants.SUGGESTION_STRIP_COORDINATE, Constants.SUGGESTION_STRIP_COORDINATE, isRepeat) }
         } else if (view.parent === toolbar) {
-            AudioAndHapticFeedbackManager.getInstance().performHapticFeedback(this, HapticEvent.KEY_LONG_PRESS)
             val pinnedKeyView = pinnedKeys.findViewWithTag<View>(tag)
             if (pinnedKeyView == null) {
                 addKeyToPinnedKeys(tag)
@@ -314,7 +305,6 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
 
         toolbarExpandKey.setOnClickListener(if (!toolbarIsExpandable) null else this)
         pinnedKeys.visibility = suggestionsStrip.visibility
-        isExternalSuggestionVisible = false
     }
 
     private fun addKeyToPinnedKeys(pinnedKey: ToolbarKey) {

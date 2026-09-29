@@ -15,8 +15,6 @@ import helium314.keyboard.event.HardwareEventDecoder
 import helium314.keyboard.event.HardwareKeyboardEventDecoder
 import helium314.keyboard.keyboard.internal.LayoutDirective
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode
-import helium314.keyboard.latin.AudioAndHapticFeedbackManager
-import helium314.keyboard.latin.EmojiAltPhysicalKeyDetector
 import helium314.keyboard.latin.LatinIME
 import helium314.keyboard.latin.RichInputMethodManager
 import helium314.keyboard.latin.common.Constants
@@ -33,7 +31,6 @@ import kotlin.math.abs
 class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inputLogic: InputLogic) : KeyboardActionListener {
 
     private val connection = inputLogic.mConnection
-    private val emojiAltPhysicalKeyDetector by lazy { EmojiAltPhysicalKeyDetector(latinIME.resources) }
 
     // We expect to have only one decoder in almost all cases, hence the default capacity of 1.
     // If it turns out we need several, it will get grown seamlessly.
@@ -41,7 +38,6 @@ class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inp
 
     private val keyboardSwitcher = KeyboardSwitcher.getInstance()
     private val settings = Settings.getInstance()
-    private val audioAndHapticFeedbackManager = AudioAndHapticFeedbackManager.getInstance()
 
     // language slide state
     private var initialSubtype: InputMethodSubtype? = null
@@ -51,12 +47,11 @@ class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inp
         metaOnPressKey(primaryCode)
         keyboardSwitcher.onPressKey(primaryCode, pointerCount, latinIME.currentAutoCapsState, latinIME.currentRecapitalizeState)
         // we need to use LatinIME for handling of key-down audio and haptics
-        latinIME.hapticAndAudioFeedback(primaryCode, repeatCount, hapticEvent)
     }
 
     override fun onLongPressKey(primaryCode: Int) {
         metaOnLongPressKey(primaryCode)
-        performHapticFeedback(HapticEvent.KEY_LONG_PRESS)
+        //performHapticFeedback(HapticEvent.KEY_LONG_PRESS)
     }
 
     override fun onReleaseKey(primaryCode: Int, withSliding: Boolean) {
@@ -65,7 +60,7 @@ class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inp
     }
 
     override fun onKeyUp(keyCode: Int, keyEvent: KeyEvent): Boolean {
-        emojiAltPhysicalKeyDetector.onKeyUp(keyEvent)
+        //emojiAltPhysicalKeyDetector.onKeyUp(keyEvent)
         if (!ProductionFlags.IS_HARDWARE_KEYBOARD_SUPPORTED)
             return false
 
@@ -74,7 +69,7 @@ class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inp
     }
 
     override fun onKeyDown(keyCode: Int, keyEvent: KeyEvent): Boolean {
-        emojiAltPhysicalKeyDetector.onKeyDown(keyEvent)
+        //emojiAltPhysicalKeyDetector.onKeyDown(keyEvent)
         if (!ProductionFlags.IS_HARDWARE_KEYBOARD_SUPPORTED)
             return false
 
@@ -182,10 +177,6 @@ class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inp
             keyboardSwitcher.mainKeyboardView?.alpha = 1f
             true
         }
-        KeyboardActionListener.CustomAction.PERFORM_HAPTIC -> {
-            performHapticFeedback(HapticEvent.KEY_LONG_PRESS)
-            true
-        }
     }
 
     override fun onHorizontalSpaceSwipe(steps: Int): Boolean = when (Settings.getValues().mSpaceSwipeHorizontal) {
@@ -252,7 +243,7 @@ class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inp
         val actualSteps = actualSteps(steps)
         val start = connection.expectedSelectionStart + actualSteps
         if (start > end) return
-        gestureMoveBackHaptics()
+        // gestureMoveBackHaptics()
         connection.setSelection(start, end)
     }
 
@@ -303,10 +294,10 @@ class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inp
     private fun onMoveCursorVertically(steps: Int): Boolean {
         if (steps == 0) return false
         val code = if (steps < 0) {
-            gestureMoveBackHaptics()
+            //gestureMoveBackHaptics()
             KeyCode.ARROW_UP
         } else {
-            gestureMoveForwardHaptics()
+            //gestureMoveForwardHaptics()
             KeyCode.ARROW_DOWN
         }
         onCodeInput(code, Constants.NOT_A_COORDINATE, Constants.NOT_A_COORDINATE, false)
@@ -330,11 +321,11 @@ class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inp
                         Constants.NOT_A_COORDINATE, false)
                 }
                 if (text.isNotEmpty()) {
-                    gestureMoveBackHaptics()
+                    //gestureMoveBackHaptics()
                 }
                 return true
             }
-            gestureMoveBackHaptics()
+            //gestureMoveBackHaptics()
         } else {
             val text = connection.getTextAfterCursor(steps * 4, 0) ?: return false
             moveSteps = moveStepsToCharCount(text, steps)
@@ -346,11 +337,11 @@ class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inp
                         Constants.NOT_A_COORDINATE, false)
                 }
                 if (text.isNotEmpty()) {
-                    gestureMoveForwardHaptics(true)
+                    //gestureMoveForwardHaptics(true)
                 }
                 return true
             }
-            gestureMoveForwardHaptics(text.isNotEmpty())
+            //gestureMoveForwardHaptics(text.isNotEmpty())
         }
         inputLogic.setExpectCursorMove()
 
@@ -375,23 +366,6 @@ class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inp
         val newPosition = connection.expectedSelectionStart + moveSteps
         connection.setSelection(newPosition, newPosition)
         return true
-    }
-
-    private fun gestureMoveBackHaptics() {
-        if (connection.canDeleteCharacters()) {
-            performHapticFeedback(HapticEvent.GESTURE_MOVE)
-        }
-    }
-
-    // hasTextAfterCursor is used because text before the cursor is cached, going through the InputConnection can be slow
-    private fun gestureMoveForwardHaptics(hasTextAfterCursor: Boolean? = null) {
-        if (hasTextAfterCursor ?: connection.hasTextAfterCursor()) {
-            performHapticFeedback(HapticEvent.GESTURE_MOVE)
-        }
-    }
-
-    private fun performHapticFeedback(hapticEvent: HapticEvent) {
-        audioAndHapticFeedbackManager.performHapticFeedback(keyboardSwitcher.visibleKeyboardView, hapticEvent)
     }
 
     private fun getHardwareKeyEventDecoder(deviceId: Int): HardwareEventDecoder {

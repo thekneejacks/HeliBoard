@@ -29,7 +29,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import helium314.keyboard.compat.ConfigurationCompatKt;
 import helium314.keyboard.keyboard.KeyboardActionListener;
-import helium314.keyboard.latin.AudioAndHapticFeedbackManager;
 import helium314.keyboard.latin.InputAttributes;
 import helium314.keyboard.latin.R;
 import helium314.keyboard.latin.RichInputMethodManager;
@@ -311,15 +310,6 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     // TODO: Remove this method and add proxy method to SettingsValues.
     public SettingsValues getCurrent() {
         return mSettingsValues;
-    }
-
-    public static int readScreenMetrics(final Resources res) {
-        return res.getInteger(R.integer.config_screen_metrics);
-    }
-
-    public static boolean readVibrationEnabled(final SharedPreferences prefs) {
-        return prefs.getBoolean(PREF_VIBRATE_ON, Defaults.PREF_VIBRATE_ON)
-                && AudioAndHapticFeedbackManager.getInstance().hasVibrator();
     }
 
     public void toggleAutoCorrect() {

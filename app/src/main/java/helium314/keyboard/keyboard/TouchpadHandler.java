@@ -43,7 +43,7 @@ public class TouchpadHandler {
     public void disableTouchpadMode() {
         if (!mInTouchpadMode) return;
         stopEdgeScrolling();
-        stopHapticRunnable();
+        //stopHapticRunnable();
         mInTouchpadMode = false;
         sTouchpadModeActive = false;
         mListener.onCustomRequest(KeyboardActionListener.CustomAction.TOUCHPAD_OFF);
@@ -62,8 +62,8 @@ public class TouchpadHandler {
             mTouchpadLastY = y;
             mTouchpadActivationTime = SystemClock.elapsedRealtime();
             mListener.onCustomRequest(KeyboardActionListener.CustomAction.TOUCHPAD_ON);
-            SettingsValues sv = Settings.getValues();
-            mHandler.postDelayed(mHapticRunnable, sv.mKeyLongpressTimeout);
+            //SettingsValues sv = Settings.getValues();
+            //mHandler.postDelayed(mHapticRunnable, sv.mKeyLongpressTimeout);
             return;
         }
 
@@ -129,17 +129,6 @@ public class TouchpadHandler {
         }
     }
 
-    private final Runnable mHapticRunnable = () -> {
-        if (!mHasVibrated) {
-            mListener.onCustomRequest(KeyboardActionListener.CustomAction.PERFORM_HAPTIC);
-            mHasVibrated = true;
-        }
-    };
-
-    private void stopHapticRunnable() {
-        mHasVibrated = false;
-        mHandler.removeCallbacks(mHapticRunnable);
-    }
 
     private final Runnable mScrollRunnable = new Runnable() {
         @Override

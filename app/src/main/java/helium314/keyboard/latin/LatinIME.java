@@ -16,9 +16,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.inputmethodservice.InputMethodService;
-import android.media.AudioManager;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Debug;
 import android.os.Message;
 import android.os.Process;
@@ -29,14 +27,10 @@ import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.CompletionInfo;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InlineSuggestion;
-import android.view.inputmethod.InlineSuggestionsRequest;
-import android.view.inputmethod.InlineSuggestionsResponse;
 import android.view.inputmethod.InputMethodSubtype;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -444,7 +438,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
         mSettings.startListener();
         KeyboardIconsSet.Companion.getInstance().loadIcons(this);
         mRichImm = RichInputMethodManager.getInstance();
-        AudioAndHapticFeedbackManager.init(this);
         //AccessibilityUtils.init(this);
         mDisplayContext = KtxKt.getDisplayContext(this);
         KeyboardSwitcher.init(this);
@@ -457,15 +450,15 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
             foldableObserver = new FoldableUtils.FoldableObserver(this);
 
         // Register to receive ringer mode change.
-        final IntentFilter filter = new IntentFilter();
+        /*final IntentFilter filter = new IntentFilter();
         filter.addAction(AudioManager.RINGER_MODE_CHANGED_ACTION);
-        registerReceiver(mRingerModeChangeReceiver, filter);
+        registerReceiver(mRingerModeChangeReceiver, filter);*/
 
         // Register to receive installation and removal of a dictionary pack.
-        final IntentFilter packageFilter = new IntentFilter();
+        /*final IntentFilter packageFilter = new IntentFilter();
         packageFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
         packageFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
-        packageFilter.addDataScheme(SCHEME_PACKAGE);
+        packageFilter.addDataScheme(SCHEME_PACKAGE);*/
 
 
         final IntentFilter restartAfterUnlockFilter = new IntentFilter();
@@ -482,8 +475,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
         final InputAttributes inputAttributes = new InputAttributes(
                 editorInfo, isFullscreenMode(), getPackageName());
         mSettings.loadSettings(this, locale, inputAttributes);
-        final SettingsValues currentSettingsValues = mSettings.getCurrent();
-        AudioAndHapticFeedbackManager.getInstance().onSettingsChanged(currentSettingsValues);
         // This method is called on startup and language switch, before the new layout has
         // been displayed. Opening dictionaries never affects responsivity as dictionaries are
         // asynchronously loaded.
@@ -505,7 +496,7 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
         mSettings.onDestroy();
         if (foldableObserver != null)
             foldableObserver.unregister(this);
-        unregisterReceiver(mRingerModeChangeReceiver);
+        //unregisterReceiver(mRingerModeChangeReceiver);
         unregisterReceiver(mRestartAfterDeviceUnlockReceiver);
         super.onDestroy();
         mHandler.removeCallbacksAndMessages(null);
@@ -982,9 +973,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
         if (Settings.getValues().mIsFloatingKeyboard)
             visibleTopY = getResources().getDisplayMetrics().heightPixels;
 
-        if (hasSuggestionStripView()) {
-            mSuggestionStripView.setMoreSuggestionsHeight(visibleTopY);
-        }
 
         // Need to set expanded touchable region only if a keyboard view is being shown.
         if (visibleKeyboardView.isShown()) {
@@ -1250,38 +1238,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
         }
     }
 
-    public void hapticAndAudioFeedback(final int code, final int repeatCount,
-                                       final HapticEvent hapticEvent) {
-        final MainKeyboardView keyboardView = mKeyboardSwitcher.getMainKeyboardView();
-        if (keyboardView != null && keyboardView.isInDraggingFinger()) {
-            // No need to feedback while finger is dragging.
-            return;
-        }
-        if (repeatCount > 0) {
-            // No need to feedback when repeat delete/cursor keys will have no effect.
-            switch (code) {
-            case KeyCode.DELETE, KeyCode.ARROW_LEFT, KeyCode.ARROW_UP, KeyCode.WORD_LEFT, KeyCode.PAGE_UP:
-                if (!mInputLogic.mConnection.canDeleteCharacters())
-                    return;
-                break;
-            case KeyCode.ARROW_RIGHT, KeyCode.ARROW_DOWN, KeyCode.WORD_RIGHT, KeyCode.PAGE_DOWN:
-                if (!mInputLogic.mConnection.hasTextAfterCursor())
-                    return;
-                break;
-            }
-            // TODO: Use event time that the last feedback has been generated instead of relying on
-            // a repeat count to thin out feedback.
-            if (repeatCount % PERIOD_FOR_AUDIO_AND_HAPTIC_FEEDBACK_IN_KEY_REPEAT == 0) {
-                return;
-            }
-        }
-        final AudioAndHapticFeedbackManager feedbackManager =
-                AudioAndHapticFeedbackManager.getInstance();
-
-        feedbackManager.performHapticFeedback(keyboardView, hapticEvent);
-        feedbackManager.performAudioFeedback(code, hapticEvent);
-    }
-
     // Hooks for hardware keyboard
     @Override
     public boolean onKeyDown(final int keyCode, final KeyEvent keyEvent) {
@@ -1301,25 +1257,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
     // related to handling of hardware key events that we may want to implement in the future:
     // boolean onKeyLongPress(final int keyCode, final KeyEvent event);
     // boolean onKeyMultiple(final int keyCode, final int count, final KeyEvent event);
-
-    // receive ringer mode change.
-    private final BroadcastReceiver mRingerModeChangeReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(final Context context, final Intent intent) {
-            final String action = intent.getAction();
-            if (AudioManager.RINGER_MODE_CHANGED_ACTION.equals(action)) {
-                boolean dnd;
-                try {
-                    dnd = android.provider.Settings.Global.getInt(context.getContentResolver(), "zen_mode") != 0;
-                } catch (android.provider.Settings.SettingNotFoundException e) {
-                    dnd = false;
-                    Log.w(TAG, "zen_mode setting not found, assuming disabled");
-                }
-                Log.i(TAG, "ringer mode changed, zen_mode on: "+dnd);
-                AudioAndHapticFeedbackManager.getInstance().onRingerModeChanged(dnd);
-            }
-        }
-    };
 
     public ClipboardHistoryManager getClipboardHistoryManager() {
         return mClipboardHistoryManager;

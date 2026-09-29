@@ -25,9 +25,6 @@ object LayoutUtils {
         return layouts
     }
 
-    fun getLMainLayoutsForLocales(locales: List<Locale>, context: Context): Collection<String> =
-        locales.flatMapTo(HashSet()) { getAvailableLayouts(LayoutType.MAIN, context, it) }.sorted()
-
     /** gets content for built-in (non-custom) layout [layoutName], with fallback to qwerty */
     fun getContent(layoutType: LayoutType, layoutName: String, context: Context): String {
         val layouts = context.assets.list(layoutType.folder)!!

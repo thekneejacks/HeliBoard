@@ -9,10 +9,8 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import androidx.core.content.edit
 import androidx.core.view.forEach
-import helium314.keyboard.event.HapticEvent
 import helium314.keyboard.keyboard.internal.KeyboardIconsSet
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode
-import helium314.keyboard.latin.AudioAndHapticFeedbackManager
 import helium314.keyboard.latin.R
 import helium314.keyboard.latin.common.Constants.Separators
 import helium314.keyboard.latin.settings.Defaults
@@ -280,7 +278,7 @@ fun clearCustomToolbarKeyCodes() {
 }
 
 fun onClickToolbarKey(view: View, onCodeInput: (Int) -> Unit) {
-    AudioAndHapticFeedbackManager.getInstance().performHapticAndAudioFeedback(KeyCode.NOT_SPECIFIED, view, HapticEvent.KEY_PRESS)
+    //AudioAndHapticFeedbackManager.getInstance().performHapticAndAudioFeedback(KeyCode.NOT_SPECIFIED, view, HapticEvent.KEY_PRESS)
     val code = getCodeForToolbarKey(view.tag as ToolbarKey)
     if (code != KeyCode.UNSPECIFIED) {
         onCodeInput(code)
@@ -288,7 +286,7 @@ fun onClickToolbarKey(view: View, onCodeInput: (Int) -> Unit) {
 }
 
 fun onLongClickToolbarKey(view: View, onCodeInput: (Int, Boolean) -> Unit) {
-    AudioAndHapticFeedbackManager.getInstance().performHapticAndAudioFeedback(KeyCode.NOT_SPECIFIED, view, HapticEvent.KEY_LONG_PRESS)
+    //AudioAndHapticFeedbackManager.getInstance().performHapticAndAudioFeedback(KeyCode.NOT_SPECIFIED, view, HapticEvent.KEY_LONG_PRESS)
     val longClickCode = getCodeForToolbarKeyLongClick(view.tag as ToolbarKey)
     if (longClickCode == KeyCode.KEY_REPEAT) {
         onClickToolbarKey(view) { onCodeInput(it, false) }

@@ -62,13 +62,6 @@ fun hasLetterBeforeLastSpaceBeforeCursor(text: CharSequence): Boolean {
     return false
 }
 
-/** get the complete emoji at end of [text], considering that emojis can be joined with ZWJ resulting in different emojis */
-// todo: this is now only used for tests, do we actually need it?
-fun getFullEmojiAtEnd(text: CharSequence): String {
-    val lastGrapheme = text.toString().lastGrapheme
-    return if (isEmoji(lastGrapheme)) lastGrapheme else ""
-}
-
 /**
  *  Returns whether the [text] ends with word codepoint, ignoring all word connectors.
  *  If the [text] is empty (after ignoring word connectors), the method returns false.

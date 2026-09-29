@@ -15,9 +15,4 @@ object ProductionFlags {
     // physical layout ignored for uppercase letters only (?) https://github.com/HeliBorg/HeliBoard/issues/2030
     const val IS_HARDWARE_KEYBOARD_SUPPORTED = false
 
-    /**
-     * Include all suggestions from all dictionaries in
-     * [helium314.keyboard.latin.SuggestedWords.mRawSuggestions].
-     */
-    const val INCLUDE_RAW_SUGGESTIONS = false
 }

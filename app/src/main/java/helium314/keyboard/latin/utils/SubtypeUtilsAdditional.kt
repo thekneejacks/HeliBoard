@@ -48,13 +48,6 @@ object SubtypeUtilsAdditional {
         return builder.build()
     }
 
-    fun createDummyAdditionalSubtype(locale: Locale, mainLayoutName: String) =
-        createAdditionalSubtype(locale, "${ExtraValue.KEYBOARD_LAYOUT_SET}=MAIN${Separators.KV}$mainLayoutName", false, false)
-
-    // only used in tests
-    fun createEmojiCapableAdditionalSubtype(locale: Locale, mainLayoutName: String, asciiCapable: Boolean) =
-        createAdditionalSubtype(locale, "${ExtraValue.KEYBOARD_LAYOUT_SET}=MAIN${Separators.KV}$mainLayoutName", asciiCapable, true)
-
     /** creates a subtype with every layout being the default for its type */
     fun createDefaultSubtype(locale: Locale): InputMethodSubtype {
         val layouts = LayoutType.entries.associateWithTo(LayoutType.getLayoutMap(null)) { it.default }

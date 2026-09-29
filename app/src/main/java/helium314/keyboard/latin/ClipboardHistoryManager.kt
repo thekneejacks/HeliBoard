@@ -9,9 +9,7 @@ import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.text.TextUtils
-import android.view.View
 import androidx.core.view.inputmethod.InputContentInfoCompat
-import androidx.core.view.isGone
 import helium314.keyboard.compat.ClipboardManagerCompat
 import helium314.keyboard.event.Event
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode
@@ -19,7 +17,6 @@ import helium314.keyboard.latin.common.Constants
 import helium314.keyboard.latin.database.ClipboardDao
 import helium314.keyboard.latin.settings.Defaults
 import helium314.keyboard.latin.settings.Settings
-import helium314.keyboard.latin.utils.InputTypeUtils
 import helium314.keyboard.latin.utils.Log
 import helium314.keyboard.latin.utils.prefs
 import kotlinx.coroutines.GlobalScope
@@ -31,7 +28,6 @@ class ClipboardHistoryManager(
 ) : ClipboardManager.OnPrimaryClipChangedListener {
 
     private lateinit var clipboardManager: ClipboardManager
-    private var clipboardSuggestionView: View? = null
     private var clipboardDao: ClipboardDao? = null
     private var tempPrimaryClip = false
 
@@ -124,16 +120,6 @@ class ClipboardHistoryManager(
                     ))
             }
         }
-    }
-
-    private fun removeClipboardSuggestion() {
-        dontShowCurrentSuggestion = true
-        val csv = clipboardSuggestionView ?: return
-        if (csv.parent != null && !csv.isGone) {
-            // clipboard view is shown -> )
-            latinIME.mHandler.postResumeSuggestions(false)
-        }
-        csv.isGone = true
     }
 
     companion object {

@@ -11,7 +11,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import helium314.keyboard.keyboard.KeyboardLayoutSet
 import helium314.keyboard.keyboard.KeyboardSwitcher
-import helium314.keyboard.latin.AudioAndHapticFeedbackManager
 import helium314.keyboard.latin.R
 import helium314.keyboard.latin.database.ClipboardDao
 import helium314.keyboard.latin.settings.Defaults
@@ -51,8 +50,6 @@ fun PreferencesScreen(
         Settings.PREF_SHOW_POPUP_HINTS,
         Settings.PREF_SHOW_TLD_POPUP_KEYS,
         Settings.PREF_POPUP_ON,
-        if (AudioAndHapticFeedbackManager.getInstance().hasVibrator())
-            Settings.PREF_VIBRATE_ON else null,
         if (prefs.getBoolean(Settings.PREF_VIBRATE_ON, Defaults.PREF_VIBRATE_ON))
             Settings.PREF_VIBRATION_DURATION_SETTINGS else null,
         if (prefs.getBoolean(Settings.PREF_VIBRATE_ON, Defaults.PREF_VIBRATE_ON))
@@ -204,19 +201,6 @@ fun createPreferencesSettings(context: Context) = listOf(
             },
             range = 1f..1001f,
         ) { ClipboardDao.getInstance(ctx)?.cleanupFiles(ctx.prefs()) }
-    },
-    Setting(context, Settings.PREF_VIBRATION_DURATION_SETTINGS, R.string.prefs_keypress_vibration_duration_settings) { setting ->
-        SliderPreference(
-            name = setting.title,
-            key = setting.key,
-            default = Defaults.PREF_VIBRATION_DURATION_SETTINGS,
-            description = {
-                if (it < 0) stringResource(R.string.settings_system_default)
-                else stringResource(R.string.abbreviation_unit_milliseconds, it.toString())
-            },
-            range = -1f..100f,
-            onValueChanged = { it?.let { AudioAndHapticFeedbackManager.getInstance().vibrate(it.toLong()) } }
-        )
     },
     Setting(context, Settings.PREF_KEYPRESS_SOUND_VOLUME, R.string.prefs_keypress_sound_volume_settings) { setting ->
         val audioManager = LocalContext.current.getSystemService(Context.AUDIO_SERVICE) as AudioManager

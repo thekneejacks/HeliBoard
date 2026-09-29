@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import helium314.keyboard.event.CombinerChain;
 import helium314.keyboard.event.Event;
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
-import helium314.keyboard.latin.common.ComposedData;
 import helium314.keyboard.latin.common.CoordinateUtils;
 import helium314.keyboard.latin.common.InputPointers;
 import helium314.keyboard.latin.common.StringUtils;
@@ -91,10 +90,6 @@ public final class WordComposer {
         mIsOnlyFirstCharCapitalized = other.mIsOnlyFirstCharCapitalized;
     }
 
-    public ComposedData getComposedDataSnapshot() {
-        return new ComposedData(getInputPointers(), isBatchMode(), mTypedWordCache.toString());
-    }
-
     /**
      * Restart the combiners, possibly with a new spec.
      * @param combiningSpec The spec string for combining. This is found in the extra value.
@@ -147,10 +142,6 @@ public final class WordComposer {
 
     public boolean isComposingWord() {
         return size() > 0;
-    }
-
-    public InputPointers getInputPointers() {
-        return mInputPointers;
     }
 
     /**
