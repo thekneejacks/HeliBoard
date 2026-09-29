@@ -122,6 +122,11 @@ class ClipboardHistoryManager(
         }
     }
 
+    fun clearHistory() {
+        clipboardDao?.clearNonPinned()
+        ClipboardManagerCompat.clearPrimaryClip(clipboardManager)
+    }
+
     companion object {
         private val TAG = "ClipboardHistoryManager"
 
