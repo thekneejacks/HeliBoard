@@ -19,9 +19,6 @@
 #include "jni_common.h"
 
 #include "com_android_inputmethod_keyboard_ProximityInfo.h"
-#include "com_android_inputmethod_latin_BinaryDictionary.h"
-#include "com_android_inputmethod_latin_BinaryDictionaryUtils.h"
-#include "com_android_inputmethod_latin_DicTraverseSession.h"
 #include "defines.h"
 
 /*
@@ -37,18 +34,6 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved) {
     ASSERT(env);
     if (!env) {
         AKLOGE("ERROR: JNIEnv is invalid");
-        return -1;
-    }
-    if (!latinime::register_BinaryDictionary(env)) {
-        AKLOGE("ERROR: BinaryDictionary native registration failed");
-        return -1;
-    }
-    if (!latinime::register_BinaryDictionaryUtils(env)) {
-        AKLOGE("ERROR: BinaryDictionaryUtils native registration failed");
-        return -1;
-    }
-    if (!latinime::register_DicTraverseSession(env)) {
-        AKLOGE("ERROR: DicTraverseSession native registration failed");
         return -1;
     }
     if (!latinime::register_ProximityInfo(env)) {
