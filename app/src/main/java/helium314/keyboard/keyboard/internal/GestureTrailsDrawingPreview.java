@@ -115,33 +115,6 @@ public final class GestureTrailsDrawingPreview extends AbstractDrawingPreview im
     }
 
     /**
-     * Draws the preview
-     * @param canvas The canvas where the preview is drawn.
-     */
-    @Override
-    public void drawPreview(@NonNull final Canvas canvas) {
-        if (!isPreviewEnabled()) {
-            return;
-        }
-        mayAllocateOffscreenBuffer();
-        // Draw gesture trails to offscreen buffer.
-        final boolean needsUpdatingGestureTrail = drawGestureTrails(
-                mOffscreenCanvas, mGesturePaint, mDirtyRect);
-        if (needsUpdatingGestureTrail) {
-            mDrawingHandler.removeCallbacks(this);
-            mDrawingHandler.postDelayed(this, mDrawingParams.mUpdateInterval);
-        }
-        // Transfer offscreen buffer to screen.
-        if (!mDirtyRect.isEmpty()) {
-            mOffscreenSrcRect.set(mDirtyRect);
-            mOffscreenSrcRect.offset(0, mOffscreenOffsetY);
-            canvas.drawBitmap(mOffscreenBuffer, mOffscreenSrcRect, mDirtyRect, null);
-            // Note: Defer clearing the dirty rectangle here because we will get cleared
-            // rectangle on the canvas.
-        }
-    }
-
-    /**
      * Set the position of the preview.
      * @param tracker The new location of the preview is based on the points in PointerTracker.
      */

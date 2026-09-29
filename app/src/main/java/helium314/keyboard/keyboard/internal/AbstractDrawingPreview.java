@@ -6,7 +6,6 @@
 
 package helium314.keyboard.keyboard.internal;
 
-import android.graphics.Canvas;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -59,12 +58,6 @@ public abstract class AbstractDrawingPreview {
     }
 
     public abstract void onDeallocateMemory();
-
-    /**
-     * Draws the preview
-     * @param canvas The canvas where the preview is drawn.
-     */
-    public abstract void drawPreview(@NonNull final Canvas canvas);
 
     /**
      * Set the position of the preview.

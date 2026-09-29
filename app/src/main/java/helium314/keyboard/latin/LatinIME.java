@@ -167,21 +167,13 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
         private static final int MSG_UPDATE_SHIFT_STATE = 0;
         private static final int MSG_PENDING_IMS_CALLBACK = 1;
         private static final int MSG_UPDATE_SUGGESTION_STRIP = 2;
-        private static final int MSG_SHOW_GESTURE_PREVIEW_AND_SET_SUGGESTIONS = 3;
         private static final int MSG_RESUME_SUGGESTIONS = 4;
         private static final int MSG_REOPEN_DICTIONARIES = 5;
-        private static final int MSG_UPDATE_TAIL_BATCH_INPUT_COMPLETED = 6;
         private static final int MSG_RESET_CACHES = 7;
         private static final int MSG_WAIT_FOR_DICTIONARY_LOAD = 8;
         private static final int MSG_DEALLOCATE_MEMORY = 9;
         private static final int MSG_SWITCH_LANGUAGE_AUTOMATICALLY = 10;
-        // Update this when adding new messages
-        private static final int MSG_LAST = MSG_SWITCH_LANGUAGE_AUTOMATICALLY;
 
-        private static final int ARG1_NOT_GESTURE_INPUT = 0;
-        private static final int ARG1_DISMISS_GESTURE_FLOATING_PREVIEW_TEXT = 1;
-        private static final int ARG1_SHOW_GESTURE_FLOATING_PREVIEW_TEXT = 2;
-        private static final int ARG2_UNUSED = 0;
         private static final int ARG1_TRUE = 1;
 
         private int mDelayInMillisecondsToUpdateSuggestions;
@@ -213,15 +205,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
                 case MSG_UPDATE_SHIFT_STATE:
                     latinIme.mKeyboardSwitcher.updateShiftState(latinIme.getCurrentAutoCapsState(),
                             latinIme.getCurrentRecapitalizeState());
-                    break;
-                case MSG_SHOW_GESTURE_PREVIEW_AND_SET_SUGGESTIONS:
-                    if (msg.arg1 == ARG1_NOT_GESTURE_INPUT) {
-                        //final SuggestedWords suggestedWords = (SuggestedWords) msg.obj;
-                        //latinIme.setSuggestedWords(suggestedWords);
-                    } else {
-                        latinIme.showGesturePreviewAndSetSuggestions((SuggestedWords) msg.obj,
-                                msg.arg1 == ARG1_DISMISS_GESTURE_FLOATING_PREVIEW_TEXT);
-                    }
                     break;
                 case MSG_RESET_CACHES:
                     final SettingsValues settingsValues = latinIme.mSettings.getCurrent();
@@ -328,32 +311,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
 
         public boolean hasPendingDeallocateMemory() {
             return hasMessages(MSG_DEALLOCATE_MEMORY);
-        }
-
-        public void removeAllMessages() {
-            for (int i = 0; i <= MSG_LAST; ++i) {
-                removeMessages(i);
-            }
-        }
-
-        public void showGesturePreviewAndSetSuggestions(final SuggestedWords suggestedWords,
-                                                        final boolean dismissGestureFloatingPreviewText) {
-            removeMessages(MSG_SHOW_GESTURE_PREVIEW_AND_SET_SUGGESTIONS);
-            final int arg1 = dismissGestureFloatingPreviewText
-                    ? ARG1_DISMISS_GESTURE_FLOATING_PREVIEW_TEXT
-                    : ARG1_SHOW_GESTURE_FLOATING_PREVIEW_TEXT;
-            obtainMessage(MSG_SHOW_GESTURE_PREVIEW_AND_SET_SUGGESTIONS, arg1,
-                    ARG2_UNUSED, suggestedWords).sendToTarget();
-        }
-
-        public void setSuggestions(final SuggestedWords suggestedWords) {
-            removeMessages(MSG_SHOW_GESTURE_PREVIEW_AND_SET_SUGGESTIONS);
-            obtainMessage(MSG_SHOW_GESTURE_PREVIEW_AND_SET_SUGGESTIONS,
-                    ARG1_NOT_GESTURE_INPUT, ARG2_UNUSED, suggestedWords).sendToTarget();
-        }
-
-        public void showTailBatchInputResult(final SuggestedWords suggestedWords) {
-            obtainMessage(MSG_UPDATE_TAIL_BATCH_INPUT_COMPLETED, suggestedWords).sendToTarget();
         }
 
         public void postSwitchLanguage(final InputMethodSubtype subtype) {
@@ -1288,64 +1245,9 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
         mGestureConsumer.onGestureCanceled();
     }
 
-    /**
-     * To be called after the InputLogic has gotten a chance to act on the suggested words by the
-     * IME for the full gesture, possibly updating the TextView to reflect the first suggestion.
-     * <p>
-     * This method must be run on the UI Thread.
-     * @param suggestedWords suggested words by the IME for the full gesture.
-     */
-    public void onTailBatchInputResultShown(final SuggestedWords suggestedWords) {
-        /*mGestureConsumer.onImeSuggestionsProcessed(suggestedWords,
-                mInputLogic.getComposingStart(), mInputLogic.getComposingLength(),
-                mDictionaryFacilitator);*/
-    }
-
-    // This method must run on the UI Thread.
-    private void showGesturePreviewAndSetSuggestions(@NonNull final SuggestedWords suggestedWords,
-                                              final boolean dismissGestureFloatingPreviewText) {
-        final MainKeyboardView mainKeyboardView = mKeyboardSwitcher.getMainKeyboardView();
-        mainKeyboardView.showGestureFloatingPreviewText(suggestedWords,
-                dismissGestureFloatingPreviewText /* dismissDelayed */);
-    }
-
     public boolean hasSuggestionStripView() {
         return null != mSuggestionStripView;
     }
-
-    private void setSuggestedWords(final SuggestedWords suggestedWords) {
-        /*final SettingsValues currentSettingsValues = mSettings.getCurrent();
-        //mInputLogic.setSuggestedWords(suggestedWords);
-        // TODO: Modify this when we support suggestions with hard keyboard
-        if (!hasSuggestionStripView()) {
-            return;
-        }
-        if (!onEvaluateInputViewShown()) {
-            return;
-        }
-
-        final boolean isEmptyApplicationSpecifiedCompletions =
-                currentSettingsValues.mInputAttributes.mApplicationSpecifiedCompletionOn
-                        && suggestedWords.isEmpty();
-        final boolean noSuggestionsFromDictionaries = suggestedWords.isEmpty()
-                || suggestedWords.isPunctuationSuggestions()
-                || isEmptyApplicationSpecifiedCompletions;
-
-        if (currentSettingsValues.mSuggestionsEnabled
-                || currentSettingsValues.mInputAttributes.mApplicationSpecifiedCompletionOn
-                // We should clear the contextual strip if there is no suggestion from dictionaries.
-                || noSuggestionsFromDictionaries) {
-            mSuggestionStripView.setSuggestions(suggestedWords,
-                    mRichImm.getCurrentSubtype().isRtlSubtype());
-            // Auto hide the toolbar if dictionary suggestions are available
-            if (currentSettingsValues.mAutoHideToolbar && !noSuggestionsFromDictionaries) {
-                mSuggestionStripView.setToolbarVisibility(false);
-            }
-        }*/
-        return;
-    }
-
-
 
 
     // Called from {@link SuggestionStripView} through the {@link SuggestionStripView#Listener}
@@ -1398,18 +1300,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
                     .updateShiftState(getCurrentAutoCapsState(), getCurrentRecapitalizeState());
             default -> {
             } // SHIFT_NO_UPDATE
-        }
-        if (inputTransaction.requiresUpdateSuggestions()) {
-            final int inputStyle;
-            if (inputTransaction.getEvent().isSuggestionStripPress()) {
-                // Suggestion strip press: no input.
-                inputStyle = SuggestedWords.INPUT_STYLE_NONE;
-            } else if (inputTransaction.getEvent().isGesture()) {
-                inputStyle = SuggestedWords.INPUT_STYLE_TAIL_BATCH;
-            } else {
-                inputStyle = SuggestedWords.INPUT_STYLE_TYPING;
-            }
-            mHandler.postUpdateSuggestionStrip(inputStyle);
         }
         if (inputTransaction.didAffectContents()) {
             mSubtypeState.setCurrentSubtypeHasBeenUsed();

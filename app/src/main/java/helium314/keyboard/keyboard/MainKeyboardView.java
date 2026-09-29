@@ -51,12 +51,10 @@ import helium314.keyboard.keyboard.internal.TimerHandler;
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
 import helium314.keyboard.latin.R;
 import helium314.keyboard.latin.RichInputMethodSubtype;
-import helium314.keyboard.latin.SuggestedWords;
 import helium314.keyboard.latin.common.ColorType;
 import helium314.keyboard.latin.common.Colors;
 import helium314.keyboard.latin.common.Constants;
 import helium314.keyboard.latin.common.CoordinateUtils;
-import helium314.keyboard.latin.define.DebugFlags;
 import helium314.keyboard.latin.settings.DebugSettings;
 import helium314.keyboard.latin.settings.Defaults;
 import helium314.keyboard.latin.settings.Settings;
@@ -424,22 +422,6 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
         mGestureTrailsDrawingPreview.setPreviewEnabled(isGestureTrailEnabled);
     }
 
-    public void showGestureFloatingPreviewText(@NonNull final SuggestedWords suggestedWords,
-            final boolean dismissDelayed) {
-        locatePreviewPlacerView();
-        mGestureFloatingTextDrawingPreview.setSuggestedWords(suggestedWords);
-        if (dismissDelayed) {
-            mTimerHandler.postDismissGestureFloatingPreviewText(
-                    mGestureFloatingPreviewTextLingerTimeout);
-        }
-    }
-
-    // Implements {@link DrawingProxy#dismissGestureFloatingPreviewTextWithoutDelay()}.
-    @Override
-    public void dismissGestureFloatingPreviewTextWithoutDelay() {
-        mGestureFloatingTextDrawingPreview.dismissGestureFloatingPreviewText();
-    }
-
     @Override
     public void showGestureTrail(@NonNull final PointerTracker tracker,
             final boolean showsFloatingPreviewText) {
@@ -613,7 +595,7 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
     public void cancelAllOngoingEvents() {
         mTimerHandler.cancelAllMessages();
         PointerTracker.setReleasedKeyGraphicsToAllKeys();
-        mGestureFloatingTextDrawingPreview.dismissGestureFloatingPreviewText();
+        //mGestureFloatingTextDrawingPreview.dismissGestureFloatingPreviewText();
         mSlidingKeyInputDrawingPreview.dismissSlidingKeyInputPreview();
         PointerTracker.dismissAllPopupKeysPanels();
         PointerTracker.cancelAllPointerTrackers();

@@ -29,7 +29,6 @@ import helium314.keyboard.keyboard.KeyboardTheme;
 import helium314.keyboard.keyboard.internal.KeyboardState;
 import helium314.keyboard.keyboard.internal.keyboard_parser.LocaleKeyboardInfos;
 import helium314.keyboard.latin.InputAttributes;
-import helium314.keyboard.latin.PunctuationSuggestions;
 import helium314.keyboard.latin.R;
 import helium314.keyboard.latin.RichInputMethodManager;
 import helium314.keyboard.latin.common.Colors;
@@ -141,7 +140,6 @@ public class SettingsValues {
     public final float mHintFontSizeMultiplier;
     public final float mFontSizeMultiplierEmoji;
     public final boolean mEmojiKeyFit;
-    public final PunctuationSuggestions mPunctuationSuggestions;
     public final boolean mIsFloatingKeyboard;
     public final int mFloatingWidth;
     public final int mFloatingHeight;
@@ -335,7 +333,6 @@ public class SettingsValues {
         mHintFontSizeMultiplier = mShowsHints ? prefs.getFloat(Settings.PREF_HINT_FONT_SCALE, Defaults.PREF_HINT_FONT_SCALE) : 1;
         mFontSizeMultiplierEmoji = prefs.getFloat(Settings.PREF_EMOJI_FONT_SCALE, Defaults.PREF_EMOJI_FONT_SCALE);
         mEmojiKeyFit = prefs.getBoolean(Settings.PREF_EMOJI_KEY_FIT, Defaults.PREF_EMOJI_KEY_FIT);
-        mPunctuationSuggestions = Settings.readPunctuationSuggestions(context);
     }
 
     public boolean needsToLookupSuggestions() {

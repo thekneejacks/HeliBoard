@@ -9,12 +9,10 @@ package helium314.keyboard.latin;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import helium314.keyboard.event.CombinerChain;
 import helium314.keyboard.event.Event;
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
-import helium314.keyboard.latin.SuggestedWords.SuggestedWordInfo;
 import helium314.keyboard.latin.common.ComposedData;
 import helium314.keyboard.latin.common.CoordinateUtils;
 import helium314.keyboard.latin.common.InputPointers;
@@ -34,7 +32,6 @@ public final class WordComposer {
     // The list of events that served to compose this string.
     private final ArrayList<Event> mEvents;
     private final InputPointers mInputPointers;
-    private SuggestedWordInfo mAutoCorrection;
     private boolean mIsResumed;
     private boolean mIsBatchMode;
     // A memory of the last rejected batch mode suggestion, if any. This goes like this: the user
@@ -66,7 +63,6 @@ public final class WordComposer {
         mCombinerChain = new CombinerChain("", "");
         mEvents = new ArrayList<>();
         mInputPointers = new InputPointers(MAX_WORD_LENGTH);
-        mAutoCorrection = null;
         mIsResumed = false;
         mIsBatchMode = false;
         mCursorPositionWithinWord = 0;
@@ -83,7 +79,6 @@ public final class WordComposer {
     private WordComposer(WordComposer other) {
         mEvents = null;
         mInputPointers = other.mInputPointers; // ideally we would have an actual copy, but for current use it should be ok
-        mAutoCorrection = other.mAutoCorrection;
         mIsResumed = other.mIsResumed;
         mIsBatchMode = other.mIsBatchMode;
         mRejectedBatchModeSuggestion = other.mRejectedBatchModeSuggestion;
@@ -118,7 +113,6 @@ public final class WordComposer {
     public void reset() {
         mCombinerChain.reset();
         mEvents.clear();
-        mAutoCorrection = null;
         mCapsCount = 0;
         mDigitsCount = 0;
         mIsOnlyFirstCharCapitalized = false;
@@ -220,7 +214,6 @@ public final class WordComposer {
             if (Character.isUpperCase(primaryCode)) mCapsCount++;
             if (Character.isDigit(primaryCode)) mDigitsCount++;
         }
-        mAutoCorrection = null;
     }
 
     public void setCursorPositionWithinWord(final int posWithinWord) {
@@ -361,20 +354,6 @@ public final class WordComposer {
     }
 
     /**
-     * Returns true if more than one character is upper case, otherwise returns false.
-     */
-    public boolean isMostlyCaps() {
-        return mCapsCount > 1;
-    }
-
-    /**
-     * Returns true if we have digits in the composing word.
-     */
-    public boolean hasDigits() {
-        return mDigitsCount > 0;
-    }
-
-    /**
      * Saves the caps mode at the start of composing.
      * <p>
      * WordComposer needs to know about the caps mode for several reasons. The first is, we need
@@ -387,49 +366,6 @@ public final class WordComposer {
      */
     public void setCapitalizedModeAtStartComposingTime(CapsMode mode) {
         mCapitalizedMode = mode;
-    }
-
-    /**
-     * Before fetching suggestions, we don't necessarily know about the capitalized mode yet.
-     * <p>
-     * If we don't have a composing word yet, we take a note of this mode so that we can then
-     * supply this information to the suggestion process. If we have a composing word, then
-     * the previous mode has priority over this.
-     * @param mode the mode just before fetching suggestions
-     */
-    public void adviseCapitalizedModeBeforeFetchingSuggestions(CapsMode mode) {
-        if (!isComposingWord()) {
-            mCapitalizedMode = mode;
-        }
-    }
-
-    /**
-     * Returns whether the word was automatically capitalized.
-     * @return whether the word was automatically capitalized
-     */
-    public boolean wasAutoCapitalized() {
-        return mCapitalizedMode == CapsMode.AUTO_LOCKED || mCapitalizedMode == CapsMode.AUTO;
-    }
-
-    /**
-     * Sets the auto-correction for this word.
-     */
-    public void setAutoCorrection(final SuggestedWordInfo autoCorrection) {
-        mAutoCorrection = autoCorrection;
-    }
-
-    /**
-     * @return the auto-correction for this word, or null if none.
-     */
-    public SuggestedWordInfo getAutoCorrectionOrNull() {
-        return mAutoCorrection;
-    }
-
-    /**
-     * @return whether we started composing this word by resuming suggestion on an existing string
-     */
-    public boolean isResumed() {
-        return mIsResumed;
     }
 
     // `type' should be one of the LastComposedWord.COMMIT_TYPE_* constants above.
@@ -456,24 +392,10 @@ public final class WordComposer {
         mIsOnlyFirstCharCapitalized = false;
         mCapitalizedMode = CapsMode.OFF;
         refreshTypedWordCache();
-        mAutoCorrection = null;
         mCursorPositionWithinWord = 0;
         mIsResumed = false;
         mRejectedBatchModeSuggestion = null;
         return lastComposedWord;
-    }
-
-    public void resumeSuggestionOnLastComposedWord(final LastComposedWord lastComposedWord) {
-        mEvents.clear();
-        Collections.copy(mEvents, lastComposedWord.mEvents);
-        mInputPointers.set(lastComposedWord.mInputPointers);
-        mCombinerChain.reset();
-        refreshTypedWordCache();
-        mCapitalizedMode = lastComposedWord.mCapitalizedMode;
-        mAutoCorrection = null; // This will be filled by the next call to updateSuggestion.
-        mCursorPositionWithinWord = mCodePointSize;
-        mRejectedBatchModeSuggestion = null;
-        mIsResumed = true;
     }
 
     public boolean isBatchMode() {
@@ -488,10 +410,6 @@ public final class WordComposer {
         mRejectedBatchModeSuggestion = rejectedSuggestion;
     }
 
-    public String getRejectedBatchModeSuggestion() {
-        return mRejectedBatchModeSuggestion;
-    }
-
     /**
      * Get the current combining spec.
      * @return the combining spec string, or null if none is set.
@@ -500,21 +418,4 @@ public final class WordComposer {
         return mCombiningSpec;
     }
 
-    void addInputPointerForTest(int index, int keyX, int keyY) {
-        mInputPointers.addPointerAt(index, keyX, keyY, 0, 0);
-    }
-
-    void setTypedWordCacheForTests(String typedWordCacheForTests) {
-        mTypedWordCache = typedWordCacheForTests;
-    }
-
-    static WordComposer getComposerForTest(boolean isEmpty) {
-        return new WordComposer(isEmpty);
-    }
-
-    private WordComposer(boolean isEmpty) {
-        mCodePointSize = isEmpty ? 0 : 1;
-        mEvents = null;
-        mInputPointers = null;
-    }
 }

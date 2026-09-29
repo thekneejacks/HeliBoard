@@ -18,7 +18,6 @@ import android.media.AudioManager
 import android.os.Build
 import android.os.SystemClock
 import android.provider.Settings
-import android.text.TextUtils
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
@@ -26,7 +25,6 @@ import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityManager
 import android.view.inputmethod.EditorInfo
 import helium314.keyboard.latin.R
-import helium314.keyboard.latin.SuggestedWords
 import helium314.keyboard.latin.utils.InputTypeUtils
 import helium314.keyboard.latin.utils.Log
 
@@ -93,48 +91,6 @@ class AccessibilityUtils private constructor() {
         return if (listeningThroughHeadphones) false
         else InputTypeUtils.isPasswordInputType(inputType)
         // Don't speak if the IME is connected to a password field.
-    }
-
-    /**
-     * Sets the current auto-correction word and typed word. These may be used
-     * to provide the user with a spoken description of what auto-correction
-     * will occur when a key is typed.
-     *
-     * @param suggestedWords the list of suggested auto-correction words
-     */
-    fun setAutoCorrection(suggestedWords: SuggestedWords) {
-        if (suggestedWords.mWillAutoCorrect) {
-            mAutoCorrectionWord = suggestedWords.getWord(SuggestedWords.INDEX_OF_AUTO_CORRECTION)
-            val typedWordInfo = suggestedWords.mTypedWordInfo
-            mTypedWord = typedWordInfo?.mWord
-        } else {
-            mAutoCorrectionWord = null
-            mTypedWord = null
-        }
-    }
-
-    /**
-     * Obtains a description for an auto-correction key, taking into account the
-     * currently typed word and auto-correction.
-     *
-     * @param keyCodeDescription spoken description of the key that will insert
-     * an auto-correction
-     * @param shouldObscure whether the key should be obscured
-     * @return a description including a description of the auto-correction, if
-     * needed
-     */
-    fun getAutoCorrectionDescription(
-            keyCodeDescription: String?, shouldObscure: Boolean): String? {
-        if (!TextUtils.isEmpty(mAutoCorrectionWord)) {
-            if (!TextUtils.equals(mAutoCorrectionWord, mTypedWord)) {
-                return if (shouldObscure) { // This should never happen, but just in case...
-                    mContext.getString(R.string.spoken_auto_correct_obscured,
-                            keyCodeDescription)
-                } else mContext.getString(R.string.spoken_auto_correct, keyCodeDescription,
-                        mTypedWord, mAutoCorrectionWord)
-            }
-        }
-        return keyCodeDescription
     }
 
     /**

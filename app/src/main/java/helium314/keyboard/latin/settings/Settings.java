@@ -29,10 +29,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import helium314.keyboard.compat.ConfigurationCompatKt;
 import helium314.keyboard.keyboard.KeyboardActionListener;
-import helium314.keyboard.keyboard.internal.PopupKeySpec;
 import helium314.keyboard.latin.AudioAndHapticFeedbackManager;
 import helium314.keyboard.latin.InputAttributes;
-import helium314.keyboard.latin.PunctuationSuggestions;
 import helium314.keyboard.latin.R;
 import helium314.keyboard.latin.RichInputMethodManager;
 import helium314.keyboard.latin.RichInputMethodSubtype;
@@ -598,11 +596,4 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
         return mPrefs.getBoolean(PREF_SAVE_SUBTYPE_PER_APP, Defaults.PREF_SAVE_SUBTYPE_PER_APP);
     }
 
-    public static PunctuationSuggestions readPunctuationSuggestions(Context context) {
-        SharedPreferences prefs = KtxKt.prefs(context);
-        String[] suggestPuncsSpec = prefs.contains(PREF_PUNCTUATION_SUGGESTIONS)
-            ? prefs.getString(PREF_PUNCTUATION_SUGGESTIONS, "").split("\\s+")
-            : PopupKeySpec.splitKeySpecs(context.getString(R.string.suggested_punctuations));
-        return PunctuationSuggestions.newPunctuationSuggestions(suggestPuncsSpec);
-    }
 }

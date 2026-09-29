@@ -61,8 +61,4 @@ public interface DrawingProxy {
      */
     void showGestureTrail(@NonNull PointerTracker tracker, boolean showsFloatingPreviewText);
 
-    /**
-     * Dismiss a gesture floating preview text without delay.
-     */
-    void dismissGestureFloatingPreviewTextWithoutDelay();
 }

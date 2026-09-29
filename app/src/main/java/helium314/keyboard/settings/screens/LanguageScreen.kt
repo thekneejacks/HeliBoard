@@ -48,7 +48,6 @@ import helium314.keyboard.settings.SearchScreen
 import helium314.keyboard.settings.SettingsActivity
 import helium314.keyboard.settings.SettingsDestination
 import helium314.keyboard.settings.initPreview
-import java.util.Locale
 
 @Composable
 fun LanguageScreen(
@@ -112,7 +111,7 @@ private fun SubtypeRow(subtype: InputMethodSubtype, isEnabled: Boolean) {
         Switch(
             checked = isEnabled,
             onCheckedChange = {
-                if (it && !dictsAvailable(subtype.locale(), ctx))
+                if (it)
                     showNoDictDialog = true
                 if (it) SubtypeSettings.addEnabledSubtype(ctx.prefs(), subtype)
                 else SubtypeSettings.removeEnabledSubtype(ctx, subtype)
@@ -121,12 +120,6 @@ private fun SubtypeRow(subtype: InputMethodSubtype, isEnabled: Boolean) {
         if (showNoDictDialog)
             MissingDictionaryDialog({ showNoDictDialog = false }, subtype.locale())
     }
-}
-
-private fun dictsAvailable(locale: Locale, context: Context): Boolean {
-    if (locale.language == SubtypeLocaleUtils.NO_LANGUAGE) return true // incorrect, but we don't want to show the dialog for "no language"
-    val (dicts, hasInternal) = getUserAndInternalDictionaries(context, locale)
-    return hasInternal || dicts.isNotEmpty()
 }
 
 // sorting by display name is still slow, even with the cache... but probably good enough

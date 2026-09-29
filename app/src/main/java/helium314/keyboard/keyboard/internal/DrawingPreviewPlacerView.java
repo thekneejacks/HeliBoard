@@ -70,9 +70,9 @@ public final class DrawingPreviewPlacerView extends RelativeLayout {
         final int originY = CoordinateUtils.y(mKeyboardViewOrigin);
         canvas.translate(originX, originY);
         final int count = mPreviews.size();
-        for (int i = 0; i < count; i++) {
+        /*for (int i = 0; i < count; i++) {
             mPreviews.get(i).drawPreview(canvas);
-        }
+        }*/
         canvas.translate(-originX, -originY);
     }
 }

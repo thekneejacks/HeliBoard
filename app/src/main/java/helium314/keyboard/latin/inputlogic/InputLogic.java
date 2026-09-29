@@ -23,7 +23,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.TreeSet;
 
 import helium314.keyboard.compat.AppWorkarounds;
@@ -38,14 +37,11 @@ import helium314.keyboard.latin.LastComposedWord;
 import helium314.keyboard.latin.LatinIME;
 import helium314.keyboard.latin.NgramContext;
 import helium314.keyboard.latin.RichInputConnection;
-import helium314.keyboard.latin.SuggestedWords;
-import helium314.keyboard.latin.SuggestedWords.SuggestedWordInfo;
 import helium314.keyboard.latin.WordComposer;
 import helium314.keyboard.latin.common.Constants;
 import helium314.keyboard.latin.common.InputPointers;
 import helium314.keyboard.latin.common.StringUtils;
 import helium314.keyboard.latin.common.StringUtilsKt;
-import helium314.keyboard.latin.common.SuggestionSpanUtilsKt;
 import helium314.keyboard.latin.define.DebugFlags;
 import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.settings.SettingsValues;
@@ -77,8 +73,6 @@ public final class InputLogic {
     // TODO : make all these fields private as soon as possible.
     // Current space state of the input method. This can be any of the above constants.
     private int mSpaceState;
-    // Never null
-    public SuggestedWords mSuggestedWords = SuggestedWords.getEmptyInstance();
 
     public LastComposedWord mLastComposedWord = LastComposedWord.NOT_A_COMPOSED_WORD;
     // This has package visibility so it can be accessed from InputLogicHandler.
@@ -214,7 +208,7 @@ public final class InputLogic {
         } else {
             resetComposingState(true /* alsoResetLastComposedWord */);
         }
-        handler.postUpdateSuggestionStrip(SuggestedWords.INPUT_STYLE_TYPING);
+        //handler.postUpdateSuggestionStrip(SuggestedWords.INPUT_STYLE_TYPING);
         final String text = performSpecificTldProcessingOnTextInput(rawText);
         if (SpaceState.PHANTOM == mSpaceState) {
             insertAutomaticSpaceIfOptionsAndTextAllow(settingsValues);
@@ -389,8 +383,8 @@ public final class InputLogic {
     public void onStartBatchInput(final SettingsValues settingsValues, final KeyboardSwitcher keyboardSwitcher, final LatinIME.UIHandler handler) {
         mWordBeingCorrectedByCursor = null;
         mInputLogicHandler.onStartBatchInput();
-        handler.showGesturePreviewAndSetSuggestions(SuggestedWords.getEmptyBatchInstance(), false);
-        handler.cancelUpdateSuggestionStrip();
+        //handler.showGesturePreviewAndSetSuggestions(SuggestedWords.getEmptyBatchInstance(), false);
+        //handler.cancelUpdateSuggestionStrip();
         ++mAutoCommitSequenceNumber;
 
 
@@ -469,7 +463,7 @@ public final class InputLogic {
 
     public void onCancelBatchInput(final LatinIME.UIHandler handler) {
         mInputLogicHandler.onCancelBatchInput();
-        handler.showGesturePreviewAndSetSuggestions(SuggestedWords.getEmptyInstance(), true /* dismissGestureFloatingPreviewText */);
+        //handler.showGesturePreviewAndSetSuggestions(SuggestedWords.getEmptyInstance(), true /* dismissGestureFloatingPreviewText */);
     }
 
 
@@ -1691,22 +1685,6 @@ public final class InputLogic {
         }
     }
 
-    /**
-     * Make a {@link helium314.keyboard.latin.SuggestedWords} object containing a typed word
-     * and obsolete suggestions.
-     * See {@link helium314.keyboard.latin.SuggestedWords#getTypedWordAndPreviousSuggestions(
-     *SuggestedWordInfo, helium314.keyboard.latin.SuggestedWords)}.
-     *
-     * @param typedWordInfo          The typed word as a SuggestedWordInfo.
-     * @param previousSuggestedWords The previously suggested words.
-     * @return Obsolete suggestions with the newly typed word.
-     */
-    static SuggestedWords retrieveOlderSuggestions(final SuggestedWordInfo typedWordInfo, final SuggestedWords previousSuggestedWords) {
-        final SuggestedWords oldSuggestedWords = previousSuggestedWords.isPunctuationSuggestions() ? SuggestedWords.getEmptyInstance() : previousSuggestedWords;
-        final ArrayList<SuggestedWords.SuggestedWordInfo> typedWordAndPreviousSuggestions = SuggestedWords.getTypedWordAndPreviousSuggestions(typedWordInfo, oldSuggestedWords);
-        return new SuggestedWords(typedWordAndPreviousSuggestions, null /* rawSuggestions */, typedWordInfo, false /* typedWordValid */, false /* hasAutoCorrectionCandidate */, true /* isObsoleteSuggestions */, oldSuggestedWords.mInputStyle, SuggestedWords.NOT_A_SEQUENCE_NUMBER);
-    }
-
 
     /**
      * Gets a chunk of text with or the auto-correction indicator underline span as appropriate.
@@ -1728,7 +1706,8 @@ public final class InputLogic {
     // TODO: Shouldn't this go in some *Utils class instead?
     private CharSequence getTextWithUnderline(final String text) {
         // TODO: Locale should be determined based on context and the text given.
-        return mIsAutoCorrectionIndicatorOn ? SuggestionSpanUtilsKt.getTextWithAutoCorrectionIndicatorUnderline(mLatinIME, text, Locale.ROOT) : text;
+        //return mIsAutoCorrectionIndicatorOn ? SuggestionSpanUtilsKt.getTextWithAutoCorrectionIndicatorUnderline(mLatinIME, text, Locale.ROOT) : text;
+        return text;
     }
 
     /**
@@ -1789,31 +1768,6 @@ public final class InputLogic {
         final CharSequence textBeforeCursor = mConnection.getTextBeforeCursor(mWordComposer.getTypedWord().length() + 3, 0);
         if (textBeforeCursor != null && textBeforeCursor.toString().startsWith("://")) return true;
         return false;
-    }
-
-    /**
-     * Do the final processing after a batch input has ended. This commits the word to the editor.
-     *
-     * @param settingsValues the current values of the settings.
-     * @param suggestedWords suggestedWords to use.
-     */
-    public void onUpdateTailBatchInputCompleted(final SettingsValues settingsValues, final SuggestedWords suggestedWords, final KeyboardSwitcher keyboardSwitcher) {
-        final String batchInputText = suggestedWords.isEmpty() ? null : suggestedWords.getWord(0);
-        if (TextUtils.isEmpty(batchInputText)) {
-            return;
-        }
-        mConnection.beginBatchEdit();
-        if (SpaceState.PHANTOM == mSpaceState) {
-            insertAutomaticSpaceIfOptionsAndTextAllow(settingsValues);
-            mSpaceState = SpaceState.NONE;
-        }
-        mWordComposer.setBatchInputWord(batchInputText);
-        setComposingTextInternal(batchInputText, 1);
-        mConnection.endBatchEdit();
-        // Space state must be updated before calling updateShiftState
-        if (settingsValues.mAutospaceAfterGestureTyping) mSpaceState = SpaceState.PHANTOM;
-        keyboardSwitcher.updateShiftState(getCurrentAutoCapsState(settingsValues), getCurrentRecapitalizeState());
-
     }
 
     /**

@@ -24,15 +24,12 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import helium314.keyboard.latin.NgramContext;
-import helium314.keyboard.latin.SuggestedWords.SuggestedWordInfo;
-import helium314.keyboard.latin.common.ComposedData;
 import helium314.keyboard.latin.common.FileUtils;
 import helium314.keyboard.latin.define.DecoderSpecificConstants;
 import helium314.keyboard.latin.makedict.DictionaryHeader;
 import helium314.keyboard.latin.makedict.FormatSpec;
 import helium314.keyboard.latin.makedict.UnsupportedFormatException;
 import helium314.keyboard.latin.makedict.WordProperty;
-import helium314.keyboard.latin.settings.SettingsValuesForSuggestion;
 import helium314.keyboard.latin.utils.AsyncResultHolder;
 import helium314.keyboard.latin.utils.CombinedFormatUtils;
 import helium314.keyboard.latin.utils.ExecutorUtils;
@@ -346,41 +343,6 @@ abstract public class ExpandableBinaryDictionary extends Dictionary {
                 }
             }
         });
-    }
-
-    @Override
-    public ArrayList<SuggestedWordInfo> getSuggestions(final ComposedData composedData,
-            final NgramContext ngramContext, final long proximityInfoHandle,
-            final SettingsValuesForSuggestion settingsValuesForSuggestion, final int sessionId,
-            final float weightForLocale, final float[] inOutWeightOfLangModelVsSpatialModel) {
-        reloadDictionaryIfRequired();
-        boolean lockAcquired = false;
-        try {
-            lockAcquired = mLock.readLock().tryLock(
-                    TIMEOUT_FOR_READ_OPS_IN_MILLISECONDS, TimeUnit.MILLISECONDS);
-            if (lockAcquired) {
-                if (mBinaryDictionary == null) {
-                    return null;
-                }
-                final ArrayList<SuggestedWordInfo> suggestions =
-                        mBinaryDictionary.getSuggestions(composedData, ngramContext,
-                                proximityInfoHandle, settingsValuesForSuggestion, sessionId,
-                                weightForLocale, inOutWeightOfLangModelVsSpatialModel);
-                if (mBinaryDictionary.isCorrupted()) {
-                    Log.i(TAG, "Dictionary (" + mDictName +") is corrupted. "
-                            + "Remove and regenerate it.");
-                    removeBinaryDictionary();
-                }
-                return suggestions;
-            }
-        } catch (final InterruptedException e) {
-            Log.e(TAG, "Interrupted tryLock() in getSuggestionsWithSessionId().", e);
-        } finally {
-            if (lockAcquired) {
-                mLock.readLock().unlock();
-            }
-        }
-        return null;
     }
 
     @Override

@@ -12,10 +12,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Locale;
 
-import helium314.keyboard.latin.NgramContext;
-import helium314.keyboard.latin.SuggestedWords.SuggestedWordInfo;
-import helium314.keyboard.latin.common.ComposedData;
-import helium314.keyboard.latin.settings.SettingsValuesForSuggestion;
 import helium314.keyboard.latin.utils.Log;
 
 /**
@@ -36,30 +32,6 @@ public final class DictionaryCollection extends Dictionary {
             Arrays.fill(mWeights, 1f);
             Log.w(TAG, "got weights array of length " + weights.length + ", expected "+mDictionaries.size());
         } else mWeights = weights;
-    }
-
-    @Override
-    public ArrayList<SuggestedWordInfo> getSuggestions(final ComposedData composedData,
-            final NgramContext ngramContext, final long proximityInfoHandle,
-            final SettingsValuesForSuggestion settingsValuesForSuggestion,
-            final int sessionId, final float weightForLocale,
-            final float[] inOutWeightOfLangModelVsSpatialModel) {
-        final ArrayList<Dictionary> dictionaries = mDictionaries;
-        if (dictionaries.isEmpty()) return null;
-        // To avoid creating unnecessary objects, we get the list out of the first
-        // dictionary and add the rest to it if not null, hence the get(0)
-        ArrayList<SuggestedWordInfo> suggestions = dictionaries.get(0).getSuggestions(composedData,
-                ngramContext, proximityInfoHandle, settingsValuesForSuggestion, sessionId,
-                weightForLocale * mWeights[0], inOutWeightOfLangModelVsSpatialModel);
-        if (null == suggestions) suggestions = new ArrayList<>();
-        final int length = dictionaries.size();
-        for (int i = 1; i < length; ++ i) {
-            final ArrayList<SuggestedWordInfo> sugg = dictionaries.get(i).getSuggestions(
-                    composedData, ngramContext, proximityInfoHandle, settingsValuesForSuggestion,
-                    sessionId, weightForLocale * mWeights[i], inOutWeightOfLangModelVsSpatialModel);
-            if (null != sugg) suggestions.addAll(sugg);
-        }
-        return suggestions;
     }
 
     @Override

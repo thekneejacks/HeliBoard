@@ -6,14 +6,9 @@
 
 package helium314.keyboard.latin.dictionary;
 
-import java.util.ArrayList;
 import java.util.Locale;
 
-import helium314.keyboard.latin.NgramContext;
-import helium314.keyboard.latin.SuggestedWords.SuggestedWordInfo;
-import helium314.keyboard.latin.common.ComposedData;
 import helium314.keyboard.latin.makedict.WordProperty;
-import helium314.keyboard.latin.settings.SettingsValuesForSuggestion;
 
 /**
  * Abstract base class for a dictionary that can do a fuzzy search for words based on a set of key
@@ -62,26 +57,6 @@ public abstract class Dictionary {
         mDictType = dictType;
         mLocale = locale;
     }
-
-    /**
-     * Searches for suggestions for a given context.
-     * @param composedData the key sequence to match with coordinate info
-     * @param ngramContext the context for n-gram.
-     * @param proximityInfoHandle the handle for key proximity. Is ignored by some implementations.
-     * @param settingsValuesForSuggestion the settings values used for the suggestion.
-     * @param sessionId the session id.
-     * @param weightForLocale the weight given to this locale, to multiply the output scores for
-     * multilingual input.
-     * @param inOutWeightOfLangModelVsSpatialModel the weight of the language model as a ratio of
-     * the spatial model, used for generating suggestions. inOutWeightOfLangModelVsSpatialModel is
-     * a float array that has only one element. This can be updated when a different value is used.
-     * @return the list of suggestions (possibly null if none)
-     */
-    abstract public ArrayList<SuggestedWordInfo> getSuggestions(final ComposedData composedData,
-            final NgramContext ngramContext, final long proximityInfoHandle,
-            final SettingsValuesForSuggestion settingsValuesForSuggestion,
-            final int sessionId, final float weightForLocale,
-            final float[] inOutWeightOfLangModelVsSpatialModel);
 
     /**
      * Checks if the given word has to be treated as a valid word. Please note that some
@@ -153,19 +128,6 @@ public abstract class Dictionary {
     }
 
     /**
-     * Whether we think this suggestion should trigger an auto-commit. prevWord is the word
-     * before the suggestion, so that we can use n-gram frequencies.
-     * @param candidate The candidate suggestion, in whole (not only the first part).
-     * @return whether we should auto-commit or not.
-     */
-    public boolean shouldAutoCommit(final SuggestedWordInfo candidate) {
-        // If we don't have support for auto-commit, or if we don't know, we return false to
-        // avoid auto-committing stuff. Implementations of the Dictionary class that know to
-        // determine whether we should auto-commit will override this.
-        return false;
-    }
-
-    /**
      * Whether this dictionary is based on data specific to the user, e.g., the user's contacts.
      * @return Whether this dictionary is specific to the user.
      */
@@ -191,15 +153,6 @@ public abstract class Dictionary {
     public static class PhonyDictionary extends Dictionary {
         public PhonyDictionary(final String type) {
             super(type, null);
-        }
-
-        @Override
-        public ArrayList<SuggestedWordInfo> getSuggestions(final ComposedData composedData,
-                final NgramContext ngramContext, final long proximityInfoHandle,
-                final SettingsValuesForSuggestion settingsValuesForSuggestion,
-                final int sessionId, final float weightForLocale,
-                final float[] inOutWeightOfLangModelVsSpatialModel) {
-            return null;
         }
 
         @Override

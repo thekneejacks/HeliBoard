@@ -7,11 +7,7 @@
 package helium314.keyboard.keyboard.internal;
 
 import android.content.res.TypedArray;
-import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Path;
-
-import androidx.annotation.NonNull;
 
 import helium314.keyboard.keyboard.PointerTracker;
 import helium314.keyboard.latin.R;
@@ -58,24 +54,6 @@ public final class SlidingKeyInputDrawingPreview extends AbstractDrawingPreview 
     public void dismissSlidingKeyInputPreview() {
         mShowsSlidingKeyInputPreview = false;
         invalidateDrawingView();
-    }
-
-    /**
-     * Draws the preview
-     * @param canvas The canvas where the preview is drawn.
-     */
-    @Override
-    public void drawPreview(@NonNull final Canvas canvas) {
-        if (!isPreviewEnabled() || !mShowsSlidingKeyInputPreview) {
-            return;
-        }
-
-        // TODO: Finalize the rubber band preview implementation.
-        final float radius = mPreviewBodyRadius;
-        final Path path = mRoundedLine.makePath(
-                CoordinateUtils.x(mPreviewFrom), CoordinateUtils.y(mPreviewFrom), radius,
-                CoordinateUtils.x(mPreviewTo), CoordinateUtils.y(mPreviewTo), radius);
-        canvas.drawPath(path, mPaint);
     }
 
     /**

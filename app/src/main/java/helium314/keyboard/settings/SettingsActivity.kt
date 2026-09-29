@@ -43,7 +43,6 @@ import helium314.keyboard.latin.utils.UncachedInputMethodManagerUtils
 import helium314.keyboard.latin.utils.cleanUnusedMainDicts
 import helium314.keyboard.latin.utils.prefs
 import helium314.keyboard.settings.dialogs.ConfirmationDialog
-import helium314.keyboard.settings.dialogs.NewDictionaryDialog
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.io.BufferedOutputStream
 import java.io.File
@@ -132,13 +131,6 @@ open class SettingsActivity : ComponentActivity(), SharedPreferences.OnSharedPre
                                 content = { Text("Crash report files found") },
                             )
                         }
-                    }
-                    if (dictUri != null) {
-                        NewDictionaryDialog(
-                            onDismissRequest = { dictUriFlow.value = null },
-                            cachedFile = cachedDictionaryFile,
-                            mainLocale = null
-                        )
                     }
                 }
             }

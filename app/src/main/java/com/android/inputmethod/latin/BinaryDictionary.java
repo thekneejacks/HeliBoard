@@ -16,24 +16,18 @@ import com.android.inputmethod.latin.utils.WordInputEventForPersonalization;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
 import helium314.keyboard.latin.NgramContext;
-import helium314.keyboard.latin.SuggestedWords.SuggestedWordInfo;
-import helium314.keyboard.latin.common.ComposedData;
-import helium314.keyboard.latin.common.Constants;
 import helium314.keyboard.latin.common.FileUtils;
-import helium314.keyboard.latin.common.InputPointers;
 import helium314.keyboard.latin.common.StringUtils;
 import helium314.keyboard.latin.dictionary.Dictionary;
 import helium314.keyboard.latin.makedict.DictionaryHeader;
 import helium314.keyboard.latin.makedict.FormatSpec.DictionaryOptions;
 import helium314.keyboard.latin.makedict.UnsupportedFormatException;
 import helium314.keyboard.latin.makedict.WordProperty;
-import helium314.keyboard.latin.settings.SettingsValuesForSuggestion;
 import helium314.keyboard.latin.utils.ChecksumCalculator;
 import helium314.keyboard.latin.utils.JniUtils;
 import helium314.keyboard.latin.utils.Log;
@@ -247,85 +241,6 @@ public final class BinaryDictionary extends Dictionary {
             attributes.put(attributeKey, attributeValue);
         }
         return new DictionaryHeader(new DictionaryOptions(attributes));
-    }
-
-    @Override
-    public ArrayList<SuggestedWordInfo> getSuggestions(final ComposedData composedData,
-            final NgramContext ngramContext, final long proximityInfoHandle,
-            final SettingsValuesForSuggestion settingsValuesForSuggestion,
-            final int sessionId, final float weightForLocale,
-            final float[] inOutWeightOfLangModelVsSpatialModel) {
-        if (!isValidDictionary()) {
-            return null;
-        }
-        final DicTraverseSession session = getTraverseSession(sessionId);
-        Arrays.fill(session.mInputCodePoints, Constants.NOT_A_CODE);
-        ngramContext.outputToArray(session.mPrevWordCodePointArrays,
-                session.mIsBeginningOfSentenceArray);
-        final InputPointers inputPointers = composedData.mInputPointers;
-        final boolean isGesture = composedData.mIsBatchMode;
-        final int inputSize;
-        if (!isGesture) {
-            inputSize =
-                    composedData.copyCodePointsExceptTrailingSingleQuotesAndReturnCodePointCount(
-                        session.mInputCodePoints);
-            if (inputSize < 0) {
-                return null;
-            }
-        } else {
-            inputSize = inputPointers.getPointerSize();
-        }
-        session.mNativeSuggestOptions.setUseFullEditDistance(mUseFullEditDistance);
-        session.mNativeSuggestOptions.setIsGesture(isGesture);
-        if (isGesture)
-            session.mNativeSuggestOptions.setIsSpaceAwareGesture(settingsValuesForSuggestion.mSpaceAwareGesture);
-        session.mNativeSuggestOptions.setBlockOffensiveWords(settingsValuesForSuggestion.mBlockPotentiallyOffensive);
-        session.mNativeSuggestOptions.setWeightForLocale(weightForLocale);
-        if (inOutWeightOfLangModelVsSpatialModel != null) {
-            session.mInputOutputWeightOfLangModelVsSpatialModel[0] =
-                    inOutWeightOfLangModelVsSpatialModel[0];
-        } else {
-            session.mInputOutputWeightOfLangModelVsSpatialModel[0] =
-                    Dictionary.NOT_A_WEIGHT_OF_LANG_MODEL_VS_SPATIAL_MODEL;
-        }
-        // TOOD: Pass multiple previous words information for n-gram.
-        getSuggestionsNative(mNativeDict, proximityInfoHandle,
-                getTraverseSession(sessionId).getSession(), inputPointers.getXCoordinates(),
-                inputPointers.getYCoordinates(), inputPointers.getTimes(),
-                inputPointers.getPointerIds(), session.mInputCodePoints, inputSize,
-                session.mNativeSuggestOptions.getOptions(), session.mPrevWordCodePointArrays,
-                session.mIsBeginningOfSentenceArray, ngramContext.getPrevWordCount(),
-                session.mOutputSuggestionCount, session.mOutputCodePoints, session.mOutputScores,
-                session.mSpaceIndices, session.mOutputTypes,
-                session.mOutputAutoCommitFirstWordConfidence,
-                session.mInputOutputWeightOfLangModelVsSpatialModel);
-        if (inOutWeightOfLangModelVsSpatialModel != null) {
-            inOutWeightOfLangModelVsSpatialModel[0] =
-                    session.mInputOutputWeightOfLangModelVsSpatialModel[0];
-        }
-        final int count = session.mOutputSuggestionCount[0];
-        final ArrayList<SuggestedWordInfo> suggestions = new ArrayList<>();
-        for (int j = 0; j < count; ++j) {
-            final int start = j * DICTIONARY_MAX_WORD_LENGTH;
-            int len = 0;
-            while (len < DICTIONARY_MAX_WORD_LENGTH
-                    && session.mOutputCodePoints[start + len] != 0) {
-                ++len;
-            }
-            if (len > 0) {
-                SuggestedWordInfo info = new SuggestedWordInfo(
-                    new String(session.mOutputCodePoints, start, len),
-                    "" /* prevWordsContext */,
-                    (int)(session.mOutputScores[j] * weightForLocale),
-                    session.mOutputTypes[j],
-                    this /* sourceDict */,
-                    session.mSpaceIndices[j] /* indexOfTouchPointOfSecondWord */,
-                    session.mOutputAutoCommitFirstWordConfidence[0]);
-                info.mOriginalScore = session.mOutputScores[j]; // no locale weight!
-                suggestions.add(info);
-            }
-        }
-        return suggestions;
     }
 
     public boolean isValidDictionary() {
@@ -618,11 +533,6 @@ public final class BinaryDictionary extends Dictionary {
             return "";
         }
         return getPropertyNative(mNativeDict, query);
-    }
-
-    @Override
-    public boolean shouldAutoCommit(final SuggestedWordInfo candidate) {
-        return candidate.mAutoCommitFirstWordConfidence > CONFIDENCE_TO_AUTO_COMMIT;
     }
 
     @Override

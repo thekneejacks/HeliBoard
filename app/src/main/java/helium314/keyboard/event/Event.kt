@@ -6,7 +6,6 @@
 
 package helium314.keyboard.event
 
-import helium314.keyboard.latin.SuggestedWords.SuggestedWordInfo
 import helium314.keyboard.latin.common.Constants
 import helium314.keyboard.latin.common.StringUtils
 
@@ -50,17 +49,16 @@ class Event private constructor(
     val y: Int = Constants.NOT_A_COORDINATE,
     // If this is of type EVENT_TYPE_SUGGESTION_PICKED, this must not be null (and must be null in
     // other cases).
-    val suggestedWordInfo: SuggestedWordInfo? = null,
     // Some flags that can't go into the key code. It's a bit field of FLAG_*
     private val flags: Int = FLAG_NONE,
     // The next event, if any. Null if there is no next event yet.
     val nextEvent: Event? = null
     // This logic may need to be refined in the future
 ) {
-    init {
+    /*init {
         if ((EVENT_TYPE_SUGGESTION_PICKED == eventType) != (suggestedWordInfo != null))
             throw RuntimeException("Wrong event: SUGGESTION_PICKED event must have a non-null SuggestedWordInfo, other events may not")
-    }
+    }*/
 
     // Returns whether this is a function key like backspace, ctrl, settings... as opposed to keys
     // that result in input like letters or space.
@@ -224,20 +222,6 @@ class Event private constructor(
             Event(eventType = EVENT_TYPE_INPUT_KEYPRESS, codePoint = codePoint, x = x, y = y)
 
         /**
-         * Creates an input event representing the manual pick of a suggestion.
-         * @return an event for this suggestion pick.
-         */
-        @JvmStatic
-        fun createSuggestionPickedEvent(suggestedWordInfo: SuggestedWordInfo) =
-            Event(
-                eventType = EVENT_TYPE_SUGGESTION_PICKED,
-                text = suggestedWordInfo.mWord,
-                x = Constants.SUGGESTION_STRIP_COORDINATE,
-                y = Constants.SUGGESTION_STRIP_COORDINATE,
-                suggestedWordInfo = suggestedWordInfo
-            )
-
-        /**
          * Creates an input event with a CharSequence. This is used by some software processes whose
          * output is a string, possibly with styling. Examples include press on a multi-character key,
          * or combination that outputs a string.
@@ -249,21 +233,6 @@ class Event private constructor(
         @JvmStatic
         fun createSoftwareTextEvent(text: CharSequence, keyCode: Int, nextEvent: Event? = null) =
             Event(eventType = EVENT_TYPE_SOFTWARE_GENERATED_STRING, text = text, keyCode = keyCode, nextEvent = nextEvent)
-
-        /**
-         * Creates an input event representing the manual pick of a punctuation suggestion.
-         * @return an event for this suggestion pick.
-         */
-        @JvmStatic
-        fun createPunctuationSuggestionPickedEvent(suggestedWordInfo: SuggestedWordInfo) =
-            Event(
-                eventType = EVENT_TYPE_SUGGESTION_PICKED,
-                text = suggestedWordInfo.mWord,
-                codePoint = suggestedWordInfo.mWord[0].code,
-                x = Constants.SUGGESTION_STRIP_COORDINATE,
-                y = Constants.SUGGESTION_STRIP_COORDINATE,
-                suggestedWordInfo = suggestedWordInfo
-            )
 
         /**
          * Creates an input event representing moving the cursor. The relative move amount is stored
@@ -282,11 +251,11 @@ class Event private constructor(
         // A consumed event should not input any text at all, so we pass the empty string as text.
         fun createConsumedEvent(source: Event) =
              Event(source.eventType, source.text, source.codePoint, source.keyCode, source.metaState,
-                    source.x, source.y, source.suggestedWordInfo, source.flags or FLAG_CONSUMED, source.nextEvent)
+                    source.x, source.y,  source.flags or FLAG_CONSUMED, source.nextEvent)
 
         fun createCombiningEvent(source: Event) =
             Event(source.eventType, source.text, source.codePoint, source.keyCode, source.metaState,
-                    source.x, source.y, source.suggestedWordInfo, source.flags or FLAG_COMBINING, source.nextEvent)
+                    source.x, source.y,  source.flags or FLAG_COMBINING, source.nextEvent)
 
         val notHandledEvent = Event(eventType = EVENT_TYPE_NOT_HANDLED)
     }

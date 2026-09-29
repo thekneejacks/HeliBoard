@@ -11,7 +11,6 @@ import android.os.HandlerThread;
 import android.os.Message;
 
 import helium314.keyboard.latin.LatinIME;
-import helium314.keyboard.latin.SuggestedWords;
 import helium314.keyboard.latin.common.InputPointers;
 
 /**
@@ -82,29 +81,6 @@ class InputLogicHandler implements Handler.Callback {
                 return;
             }
             mInputLogic.mWordComposer.setBatchInputPointers(batchPointers);
-        }
-    }
-
-    private void showGestureSuggestionsWithPreviewVisuals(final SuggestedWords suggestedWordsForBatchInput,
-            final boolean isTailBatchInput) {
-        final SuggestedWords suggestedWordsToShowSuggestions;
-        // We're now inside the callback. This always runs on the Non-UI thread,
-        // no matter what thread updateBatchInput was originally called on.
-        if (suggestedWordsForBatchInput.isEmpty()) {
-            // Use old suggestions if we don't have any new ones.
-            // Previous suggestions are found in InputLogic#mSuggestedWords.
-            // Since these are the most recent ones and we just recomputed
-            // new ones to update them, then the previous ones are there.
-            suggestedWordsToShowSuggestions = mInputLogic.mSuggestedWords;
-        } else {
-            suggestedWordsToShowSuggestions = suggestedWordsForBatchInput;
-        }
-        mLatinIMEHandler.showGesturePreviewAndSetSuggestions(suggestedWordsToShowSuggestions, isTailBatchInput);
-        if (isTailBatchInput) {
-            mInBatchInput = false;
-            // The following call schedules onEndBatchInputInternal
-            // to be called on the UI thread.
-            mLatinIMEHandler.showTailBatchInputResult(suggestedWordsToShowSuggestions);
         }
     }
 

@@ -67,9 +67,6 @@ public final class TimerHandler extends LeakGuardHandlerWrapper<DrawingProxy>
         case MSG_DISMISS_KEY_PREVIEW -> {
             drawingProxy.onKeyReleased((Key)msg.obj, false /* withAnimation */);
         }
-        case MSG_DISMISS_GESTURE_FLOATING_PREVIEW_TEXT -> {
-            drawingProxy.dismissGestureFloatingPreviewTextWithoutDelay();
-        }
         }
     }
 

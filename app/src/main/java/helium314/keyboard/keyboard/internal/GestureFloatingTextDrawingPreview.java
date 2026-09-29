@@ -7,19 +7,15 @@
 package helium314.keyboard.keyboard.internal;
 
 import android.content.res.TypedArray;
-import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Rect;
-import android.graphics.RectF;
-import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
 import helium314.keyboard.keyboard.KeyboardTypeface;
 import helium314.keyboard.keyboard.PointerTracker;
 import helium314.keyboard.latin.R;
-import helium314.keyboard.latin.SuggestedWords;
 import helium314.keyboard.latin.common.ColorType;
 import helium314.keyboard.latin.common.Colors;
 import helium314.keyboard.latin.common.CoordinateUtils;
@@ -85,10 +81,6 @@ public class GestureFloatingTextDrawingPreview extends AbstractDrawingPreview {
     }
 
     private final GesturePreviewTextParams mParams;
-    private final RectF mGesturePreviewRectangle = new RectF();
-    private int mPreviewTextX;
-    private int mPreviewTextY;
-    private SuggestedWords mSuggestedWords = SuggestedWords.getEmptyInstance();
     private final int[] mLastPointerCoords = CoordinateUtils.newInstance();
 
     public GestureFloatingTextDrawingPreview(final TypedArray mainKeyboardViewAttr) {
@@ -100,73 +92,13 @@ public class GestureFloatingTextDrawingPreview extends AbstractDrawingPreview {
         // Nothing to do here.
     }
 
-    public void dismissGestureFloatingPreviewText() {
-        setSuggestedWords(SuggestedWords.getEmptyInstance());
-    }
-
-    public void setSuggestedWords(@NonNull final SuggestedWords suggestedWords) {
-        if (!isPreviewEnabled()) {
-            return;
-        }
-        mSuggestedWords = suggestedWords;
-        updatePreviewPosition();
-    }
-
     @Override
     public void setPreviewPosition(@NonNull final PointerTracker tracker) {
         if (!isPreviewEnabled()) {
             return;
         }
         tracker.getLastCoordinates(mLastPointerCoords);
-        updatePreviewPosition();
+        //updatePreviewPosition();
     }
 
-    /**
-     * Draws gesture preview text
-     * @param canvas The canvas where preview text is drawn.
-     */
-    @Override
-    public void drawPreview(@NonNull final Canvas canvas) {
-        if (!isPreviewEnabled() || mSuggestedWords.isEmpty()
-                || TextUtils.isEmpty(mSuggestedWords.getWord(0))) {
-            return;
-        }
-        final float round = mParams.mGesturePreviewRoundRadius;
-        canvas.drawRoundRect(
-                mGesturePreviewRectangle, round, round, mParams.getBackgroundPaint());
-        final String text = mSuggestedWords.getWord(0);
-        canvas.drawText(text, mPreviewTextX, mPreviewTextY, mParams.getTextPaint());
-    }
-
-    /**
-     * Updates gesture preview text position based on mLastPointerCoords.
-     */
-    protected void updatePreviewPosition() {
-        if (mSuggestedWords.isEmpty() || TextUtils.isEmpty(mSuggestedWords.getWord(0))) {
-            invalidateDrawingView();
-            return;
-        }
-        final String text = mSuggestedWords.getWord(0);
-
-        final int textHeight = mParams.mGesturePreviewTextHeight;
-        final float textWidth = mParams.getTextPaint().measureText(text);
-        final float hPad = mParams.mGesturePreviewHorizontalPadding;
-        final float vPad = mParams.mGesturePreviewVerticalPadding;
-        final float rectWidth = textWidth + hPad * 2.0f;
-        final float rectHeight = textHeight + vPad * 2.0f;
-
-        final float rectX = mParams.mGesturePreviewDynamic ? Math.min(
-                Math.max(CoordinateUtils.x(mLastPointerCoords) - rectWidth / 2.0f, 0.0f),
-                mParams.mDisplayWidth - rectWidth)
-            : (mParams.mDisplayWidth - rectWidth) / 2.0f;
-        final float rectY = mParams.mGesturePreviewDynamic ? CoordinateUtils.y(mLastPointerCoords)
-                - mParams.mGesturePreviewTextOffset - rectHeight
-            : -mParams.mGesturePreviewTextOffset - rectHeight;
-        mGesturePreviewRectangle.set(rectX, rectY, rectX + rectWidth, rectY + rectHeight);
-
-        mPreviewTextX = (int)(rectX + hPad + textWidth / 2.0f);
-        mPreviewTextY = (int)(rectY + vPad) + textHeight;
-        // TODO: Should narrow the invalidate region.
-        invalidateDrawingView();
-    }
 }
