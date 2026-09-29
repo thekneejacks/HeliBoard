@@ -19,7 +19,6 @@ import androidx.core.content.edit
 import helium314.keyboard.keyboard.KeyboardActionListener
 import helium314.keyboard.keyboard.KeyboardLayoutSet
 import helium314.keyboard.keyboard.KeyboardSwitcher
-import helium314.keyboard.keyboard.emoji.SupportedEmojis
 import helium314.keyboard.keyboard.internal.keyboard_parser.LocaleKeyboardInfos
 import helium314.keyboard.latin.BuildConfig
 import helium314.keyboard.latin.R
@@ -235,40 +234,6 @@ fun createAdvancedSettings(context: Context) = listOf(
             name = it.title,
             onClick = { SettingsDestination.navigateTo(SettingsDestination.Debug) }
         ) { NextScreenIcon() }
-    },
-    Setting(context, Settings.PREF_EMOJI_MAX_SDK, R.string.prefs_key_emoji_max_sdk) { setting ->
-        val ctx = LocalContext.current
-        SliderPreference(
-            name = setting.title,
-            key = setting.key,
-            default = 0,
-            range = 21f..36f,
-            description = {
-                "Android " + when(it) {
-                    21 -> "5.0"
-                    22 -> "5.1"
-                    23 -> "6"
-                    24 -> "7.0"
-                    25 -> "7.1"
-                    26 -> "8.0"
-                    27 -> "8.1"
-                    28 -> "9"
-                    29 -> "10"
-                    30 -> "11"
-                    31 -> "12"
-                    32 -> "12L"
-                    33 -> "13"
-                    34 -> "14"
-                    35 -> "15"
-                    36 -> "16"
-                    else -> "version unknown"
-                }
-            },
-            onConfirmed = {
-                SupportedEmojis.load(ctx)
-                KeyboardSwitcher.getInstance().setThemeNeedsReload()
-            }
-        )
     },
     Setting(context, Settings.PREF_URL_DETECTION, R.string.url_detection_title, R.string.url_detection_summary) {
         SwitchPreference(it, Defaults.PREF_URL_DETECTION)

@@ -8,7 +8,6 @@ import helium314.keyboard.compat.isDeviceLocked
 import helium314.keyboard.compat.isUserLocked
 import helium314.keyboard.keyboard.ColorSetting
 import helium314.keyboard.keyboard.KeyboardTheme
-import helium314.keyboard.keyboard.emoji.RecentEmojis
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode.checkAndConvertCode
 import helium314.keyboard.latin.common.ColorType
 import helium314.keyboard.latin.common.Constants.Separators
@@ -699,7 +698,6 @@ private object AppUpgrade {
             if (prefs.contains("emoji_recent_keys")) {
                 val old = JsonUtils.jsonStrToList(prefs.getString("emoji_recent_keys", ""))
                     .mapNotNull { it as? String ?: (it as? Int)?.let { StringUtils.newSingleCodePointString(it) } }
-                RecentEmojis.set(old)
                 prefs.edit { remove("emoji_recent_keys")  }
             }
         }

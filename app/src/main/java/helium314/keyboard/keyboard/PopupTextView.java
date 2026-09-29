@@ -12,7 +12,7 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
-import helium314.keyboard.keyboard.emoji.EmojiViewCallback;
+
 import helium314.keyboard.keyboard.internal.KeyDrawParams;
 import helium314.keyboard.latin.R;
 import helium314.keyboard.latin.common.ColorType;
@@ -29,7 +29,6 @@ public class PopupTextView extends TextView implements PopupKeysPanel {
     private int mOriginX;
     private int mOriginY;
     private Key mKey;
-    private EmojiViewCallback mEmojiViewCallback;
 
     public PopupTextView(final Context context, final AttributeSet attrs) {
         this(context, attrs, R.attr.popupKeysKeyboardViewStyle);
@@ -51,13 +50,6 @@ public class PopupTextView extends TextView implements PopupKeysPanel {
     @Override
     public void showPopupKeysPanel(final View parentView, final Controller controller,
             final int pointX, final int pointY, final KeyboardActionListener listener) {
-        showPopupKeysPanelInternal(parentView, controller, pointX, pointY);
-    }
-
-    @Override
-    public void showPopupKeysPanel(final View parentView, final Controller controller,
-            final int pointX, final int pointY, final EmojiViewCallback emojiViewCallback) {
-        mEmojiViewCallback = emojiViewCallback;
         showPopupKeysPanelInternal(parentView, controller, pointX, pointY);
     }
 
@@ -95,7 +87,6 @@ public class PopupTextView extends TextView implements PopupKeysPanel {
 
     @Override
     public void onUpEvent(final int x, final int y, final int pointerId, final long eventTime) {
-        mEmojiViewCallback.onReleaseKey(mKey);
     }
 
     @Override

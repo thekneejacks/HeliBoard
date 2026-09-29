@@ -29,9 +29,6 @@
             android:layoutDirection="ltr"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-        <include
-            android:id="@+id/emoji_palettes_view"
-            layout="@layout/emoji_palettes_view" />
 
         <ImageButton
             android:id="@+id/btn_stop_one_handed_mode"

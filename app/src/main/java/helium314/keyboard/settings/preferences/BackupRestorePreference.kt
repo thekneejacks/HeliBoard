@@ -17,7 +17,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.edit
 import helium314.keyboard.keyboard.KeyboardSwitcher
-import helium314.keyboard.keyboard.emoji.SupportedEmojis
 import helium314.keyboard.latin.R
 import helium314.keyboard.latin.checkVersionUpgrade
 import helium314.keyboard.latin.common.FileUtils
@@ -274,7 +273,6 @@ private fun restoreLauncher(onError: (String) -> Unit): ManagedActivityResultLau
         LayoutUtilsCustom.onLayoutFileChanged()
         LayoutUtilsCustom.removeMissingLayouts(ctx)
         (ctx.getActivity() as? SettingsActivity)?.prefChanged()
-        SupportedEmojis.load(ctx)
         KeyboardSwitcher.getInstance().setThemeNeedsReload()
     }
 }

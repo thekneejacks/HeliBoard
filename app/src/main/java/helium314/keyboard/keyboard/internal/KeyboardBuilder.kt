@@ -14,7 +14,6 @@ import helium314.keyboard.keyboard.Key.KeyParams
 import helium314.keyboard.keyboard.Keyboard
 import helium314.keyboard.keyboard.KeyboardElement
 import helium314.keyboard.keyboard.KeyboardId
-import helium314.keyboard.keyboard.internal.keyboard_parser.EmojiParser
 import helium314.keyboard.keyboard.internal.keyboard_parser.KeyboardParser
 import helium314.keyboard.keyboard.internal.keyboard_parser.LocaleKeyboardInfos
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode
@@ -45,11 +44,6 @@ open class KeyboardBuilder<KP : KeyboardParams>(protected val mContext: Context,
 
     fun load(id: KeyboardId): KeyboardBuilder<KP> {
         mParams.mId = id
-        if (id.element.isEmojiLayout) {
-            mParams.mAllowRedundantPopupKeys = true
-            readAttributes(R.xml.kbd_emoji)
-            keysInRows = EmojiParser(mParams, mContext).parse()
-        } else {
             try {
                 setupParams()
                 keysInRows = KeyboardParser(mParams, mContext).parseLayout()
@@ -60,7 +54,7 @@ open class KeyboardBuilder<KP : KeyboardParams>(protected val mContext: Context,
                 Log.e(TAG, "error parsing layout $id ${id.element}", e)
                 throw e
             }
-        }
+
         return this
     }
 
@@ -94,10 +88,6 @@ open class KeyboardBuilder<KP : KeyboardParams>(protected val mContext: Context,
 
     fun disableTouchPositionCorrectionDataForTest() {
         mParams.mTouchPositionCorrection.setEnabled(false)
-    }
-
-    fun setProximityCharsCorrectionEnabled(enabled: Boolean) {
-        mParams.mProximityCharsCorrectionEnabled = enabled
     }
 
     open fun build(): Keyboard {
