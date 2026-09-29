@@ -6,8 +6,6 @@
 
 package helium314.keyboard.latin.makedict;
 
-import com.android.inputmethod.latin.BinaryDictionary;
-
 import java.util.Arrays;
 
 import helium314.keyboard.latin.utils.CombinedFormatUtils;
@@ -20,6 +18,8 @@ public final class ProbabilityInfo {
     public final int mTimestamp;
     public final int mLevel;
     public final int mCount;
+
+    public static final int NOT_A_VALID_TIMESTAMP = -1;
 
     public static ProbabilityInfo max(final ProbabilityInfo probabilityInfo1,
             final ProbabilityInfo probabilityInfo2) {
@@ -34,7 +34,7 @@ public final class ProbabilityInfo {
     }
 
     public ProbabilityInfo(final int probability) {
-        this(probability, BinaryDictionary.NOT_A_VALID_TIMESTAMP, 0, 0);
+        this(probability, NOT_A_VALID_TIMESTAMP, 0, 0);
     }
 
     public ProbabilityInfo(final int probability, final int timestamp, final int level,
@@ -46,7 +46,7 @@ public final class ProbabilityInfo {
     }
 
     public boolean hasHistoricalInfo() {
-        return mTimestamp != BinaryDictionary.NOT_A_VALID_TIMESTAMP;
+        return mTimestamp != NOT_A_VALID_TIMESTAMP;
     }
 
     @Override

@@ -23,8 +23,6 @@ import helium314.keyboard.latin.settings.SettingsSubtype
 import helium314.keyboard.latin.settings.SettingsSubtype.Companion.toSettingsSubtype
 import helium314.keyboard.latin.settings.createPrefKeyForBooleanSettings
 import helium314.keyboard.latin.utils.DeviceProtectedUtils
-import helium314.keyboard.latin.utils.DictionaryInfoUtils
-import helium314.keyboard.latin.utils.DictionaryInfoUtils.USER_DICTIONARY_SUFFIX
 import helium314.keyboard.latin.utils.JsonUtils
 import helium314.keyboard.latin.utils.LayoutType
 import helium314.keyboard.latin.utils.LayoutType.Companion.folder
@@ -87,12 +85,12 @@ private object AppUpgrade {
             return
         }
         // clear extracted dictionaries, in case updated version contains newer ones
-        DictionaryInfoUtils.getCacheDirectories(context).forEach {
+       /* DictionaryInfoUtils.getCacheDirectories(context).forEach {
             for (file in it.listFiles()!!) {
                 if (!file.name.endsWith(USER_DICTIONARY_SUFFIX))
                     file.delete()
             }
-        }
+        }*/
         if (oldVersion <= 1000) { // upgrade old custom layouts name
             val oldShiftSymbolsFile = getCustomLayoutFile("custom.shift_symbols", context)
             if (oldShiftSymbolsFile.exists()) {

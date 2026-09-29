@@ -1,6 +1,5 @@
 package helium314.keyboard.settings.screens
 
-import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -43,8 +42,6 @@ import helium314.keyboard.latin.R
 import helium314.keyboard.latin.common.Constants.Separators
 import helium314.keyboard.latin.common.Constants.Subtype.ExtraValue
 import helium314.keyboard.latin.common.Links
-import helium314.keyboard.latin.common.LocaleUtils.constructLocale
-import helium314.keyboard.latin.common.LocaleUtils.localizedDisplayName
 import helium314.keyboard.latin.settings.Defaults
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.settings.SettingsSubtype
@@ -64,8 +61,6 @@ import helium314.keyboard.latin.utils.SubtypeSettings
 import helium314.keyboard.latin.utils.SubtypeUtilsAdditional
 import helium314.keyboard.latin.utils.Theme
 import helium314.keyboard.latin.utils.getActivity
-import helium314.keyboard.latin.utils.getDictionaryLocales
-import helium314.keyboard.latin.utils.getSecondaryLocales
 import helium314.keyboard.latin.utils.getStringResourceOrName
 import helium314.keyboard.latin.utils.htmlToAnnotated
 import helium314.keyboard.latin.utils.mainLayoutName
@@ -81,7 +76,6 @@ import helium314.keyboard.settings.WithSmallTitle
 import helium314.keyboard.settings.dialogs.ConfirmationDialog
 import helium314.keyboard.settings.dialogs.LayoutEditDialog
 import helium314.keyboard.settings.dialogs.ListPickerDialog
-import helium314.keyboard.settings.dialogs.MultiListPickerDialog
 import helium314.keyboard.settings.dialogs.ReorderDialog
 import helium314.keyboard.settings.initPreview
 import helium314.keyboard.settings.layoutFilePicker
@@ -124,7 +118,7 @@ fun SubtypeScreen(
             setCurrentSubtype(currentSubtype.with(ExtraValue.NO_SHIFT_KEY))
     }
 
-    val availableLocalesForScript = getAvailableSecondaryLocales(ctx, currentSubtype.locale).sortedBy { it.toLanguageTag() }
+    //val availableLocalesForScript = getAvailableSecondaryLocales(ctx, currentSubtype.locale).sortedBy { it.toLanguageTag() }
     var showSecondaryLocaleDialog by remember { mutableStateOf(false) }
     var showKeyOrderDialog by remember { mutableStateOf(false) }
     var showHintOrderDialog by remember { mutableStateOf(false) }
@@ -151,7 +145,7 @@ fun SubtypeScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 MainLayoutRow(currentSubtype, customMainLayouts) { setCurrentSubtype(it) }
-                if (availableLocalesForScript.size > 1) {
+                /*if (availableLocalesForScript.size > 1) {
                     WithSmallTitle(stringResource(R.string.secondary_locale)) {
                         ActionRow(onClick = { showSecondaryLocaleDialog = true }) {
                             val text = getSecondaryLocales(currentSubtype.extraValues).joinToString(", ") {
@@ -163,7 +157,7 @@ fun SubtypeScreen(
                             )
                         }
                     }
-                }
+                }*/
                 WithSmallTitle(stringResource(R.string.popup_order_and_hint_source)) {
                     ActionRow(onClick = { showKeyOrderDialog = true }) {
                         Text(stringResource(R.string.popup_order),
@@ -285,7 +279,7 @@ fun SubtypeScreen(
                 }
             }
         }
-        if (showSecondaryLocaleDialog)
+        /*if (showSecondaryLocaleDialog)
             MultiListPickerDialog(
                 onDismissRequest = { showSecondaryLocaleDialog = false },
                 onConfirmed = { locales ->
@@ -300,7 +294,7 @@ fun SubtypeScreen(
                 initialSelection = currentSubtype.getExtraValueOf(ExtraValue.SECONDARY_LOCALES)
                     ?.split(Separators.KV)?.map { it.constructLocale() }.orEmpty(),
                 getItemName = { it.localizedDisplayName(ctx.resources) }
-            )
+            )*/
         if (showKeyOrderDialog) {
             val setting = currentSubtype.getExtraValueOf(ExtraValue.POPUP_ORDER)
             PopupOrderDialog(
@@ -499,9 +493,6 @@ private fun MainLayoutRow(
         }
     }
 }
-
-private fun getAvailableSecondaryLocales(context: Context, mainLocale: Locale): List<Locale> =
-    getDictionaryLocales(context).filter { it != mainLocale && it.script() == mainLocale.script() }
 
 @Preview
 @Composable

@@ -9,15 +9,12 @@ package helium314.keyboard.latin.makedict;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.android.inputmethod.latin.BinaryDictionary;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import helium314.keyboard.latin.NgramContext;
 import helium314.keyboard.latin.NgramContext.WordInfo;
 import helium314.keyboard.latin.common.StringUtils;
-import helium314.keyboard.latin.dictionary.Dictionary;
 import helium314.keyboard.latin.utils.CombinedFormatUtils;
 
 /**
@@ -63,12 +60,17 @@ public final class WordProperty implements Comparable<WordProperty> {
         mHasShortcuts = shortcutTargets != null && !shortcutTargets.isEmpty();
     }
 
+    public static final int FORMAT_WORD_PROPERTY_PROBABILITY_INDEX = 0;
+    public static final int FORMAT_WORD_PROPERTY_TIMESTAMP_INDEX = 1;
+    public static final int FORMAT_WORD_PROPERTY_LEVEL_INDEX = 2;
+    public static final int FORMAT_WORD_PROPERTY_COUNT_INDEX = 3;
+
     private static ProbabilityInfo createProbabilityInfoFromArray(final int[] probabilityInfo) {
       return new ProbabilityInfo(
-              probabilityInfo[BinaryDictionary.FORMAT_WORD_PROPERTY_PROBABILITY_INDEX],
-              probabilityInfo[BinaryDictionary.FORMAT_WORD_PROPERTY_TIMESTAMP_INDEX],
-              probabilityInfo[BinaryDictionary.FORMAT_WORD_PROPERTY_LEVEL_INDEX],
-              probabilityInfo[BinaryDictionary.FORMAT_WORD_PROPERTY_COUNT_INDEX]);
+              probabilityInfo[FORMAT_WORD_PROPERTY_PROBABILITY_INDEX],
+              probabilityInfo[FORMAT_WORD_PROPERTY_TIMESTAMP_INDEX],
+              probabilityInfo[FORMAT_WORD_PROPERTY_LEVEL_INDEX],
+              probabilityInfo[FORMAT_WORD_PROPERTY_COUNT_INDEX]);
     }
 
     // Construct word property using information from native code.
@@ -195,8 +197,10 @@ public final class WordProperty implements Comparable<WordProperty> {
         return mHashCode;
     }
 
+    public static final int NOT_A_PROBABILITY = -1;
+
     public boolean isValid() {
-        return getProbability() != Dictionary.NOT_A_PROBABILITY;
+        return getProbability() != NOT_A_PROBABILITY;
     }
 
     @Override

@@ -14,7 +14,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.core.content.edit
 import helium314.keyboard.latin.R
 import helium314.keyboard.latin.common.Links
-import helium314.keyboard.latin.utils.DictionaryInfoUtils
 import helium314.keyboard.latin.utils.Log
 import helium314.keyboard.latin.utils.getActivity
 import helium314.keyboard.latin.utils.htmlToAnnotated
@@ -83,7 +82,7 @@ fun SwitchPreference(
 fun SwitchPreferenceWithEmojiDictWarning(setting: Setting, default: Boolean) {
     val context = LocalContext.current
     var showWarningDialog by rememberSaveable { mutableStateOf(false) }
-    val hasEmojiDict = DictionaryInfoUtils.getLocalesWithEmojiDicts(context).isNotEmpty()
+    val hasEmojiDict = false
     SwitchPreference(setting, default && hasEmojiDict) { showWarningDialog = it && !hasEmojiDict }
     if (showWarningDialog) {
         // emoji_dictionary_required contains "%s" since we didn't supply a formatArg

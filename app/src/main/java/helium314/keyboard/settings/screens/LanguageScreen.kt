@@ -33,9 +33,7 @@ import helium314.keyboard.latin.common.LocaleUtils.localizedDisplayName
 import helium314.keyboard.latin.common.splitOnWhitespace
 import helium314.keyboard.latin.settings.Defaults
 import helium314.keyboard.latin.settings.SettingsSubtype.Companion.toSettingsSubtype
-import helium314.keyboard.latin.utils.DictionaryInfoUtils
 import helium314.keyboard.latin.utils.Log
-import helium314.keyboard.latin.utils.MissingDictionaryDialog
 import helium314.keyboard.latin.utils.SubtypeLocaleUtils
 import helium314.keyboard.latin.utils.SubtypeLocaleUtils.displayName
 import helium314.keyboard.latin.utils.SubtypeSettings
@@ -117,8 +115,8 @@ private fun SubtypeRow(subtype: InputMethodSubtype, isEnabled: Boolean) {
                 else SubtypeSettings.removeEnabledSubtype(ctx, subtype)
             }
         )
-        if (showNoDictDialog)
-            MissingDictionaryDialog({ showNoDictDialog = false }, subtype.locale())
+        /*if (showNoDictDialog)
+            MissingDictionaryDialog({ showNoDictDialog = false }, subtype.locale())*/
     }
 }
 
@@ -126,11 +124,6 @@ private fun SubtypeRow(subtype: InputMethodSubtype, isEnabled: Boolean) {
 private fun getSortedSubtypes(context: Context): List<InputMethodSubtype> {
     val systemLocales = SubtypeSettings.getSystemLocales()
     val enabledSubtypes = SubtypeSettings.getEnabledSubtypes(true)
-    val localesWithDictionary = DictionaryInfoUtils.getCacheDirectories(context).mapNotNull { dir ->
-        if (dir.list()?.any { it.endsWith(DictionaryInfoUtils.USER_DICTIONARY_SUFFIX) } == true)
-            dir.name.constructLocale()
-        else null
-    }
 
     val defaultAdditionalSubtypes = Defaults.PREF_ADDITIONAL_SUBTYPES.split(Separators.SETS).map {
         it.substringBefore(Separators.SET) to (it.substringAfter(Separators.SET) + ",AsciiCapable,EmojiCapable,isAdditionalSubtype")
@@ -140,7 +133,6 @@ private fun getSortedSubtypes(context: Context): List<InputMethodSubtype> {
 
     val subtypeSortComparator = compareBy<InputMethodSubtype>(
         { it !in enabledSubtypes },
-        { it.locale() !in localesWithDictionary },
         { it.locale() !in systemLocales},
         { !(SubtypeSettings.isAdditionalSubtype(it) && !isDefaultSubtype(it) ) },
         {
