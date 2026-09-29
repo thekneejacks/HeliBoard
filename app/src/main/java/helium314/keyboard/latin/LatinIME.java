@@ -71,7 +71,6 @@ import helium314.keyboard.latin.inputlogic.InputLogic;
 import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.settings.SettingsValues;
 import helium314.keyboard.latin.suggestions.SuggestionStripView;
-import helium314.keyboard.latin.touchinputconsumer.GestureConsumer;
 import helium314.keyboard.latin.utils.ColorUtilKt;
 import helium314.keyboard.latin.utils.FloatingKeyboardUtils;
 import helium314.keyboard.latin.utils.FoldableUtils;
@@ -158,8 +157,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
     private AlertDialog mOptionsDialog;
 
     private final boolean mIsHardwareAcceleratedDrawingEnabled;
-
-    private GestureConsumer mGestureConsumer = GestureConsumer.NULL_GESTURE_CONSUMER;
 
     private final ClipboardHistoryManager mClipboardHistoryManager = new ClipboardHistoryManager(this);
 
@@ -602,8 +599,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
     public void onFinishInputView(final boolean finishingInput) {
         StatsUtils.onFinishInputView();
         mHandler.onFinishInputView(finishingInput);
-
-        mGestureConsumer = GestureConsumer.NULL_GESTURE_CONSUMER;
         //BackgroundGatheringCache.saveOrClear(this);
     }
 
@@ -664,7 +659,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
 
         // Switch to the null consumer to handle cases leading to early exit below, for which we
         // also wouldn't be consuming gesture data.
-        mGestureConsumer = GestureConsumer.NULL_GESTURE_CONSUMER;
         mRichImm.refreshSubtypeCaches();
         final KeyboardSwitcher switcher = mKeyboardSwitcher;
 
@@ -702,13 +696,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
             return;
         }
 
-
-
-        // Update to a gesture consumer with the current editor and IME state.
-        mGestureConsumer = GestureConsumer.newInstance(editorInfo,
-                mInputLogic.getPrivateCommandPerformer(),
-                mRichImm.getCurrentSubtypeLocale(),
-                switcher.getKeyboard());
 
         // Forward this event to the accessibility utilities, if enabled.
         final AccessibilityUtils accessUtils = AccessibilityUtils.Companion.getInstance();
@@ -796,11 +783,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
         mainKeyboardView.setMainDictionaryAvailability(false);
         mainKeyboardView.setKeyPreviewPopupEnabled(currentSettingsValues.mKeyPreviewPopupOn);
         mainKeyboardView.setSlidingKeyInputPreviewEnabled(currentSettingsValues.mSlidingKeyInputPreviewEnabled);
-        mainKeyboardView.setGestureHandlingEnabledByUser(
-                currentSettingsValues.mGestureInputEnabled,
-                currentSettingsValues.mGestureTrailEnabled,
-                currentSettingsValues.mGestureFloatingPreviewTextEnabled);
-
         if (TRACE) Debug.startMethodTracing("/data/trace/latinime");
     }
 
@@ -1228,7 +1210,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
 
     public void onStartBatchInput() {
         mInputLogic.onStartBatchInput(mSettings.getCurrent(), mKeyboardSwitcher, mHandler);
-        mGestureConsumer.onGestureStarted(mRichImm.getCurrentSubtypeLocale(), mKeyboardSwitcher.getKeyboard());
     }
 
     public void onUpdateBatchInput(final InputPointers batchPointers) {
@@ -1237,12 +1218,10 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
 
     public void onEndBatchInput(final InputPointers batchPointers) {
         mInputLogic.onEndBatchInput(batchPointers);
-        mGestureConsumer.onGestureCompleted(batchPointers);
     }
 
     public void onCancelBatchInput() {
         mInputLogic.onCancelBatchInput(mHandler);
-        mGestureConsumer.onGestureCanceled();
     }
 
     public boolean hasSuggestionStripView() {

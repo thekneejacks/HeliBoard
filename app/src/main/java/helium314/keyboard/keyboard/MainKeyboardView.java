@@ -438,13 +438,6 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
         PointerTracker.setMainDictionaryAvailability(mainDictionaryAvailable);
     }
 
-    public void setGestureHandlingEnabledByUser(final boolean isGestureHandlingEnabledByUser,
-            final boolean isGestureTrailEnabled,
-            final boolean isGestureFloatingPreviewTextEnabled) {
-        PointerTracker.setGestureHandlingEnabledByUser(isGestureHandlingEnabledByUser);
-        setGesturePreviewMode(isGestureHandlingEnabledByUser && isGestureTrailEnabled,
-                isGestureHandlingEnabledByUser && isGestureFloatingPreviewTextEnabled);
-    }
 
     @Override
     protected void onAttachedToWindow() {
