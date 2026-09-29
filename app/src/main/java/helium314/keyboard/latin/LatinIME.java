@@ -73,7 +73,6 @@ import helium314.keyboard.latin.suggestions.SuggestionStripView;
 import helium314.keyboard.latin.utils.ColorUtilKt;
 import helium314.keyboard.latin.utils.FloatingKeyboardUtils;
 import helium314.keyboard.latin.utils.FoldableUtils;
-import helium314.keyboard.latin.utils.InlineAutofillUtils;
 import helium314.keyboard.latin.utils.InputMethodPickerKt;
 import helium314.keyboard.latin.utils.JniUtils;
 import helium314.keyboard.latin.utils.KtxKt;
@@ -1075,39 +1074,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
         KtxKt.updateSoftInputWindowLayoutParameters(this, mInputView);
     }
 
-    @Override
-    @RequiresApi(api = Build.VERSION_CODES.R)
-    public InlineSuggestionsRequest onCreateInlineSuggestionsRequest(@NonNull Bundle uiExtras) {
-        Log.d(TAG,"onCreateInlineSuggestionsRequest called");
-        if (Settings.getValues().mSuggestionStripHiddenPerUserSettings) {
-            return null;
-        }
-
-        return InlineAutofillUtils.createInlineSuggestionRequest(mDisplayContext);
-    }
-
-    @Override
-    @RequiresApi(api = Build.VERSION_CODES.R)
-    public boolean onInlineSuggestionsResponse(InlineSuggestionsResponse response) {
-        Log.d(TAG,"onInlineSuggestionsResponse called");
-        if (Settings.getValues().mSuggestionStripHiddenPerUserSettings) {
-            return false;
-        }
-
-        final List<InlineSuggestion> inlineSuggestions = response.getInlineSuggestions();
-        if (inlineSuggestions.isEmpty()) {
-            return false;
-        }
-
-        final View inlineSuggestionView = InlineAutofillUtils.createView(inlineSuggestions, mDisplayContext);
-
-        // Without this function the inline autofill suggestions will not be visible
-        mHandler.cancelResumeSuggestions();
-
-        mSuggestionStripView.setExternalSuggestionView(inlineSuggestionView, true);
-
-        return true;
-    }
 
     public int getCurrentAutoCapsState() {
         return mInputLogic.getCurrentAutoCapsState(mSettings.getCurrent());

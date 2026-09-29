@@ -41,7 +41,6 @@ import helium314.keyboard.latin.utils.ToolbarKey
 import helium314.keyboard.latin.utils.ToolbarMode
 import helium314.keyboard.latin.utils.addPinnedKey
 import helium314.keyboard.latin.utils.createToolbarKey
-import helium314.keyboard.latin.utils.dpToPx
 import helium314.keyboard.latin.utils.getEnabledToolbarKeys
 import helium314.keyboard.latin.utils.getPinnedToolbarKeys
 import helium314.keyboard.latin.utils.onClickToolbarKey
@@ -199,32 +198,6 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
         }
 
         toolbarExpandKey.scaleX = (if (toolbarVisible) -1f else 1f) * direction
-    }
-
-    fun setExternalSuggestionView(view: View?, addCloseButton: Boolean) {
-        clear()
-        isExternalSuggestionVisible = true
-
-        if (addCloseButton) {
-            val wrapper = LinearLayout(context)
-            suggestionsStrip.doOnNextLayout {
-                wrapper.layoutParams = LinearLayout.LayoutParams(suggestionsStrip.width - 30.dpToPx(resources), LayoutParams.MATCH_PARENT)
-            }
-            wrapper.addView(view)
-            suggestionsStrip.addView(wrapper)
-
-            /*val closeButton = createToolbarKey(context, ToolbarKey.CLOSE_HISTORY)
-            closeButton.layoutParams = toolbarKeyLayoutParams
-            setupKey(closeButton, Settings.getValues().mColors)
-            closeButton.setOnClickListener {
-                listener.removeExternalSuggestions()
-            }
-            suggestionsStrip.addView(closeButton)*/
-        } else {
-            suggestionsStrip.addView(view)
-        }
-
-        if (Settings.getValues().mAutoHideToolbar) setToolbarVisibility(false)
     }
 
     fun setMoreSuggestionsHeight(remainingHeight: Int) {
