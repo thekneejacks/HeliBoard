@@ -16,7 +16,6 @@ import android.widget.FrameLayout;
 
 import androidx.core.view.ViewKt;
 
-import helium314.keyboard.accessibility.AccessibilityUtils;
 import helium314.keyboard.keyboard.MainKeyboardView;
 import helium314.keyboard.latin.common.ColorType;
 import helium314.keyboard.latin.settings.Settings;
@@ -52,12 +51,12 @@ public final class InputView extends FrameLayout {
 
     @Override
     protected boolean dispatchHoverEvent(final MotionEvent event) {
-        if (AccessibilityUtils.Companion.getInstance().isTouchExplorationEnabled()
+        /*if (AccessibilityUtils.Companion.getInstance().isTouchExplorationEnabled()
                 && mMainKeyboardView.isShowingPopupKeysPanel()) {
             // With accessibility mode on, discard hover events while a popup keys keyboard is shown.
             // The {@link PopupKeysKeyboard} receives hover events directly from the platform.
             return true;
-        }
+        }*/
         return super.dispatchHoverEvent(event);
     }
 

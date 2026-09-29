@@ -33,8 +33,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.WeakHashMap;
 
-import helium314.keyboard.accessibility.AccessibilityUtils;
-import helium314.keyboard.accessibility.MainKeyboardAccessibilityDelegate;
 import helium314.keyboard.compat.ConfigurationCompatKt;
 import helium314.keyboard.keyboard.internal.DrawingPreviewPlacerView;
 import helium314.keyboard.keyboard.internal.DrawingProxy;
@@ -121,8 +119,6 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
 
     private final TimerHandler mTimerHandler;
     private final int mLanguageOnSpacebarHorizontalMargin;
-
-    private MainKeyboardAccessibilityDelegate mAccessibilityDelegate;
 
     public MainKeyboardView(final Context context, final AttributeSet attrs) {
         this(context, attrs, R.attr.mainKeyboardViewStyle);
@@ -313,14 +309,14 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
         final int keyHeight = keyboard.mMostCommonKeyHeight - keyboard.mVerticalGap;
         mLanguageOnSpacebarTextSize = keyHeight * mLanguageOnSpacebarTextRatio;
 
-        if (AccessibilityUtils.Companion.getInstance().isAccessibilityEnabled()) {
+        /*if (AccessibilityUtils.Companion.getInstance().isAccessibilityEnabled()) {
             if (mAccessibilityDelegate == null) {
                 mAccessibilityDelegate = new MainKeyboardAccessibilityDelegate(this, mKeyDetector);
             }
             mAccessibilityDelegate.setKeyboard(keyboard);
         } else {
             mAccessibilityDelegate = null;
-        }
+        }*/
     }
 
     /**
@@ -601,11 +597,11 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
 
     public void onHideWindow() {
         onDismissPopupKeysPanel();
-        final MainKeyboardAccessibilityDelegate accessibilityDelegate = mAccessibilityDelegate;
-        if (accessibilityDelegate != null
+        //final MainKeyboardAccessibilityDelegate accessibilityDelegate = mAccessibilityDelegate;
+        /*if (accessibilityDelegate != null
                 && AccessibilityUtils.Companion.getInstance().isAccessibilityEnabled()) {
             accessibilityDelegate.onHideWindow();
-        }
+        }*/
     }
 
     /**
@@ -613,11 +609,11 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
      */
     @Override
     public boolean onHoverEvent(final MotionEvent event) {
-        final MainKeyboardAccessibilityDelegate accessibilityDelegate = mAccessibilityDelegate;
+        /*final MainKeyboardAccessibilityDelegate accessibilityDelegate = mAccessibilityDelegate;
         if (accessibilityDelegate != null
                 && AccessibilityUtils.Companion.getInstance().isTouchExplorationEnabled()) {
             return accessibilityDelegate.onHoverEvent(event);
-        }
+        }*/
         return super.onHoverEvent(event);
     }
 

@@ -19,8 +19,6 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
-import helium314.keyboard.accessibility.AccessibilityUtils;
-import helium314.keyboard.accessibility.PopupKeysKeyboardAccessibilityDelegate;
 import helium314.keyboard.keyboard.emoji.EmojiViewCallback;
 import helium314.keyboard.keyboard.internal.KeyDrawParams;
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
@@ -46,8 +44,6 @@ public class PopupKeysKeyboardView extends KeyboardView implements PopupKeysPane
     private Key mCurrentKey;
 
     private int mActivePointerId;
-
-    protected PopupKeysKeyboardAccessibilityDelegate mAccessibilityDelegate;
 
     public PopupKeysKeyboardView(final Context context, final AttributeSet attrs) {
         this(context, attrs, R.attr.popupKeysKeyboardViewStyle);
@@ -98,7 +94,7 @@ public class PopupKeysKeyboardView extends KeyboardView implements PopupKeysPane
         super.setKeyboard(keyboard);
         mKeyDetector.setKeyboard(
                 keyboard, -getPaddingLeft(), -getPaddingTop() + getVerticalCorrection());
-        if (AccessibilityUtils.Companion.getInstance().isAccessibilityEnabled()) {
+        /*if (AccessibilityUtils.Companion.getInstance().isAccessibilityEnabled()) {
             if (mAccessibilityDelegate == null) {
                 mAccessibilityDelegate = new PopupKeysKeyboardAccessibilityDelegate(
                         this, mKeyDetector);
@@ -108,7 +104,7 @@ public class PopupKeysKeyboardView extends KeyboardView implements PopupKeysPane
             mAccessibilityDelegate.setKeyboard(keyboard);
         } else {
             mAccessibilityDelegate = null;
-        }
+        }*/
         final Key shortcutKey = keyboard.getKey(KeyCode.VOICE_INPUT);
         if (shortcutKey != null) {
             shortcutKey.setEnabled(RichInputMethodManager.getInstance().isShortcutImeReady());
@@ -178,11 +174,11 @@ public class PopupKeysKeyboardView extends KeyboardView implements PopupKeysPane
         mOriginX = panelFinalX;
         mOriginY = y + container.getPaddingTop() + (int) getY();
         controller.onShowPopupKeysPanel(this);
-        final PopupKeysKeyboardAccessibilityDelegate accessibilityDelegate = mAccessibilityDelegate;
+        /*final PopupKeysKeyboardAccessibilityDelegate accessibilityDelegate = mAccessibilityDelegate;
         if (accessibilityDelegate != null
                 && AccessibilityUtils.Companion.getInstance().isAccessibilityEnabled()) {
             accessibilityDelegate.onShowPopupKeysKeyboard();
-        }
+        }*/
     }
 
     /**
@@ -280,11 +276,11 @@ public class PopupKeysKeyboardView extends KeyboardView implements PopupKeysPane
         if (!isShowingInParent()) {
             return;
         }
-        final PopupKeysKeyboardAccessibilityDelegate accessibilityDelegate = mAccessibilityDelegate;
+        /*final PopupKeysKeyboardAccessibilityDelegate accessibilityDelegate = mAccessibilityDelegate;
         if (accessibilityDelegate != null
                 && AccessibilityUtils.Companion.getInstance().isAccessibilityEnabled()) {
             accessibilityDelegate.onDismissPopupKeysKeyboard();
-        }
+        }*/
         mController.onDismissPopupKeysPanel();
     }
 
@@ -328,11 +324,11 @@ public class PopupKeysKeyboardView extends KeyboardView implements PopupKeysPane
      */
     @Override
     public boolean onHoverEvent(final MotionEvent event) {
-        final PopupKeysKeyboardAccessibilityDelegate accessibilityDelegate = mAccessibilityDelegate;
+        /*final PopupKeysKeyboardAccessibilityDelegate accessibilityDelegate = mAccessibilityDelegate;
         if (accessibilityDelegate != null
                 && AccessibilityUtils.Companion.getInstance().isTouchExplorationEnabled()) {
             return accessibilityDelegate.onHoverEvent(event);
-        }
+        }*/
         return super.onHoverEvent(event);
     }
 }

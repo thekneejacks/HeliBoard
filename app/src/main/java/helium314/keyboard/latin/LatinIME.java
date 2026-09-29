@@ -44,7 +44,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import helium314.keyboard.accessibility.AccessibilityUtils;
 import helium314.keyboard.compat.EditorInfoCompatUtils;
 import helium314.keyboard.compat.ImeCompat;
 import helium314.keyboard.event.Event;
@@ -447,7 +446,7 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
         KeyboardIconsSet.Companion.getInstance().loadIcons(this);
         mRichImm = RichInputMethodManager.getInstance();
         AudioAndHapticFeedbackManager.init(this);
-        AccessibilityUtils.init(this);
+        //AccessibilityUtils.init(this);
         mDisplayContext = KtxKt.getDisplayContext(this);
         KeyboardSwitcher.init(this);
         super.onCreate();
@@ -698,10 +697,10 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
 
 
         // Forward this event to the accessibility utilities, if enabled.
-        final AccessibilityUtils accessUtils = AccessibilityUtils.Companion.getInstance();
+        /*final AccessibilityUtils accessUtils = AccessibilityUtils.Companion.getInstance();
         if (accessUtils.isTouchExplorationEnabled()) {
             accessUtils.onStartInputViewInternal(mainKeyboardView, editorInfo, restarting);
-        }
+        }*/
 
         StatsUtils.onStartInputView(editorInfo.inputType,
                 Settings.getValues().mDisplayOrientation,

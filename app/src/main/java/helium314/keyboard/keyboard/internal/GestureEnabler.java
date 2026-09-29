@@ -6,8 +6,6 @@
 
 package helium314.keyboard.keyboard.internal;
 
-import helium314.keyboard.accessibility.AccessibilityUtils;
-
 public final class GestureEnabler {
     /** True if we should handle gesture events. */
     private boolean mShouldHandleGesture;
@@ -18,8 +16,8 @@ public final class GestureEnabler {
     private void updateGestureHandlingMode() {
         mShouldHandleGesture = mMainDictionaryAvailable
                 && mGestureHandlingEnabledByInputField
-                && mGestureHandlingEnabledByUser
-                && !AccessibilityUtils.Companion.getInstance().isTouchExplorationEnabled();
+                && mGestureHandlingEnabledByUser;
+                //&& !AccessibilityUtils.Companion.getInstance().isTouchExplorationEnabled();
     }
 
     // Note that this method is called from a non-UI thread.

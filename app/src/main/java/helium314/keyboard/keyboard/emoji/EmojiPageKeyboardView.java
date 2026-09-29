@@ -28,8 +28,6 @@ import androidx.annotation.Nullable;
 
 import java.util.WeakHashMap;
 
-import helium314.keyboard.accessibility.AccessibilityUtils;
-import helium314.keyboard.accessibility.KeyboardAccessibilityDelegate;
 import helium314.keyboard.keyboard.Key;
 import helium314.keyboard.keyboard.KeyDetector;
 import helium314.keyboard.keyboard.Keyboard;
@@ -68,7 +66,6 @@ public final class EmojiPageKeyboardView extends KeyboardView implements
 
     private EmojiViewCallback mEmojiViewCallback = EMPTY_EMOJI_VIEW_CALLBACK;
     private final KeyDetector mKeyDetector = new KeyDetector();
-    private KeyboardAccessibilityDelegate<EmojiPageKeyboardView> mAccessibilityDelegate;
 
     // Touch inputs
     private int mPointerId = MotionEvent.INVALID_POINTER_ID;
@@ -169,14 +166,14 @@ public final class EmojiPageKeyboardView extends KeyboardView implements
         super.setKeyboard(keyboard);
         mKeyDetector.setKeyboard(keyboard, 0 /* correctionX */, 0 /* correctionY */);
         mPopupKeysKeyboardCache.clear();
-        if (AccessibilityUtils.Companion.getInstance().isAccessibilityEnabled()) {
+        /*if (AccessibilityUtils.Companion.getInstance().isAccessibilityEnabled()) {
             if (mAccessibilityDelegate == null) {
                 mAccessibilityDelegate = new KeyboardAccessibilityDelegate<>(this, mKeyDetector);
             }
             mAccessibilityDelegate.setKeyboard(keyboard);
         } else {
             mAccessibilityDelegate = null;
-        }
+        }*/
     }
 
     @Nullable
@@ -257,10 +254,10 @@ public final class EmojiPageKeyboardView extends KeyboardView implements
      */
     @Override
     public boolean onHoverEvent(final MotionEvent event) {
-        final KeyboardAccessibilityDelegate<EmojiPageKeyboardView> accessibilityDelegate = mAccessibilityDelegate;
+        /*final KeyboardAccessibilityDelegate<EmojiPageKeyboardView> accessibilityDelegate = mAccessibilityDelegate;
         if (accessibilityDelegate != null && AccessibilityUtils.Companion.getInstance().isTouchExplorationEnabled()) {
             return accessibilityDelegate.onHoverEvent(event);
-        }
+        }*/
         return super.onHoverEvent(event);
     }
 

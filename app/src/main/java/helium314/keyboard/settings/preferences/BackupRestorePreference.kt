@@ -16,7 +16,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.edit
-import helium314.keyboard.dictionarypack.DictionaryPackConstants
 import helium314.keyboard.keyboard.KeyboardSwitcher
 import helium314.keyboard.keyboard.emoji.SupportedEmojis
 import helium314.keyboard.latin.R
@@ -272,8 +271,6 @@ private fun restoreLauncher(onError: (String) -> Unit): ManagedActivityResultLau
         transferOldPinnedClips(ctx)
         Settings.getInstance().startListener()
         SubtypeSettings.reloadEnabledSubtypes(ctx)
-        val newDictBroadcast = Intent(DictionaryPackConstants.NEW_DICTIONARY_INTENT_ACTION)
-        ctx.getActivity()?.sendBroadcast(newDictBroadcast)
         LayoutUtilsCustom.onLayoutFileChanged()
         LayoutUtilsCustom.removeMissingLayouts(ctx)
         (ctx.getActivity() as? SettingsActivity)?.prefChanged()
