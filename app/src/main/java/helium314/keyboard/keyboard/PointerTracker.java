@@ -559,11 +559,7 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
     }
 
     private void showGestureTrail() {
-        if (mIsTrackingForActionDisabled) {
-            return;
-        }
-        // A gesture floating preview text will be shown at the oldest pointer/finger on the screen.
-        sDrawingProxy.showGestureTrail(this, isOldestTrackerInQueue());
+        return;
     }
 
     public void updateBatchInputByTimer(final long syntheticMoveEventTime) {

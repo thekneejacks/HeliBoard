@@ -53,12 +53,4 @@ public interface DrawingProxy {
      */
     void showSlidingKeyInputPreview(@Nullable PointerTracker tracker);
 
-    /**
-     * Show gesture trails.
-     * @param tracker the {@link PointerTracker} whose gesture trail will be shown.
-     * @param showsFloatingPreviewText when true, a gesture floating preview text will be shown
-     * with this <code>tracker</code>'s trail.
-     */
-    void showGestureTrail(@NonNull PointerTracker tracker, boolean showsFloatingPreviewText);
-
 }

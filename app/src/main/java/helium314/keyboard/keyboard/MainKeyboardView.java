@@ -36,8 +36,6 @@ import java.util.WeakHashMap;
 import helium314.keyboard.compat.ConfigurationCompatKt;
 import helium314.keyboard.keyboard.internal.DrawingPreviewPlacerView;
 import helium314.keyboard.keyboard.internal.DrawingProxy;
-import helium314.keyboard.keyboard.internal.GestureFloatingTextDrawingPreview;
-import helium314.keyboard.keyboard.internal.GestureTrailsDrawingPreview;
 import helium314.keyboard.keyboard.internal.KeyDrawParams;
 import helium314.keyboard.keyboard.internal.KeyPreviewChoreographer;
 import helium314.keyboard.keyboard.internal.KeyPreviewDrawParams;
@@ -93,8 +91,6 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
     // Drawing preview placer view
     private final DrawingPreviewPlacerView mDrawingPreviewPlacerView;
     private final int[] mOriginCoords = CoordinateUtils.newInstance();
-    private final GestureFloatingTextDrawingPreview mGestureFloatingTextDrawingPreview;
-    private final GestureTrailsDrawingPreview mGestureTrailsDrawingPreview;
     private final SlidingKeyInputDrawingPreview mSlidingKeyInputDrawingPreview;
 
     // Key preview
@@ -189,12 +185,6 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
 
         final int gestureTrailFadeoutDuration = Settings.getValues().mGestureTrailFadeoutDuration;
         mGestureFloatingPreviewTextLingerTimeout = gestureTrailFadeoutDuration / 4;
-
-        mGestureFloatingTextDrawingPreview = new GestureFloatingTextDrawingPreview(mainKeyboardViewAttr);
-        mGestureFloatingTextDrawingPreview.setDrawingView(drawingPreviewPlacerView);
-
-        mGestureTrailsDrawingPreview = new GestureTrailsDrawingPreview(mainKeyboardViewAttr);
-        mGestureTrailsDrawingPreview.setDrawingView(drawingPreviewPlacerView);
 
         mSlidingKeyInputDrawingPreview = new SlidingKeyInputDrawingPreview(mainKeyboardViewAttr);
         mSlidingKeyInputDrawingPreview.setDrawingView(drawingPreviewPlacerView);
@@ -412,22 +402,6 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
         }
     }
 
-    private void setGesturePreviewMode(final boolean isGestureTrailEnabled,
-            final boolean isGestureFloatingPreviewTextEnabled) {
-        mGestureFloatingTextDrawingPreview.setPreviewEnabled(isGestureFloatingPreviewTextEnabled);
-        mGestureTrailsDrawingPreview.setPreviewEnabled(isGestureTrailEnabled);
-    }
-
-    @Override
-    public void showGestureTrail(@NonNull final PointerTracker tracker,
-            final boolean showsFloatingPreviewText) {
-        locatePreviewPlacerView();
-        if (showsFloatingPreviewText) {
-            mGestureFloatingTextDrawingPreview.setPreviewPosition(tracker);
-        }
-        mGestureTrailsDrawingPreview.setPreviewPosition(tracker);
-    }
-
     // Note that this method is called from a non-UI thread.
     @SuppressWarnings("static-method")
     public void setMainDictionaryAvailability(final boolean mainDictionaryAvailable) {
@@ -584,7 +558,6 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
     public void cancelAllOngoingEvents() {
         mTimerHandler.cancelAllMessages();
         PointerTracker.setReleasedKeyGraphicsToAllKeys();
-        //mGestureFloatingTextDrawingPreview.dismissGestureFloatingPreviewText();
         mSlidingKeyInputDrawingPreview.dismissSlidingKeyInputPreview();
         PointerTracker.dismissAllPopupKeysPanels();
         PointerTracker.cancelAllPointerTrackers();
