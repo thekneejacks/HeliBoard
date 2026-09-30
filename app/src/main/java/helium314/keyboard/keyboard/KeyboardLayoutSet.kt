@@ -20,7 +20,6 @@ import helium314.keyboard.latin.RichInputMethodSubtype.Companion.emojiSubtype
 import helium314.keyboard.latin.RichInputMethodSubtype.Companion.noLanguageSubtype
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.utils.InputTypeUtils
-import helium314.keyboard.latin.utils.Log
 import helium314.keyboard.latin.utils.ResourceUtils
 import helium314.keyboard.latin.utils.ScriptUtils
 import helium314.keyboard.latin.utils.ScriptUtils.script
@@ -62,7 +61,7 @@ class KeyboardLayoutSet internal constructor(private val mContext: Context, priv
         try {
             return getKeyboard(id)
         } catch (e: RuntimeException) {
-            Log.e(TAG, "Can't create keyboard: $id", e)
+            //Log.e(TAG, "Can't create keyboard: $id", e)
             throw KeyboardLayoutSetException(e, id)
         }
     }
@@ -72,7 +71,7 @@ class KeyboardLayoutSet internal constructor(private val mContext: Context, priv
         val cachedKeyboard = ref?.get()
         if (cachedKeyboard != null) {
             if (DEBUG_CACHE) {
-                Log.d(TAG, "keyboard cache size=${keyboardCache.size}: HIT  id=$id")
+                ////Log.(TAG, "keyboard cache size=${keyboardCache.size}: HIT  id=$id")
             }
             return cachedKeyboard
         }
@@ -94,11 +93,11 @@ class KeyboardLayoutSet internal constructor(private val mContext: Context, priv
             }
             forcibleKeyboardCache[0] = keyboard
             if (DEBUG_CACHE) {
-                Log.d(TAG, "forcing caching of keyboard with id=$id")
+                ////Log.(TAG, "forcing caching of keyboard with id=$id")
             }
         }
         if (DEBUG_CACHE) {
-            Log.d(TAG, ("keyboard cache size=${keyboardCache.size}: ${(if (ref == null) "LOAD" else "GCed")} id=$id"))
+            ////Log.(TAG, ("keyboard cache size=${keyboardCache.size}: ${(if (ref == null) "LOAD" else "GCed")} id=$id"))
         }
         return keyboard
     }

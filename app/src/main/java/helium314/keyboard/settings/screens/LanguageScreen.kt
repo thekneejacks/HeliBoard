@@ -33,7 +33,6 @@ import helium314.keyboard.latin.common.LocaleUtils.localizedDisplayName
 import helium314.keyboard.latin.common.splitOnWhitespace
 import helium314.keyboard.latin.settings.Defaults
 import helium314.keyboard.latin.settings.SettingsSubtype.Companion.toSettingsSubtype
-import helium314.keyboard.latin.utils.Log
 import helium314.keyboard.latin.utils.SubtypeLocaleUtils
 import helium314.keyboard.latin.utils.SubtypeLocaleUtils.displayName
 import helium314.keyboard.latin.utils.SubtypeSettings
@@ -53,9 +52,6 @@ fun LanguageScreen(
 ) {
     val ctx = LocalContext.current
     val sortedSubtypes by remember { mutableStateOf(getSortedSubtypes(ctx)) }
-    val b = (LocalContext.current.getActivity() as? SettingsActivity)?.prefChanged?.collectAsState()
-    if ((b?.value ?: 0) < 0)
-        Log.v("irrelevant", "stupid way to trigger recomposition on preference change")
     val enabledSubtypes = SubtypeSettings.getEnabledSubtypes()
     SearchScreen(
         onClickBack = onClickBack,

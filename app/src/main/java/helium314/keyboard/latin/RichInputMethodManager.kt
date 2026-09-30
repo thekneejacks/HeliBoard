@@ -16,7 +16,6 @@ import helium314.keyboard.latin.common.Constants
 import helium314.keyboard.latin.common.LocaleUtils.getBestMatch
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.utils.LanguageOnSpacebarUtils
-import helium314.keyboard.latin.utils.Log
 import helium314.keyboard.latin.utils.ScriptUtils.script
 import helium314.keyboard.latin.utils.SubtypeLocaleUtils
 import helium314.keyboard.latin.utils.SubtypeSettings
@@ -70,8 +69,6 @@ class RichInputMethodManager private constructor() {
         val enabledSubtypes = SubtypeSettings.getEnabledSubtypes(true)
         val currentIndex = enabledSubtypes.indexOf(currentSubtype)
         if (currentIndex == -1) {
-            Log.w(TAG, "Can't find current subtype in enabled subtypes: subtype=" +
-                    SubtypeLocaleUtils.getSubtypeNameForLogging(currentSubtype))
             return if (onlyCurrentIme) enabledSubtypes[0] // just return first enabled subtype
             else null
         }
@@ -116,7 +113,7 @@ class RichInputMethodManager private constructor() {
         currentRichInputMethodSubtype = RichInputMethodSubtype.get(newSubtype)
         scope.launch { updateShortcutIme() }
         if (DEBUG) {
-            Log.w(TAG, "onSubtypeChanged: $currentRichInputMethodSubtype")
+            //Log.w(TAG, "onSubtypeChanged: $currentRichInputMethodSubtype")
         }
     }
 
@@ -141,7 +138,7 @@ class RichInputMethodManager private constructor() {
     private fun updateShortcutIme() {
         if (DEBUG) {
             val old = shortcuts.joinToString("; ") { "${it.imi.id}: ${it.subtype.locale()}, ${it.subtype.mode}" }
-            Log.d(TAG, ("Update shortcut IMEs from: $old"))
+            ////Log.(TAG, ("Update shortcut IMEs from: $old"))
         }
         val richSubtype = currentRichInputMethodSubtype
         val implicitlyEnabledSubtype = SubtypeSettings.isEnabled(richSubtype.rawSubtype)
@@ -156,7 +153,7 @@ class RichInputMethodManager private constructor() {
         }
         if (DEBUG) {
             val new = shortcuts.joinToString("; ") { "${it.imi.id}: ${it.subtype.locale()}, ${it.subtype.mode}" }
-            Log.d(TAG, ("Update shortcut IMEs to: $new"))
+            ////Log.(TAG, ("Update shortcut IMEs to: $new"))
         }
     }
 

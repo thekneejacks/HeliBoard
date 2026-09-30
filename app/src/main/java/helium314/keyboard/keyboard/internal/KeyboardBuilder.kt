@@ -21,7 +21,6 @@ import helium314.keyboard.latin.R
 import helium314.keyboard.latin.common.Constants
 import helium314.keyboard.latin.define.DebugFlags
 import helium314.keyboard.latin.settings.Settings
-import helium314.keyboard.latin.utils.Log
 import helium314.keyboard.latin.utils.sumOf
 import org.xmlpull.v1.XmlPullParser
 
@@ -51,7 +50,7 @@ open class KeyboardBuilder<KP : KeyboardParams>(protected val mContext: Context,
                     mParams.mTouchPositionCorrection.load(mContext.resources.getStringArray(R.array.touch_position_correction_data_default))
                 determineAbsoluteValues()
             } catch (e: Exception) {
-                Log.e(TAG, "error parsing layout $id ${id.element}", e)
+                //Log.e(TAG, "error parsing layout $id ${id.element}", e)
                 throw e
             }
 
@@ -107,8 +106,6 @@ open class KeyboardBuilder<KP : KeyboardParams>(protected val mContext: Context,
             var currentX = mParams.mLeftPadding.toFloat()
             row.forEach {
                 it.setAbsoluteDimensions(currentX, currentY)
-                if (DebugFlags.DEBUG_ENABLED)
-                    Log.d(TAG, "setting size and position for ${it.mLabel ?: it.mIconName}, ${it.mCode}: x ${currentX.toInt()}, w ${it.mAbsoluteWidth.toInt()}")
                 currentX += it.mAbsoluteWidth
             }
             currentY += row.first().mAbsoluteHeight

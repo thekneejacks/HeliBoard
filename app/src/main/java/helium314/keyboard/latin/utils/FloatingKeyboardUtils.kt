@@ -33,8 +33,6 @@ object FloatingKeyboardUtils {
             windowFrame.right - windowFrame.left - Settings.getValues().mFloatingWidth,
             windowFrame.bottom - windowFrame.top - extraHeight.toInt() - Settings.getValues().mFloatingHeight
         )
-        if (DebugFlags.DEBUG_ENABLED)
-            Log.d(TAG, "place floating view at $x, $y, width ${Settings.getValues().mFloatingWidth}, height ${Settings.getValues().mFloatingHeight}")
         ViewLayoutUtils.placeViewAt(view, x, y, Settings.getValues().mFloatingWidth, ViewGroup.LayoutParams.WRAP_CONTENT)
         if (view.findViewById<View>(R.id.float_handle_container)?.isVisible == true)
             return
@@ -48,7 +46,7 @@ object FloatingKeyboardUtils {
         val lp = view?.layoutParams as? ViewGroup.MarginLayoutParams ?: return
         if (lp.width == ViewGroup.LayoutParams.MATCH_PARENT) return // not floating
         if (DebugFlags.DEBUG_ENABLED)
-            Log.d(TAG, "disable floating view")
+            ////Log.(TAG, "disable floating view")
         lp.width = ViewGroup.LayoutParams.MATCH_PARENT
         lp.height = ViewGroup.LayoutParams.MATCH_PARENT
         lp.leftMargin = 0

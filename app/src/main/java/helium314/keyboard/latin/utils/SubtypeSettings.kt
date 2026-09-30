@@ -82,11 +82,11 @@ object SubtypeSettings {
             }
             // the match is done on locale and main layout name, like in loadEnabledSubtypes
             if (match == null || !removeEnabledSubtype(prefs, match)) {
-                Log.e(TAG, "tried to disable built-in ${subtype.toSettingsSubtype()}, but failed")
+                //Log.e(TAG, "tried to disable built-in ${subtype.toSettingsSubtype()}, but failed")
                 return false
             }
             else {
-                Log.w(TAG, "had to do some workaround to actually disable $match")
+                //Log.w(TAG, "had to do some workaround to actually disable $match")
             }
         }
         if (!enabledSubtypes.remove(subtype)) reloadEnabledSubtypes(context)
@@ -104,7 +104,7 @@ object SubtypeSettings {
         if (subtype != null) {
             return subtype
         } else if (enabledSubtypes.isNotEmpty()) {
-            Log.w(TAG, "selected subtype $selectedSubtype / ${prefs.getString(Settings.PREF_SELECTED_SUBTYPE, Defaults.PREF_SELECTED_SUBTYPE)} not found")
+            //Log.w(TAG, "selected subtype $selectedSubtype / ${prefs.getString(Settings.PREF_SELECTED_SUBTYPE, Defaults.PREF_SELECTED_SUBTYPE)} not found")
         }
         if (enabledSubtypes.isNotEmpty())
             return enabledSubtypes.first()
@@ -117,7 +117,7 @@ object SubtypeSettings {
     fun setSelectedSubtype(prefs: SharedPreferences, subtype: InputMethodSubtype) {
         val settingsSubtype = subtype.toSettingsSubtype()
         if (settingsSubtype.locale.toLanguageTag().isEmpty()) {
-            Log.w(TAG, "tried to set subtype with empty locale: $settingsSubtype")
+            //Log.w(TAG, "tried to set subtype with empty locale: $settingsSubtype")
             return
         }
         prefs.edit { putString(Settings.PREF_SELECTED_SUBTYPE, settingsSubtype.toPref()) }
@@ -258,7 +258,7 @@ object SubtypeSettings {
             val subtypesForLocale = resourceSubtypesByLocale[settingsSubtype.locale]
             if (subtypesForLocale == null) {
                 val message = "no resource subtype for $settingsSubtype"
-                Log.w(TAG, message)
+                //Log.w(TAG, message)
                 if (DebugFlags.DEBUG_ENABLED)
                     Toast.makeText(context, message, Toast.LENGTH_LONG).show()
                 else // don't remove in debug mode
@@ -269,7 +269,7 @@ object SubtypeSettings {
             val subtype = subtypesForLocale.firstOrNull { it.mainLayoutNameOrQwerty() == (settingsSubtype.mainLayoutName() ?: SubtypeLocaleUtils.QWERTY) }
             if (subtype == null) {
                 val message = "subtype $settingsSubtype could not be loaded"
-                Log.w(TAG, message)
+                //Log.w(TAG, message)
                 if (DebugFlags.DEBUG_ENABLED)
                     Toast.makeText(context, message, Toast.LENGTH_LONG).show()
                 else // don't remove in debug mode

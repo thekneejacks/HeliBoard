@@ -55,7 +55,6 @@ import helium314.keyboard.latin.settings.Defaults;
 import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.utils.KtxKt;
 import helium314.keyboard.latin.utils.LanguageOnSpacebarUtils;
-import helium314.keyboard.latin.utils.Log;
 import helium314.keyboard.latin.utils.TypefaceUtils;
 
 /** A view that is responsible for detecting key presses and touch movements. */
@@ -322,7 +321,7 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
     private void installPreviewPlacerView() {
         final View rootView = getRootView();
         if (rootView == null) {
-            Log.w(TAG, "Cannot find root view");
+            //Log.w(TAG, "Cannot find root view");
             return;
         }
         ViewGroup windowContentView = rootView.findViewById(android.R.id.content);
@@ -330,7 +329,7 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
             vg.removeView(mDrawingPreviewPlacerView); // when moving keyboard from input method content view to floating container
         // Note: It'd be very weird if we get null by android.R.id.content.
         if (windowContentView == null) {
-            Log.w(TAG, "Cannot find android.R.id.content view to add DrawingPreviewPlacerView");
+            //Log.w(TAG, "Cannot find android.R.id.content view to add DrawingPreviewPlacerView");
             return;
         }
         windowContentView.addView(mDrawingPreviewPlacerView);

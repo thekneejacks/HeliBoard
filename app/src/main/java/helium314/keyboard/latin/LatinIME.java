@@ -71,7 +71,6 @@ import helium314.keyboard.latin.utils.InputMethodPickerKt;
 import helium314.keyboard.latin.utils.JniUtils;
 import helium314.keyboard.latin.utils.KtxKt;
 import helium314.keyboard.latin.utils.LeakGuardHandlerWrapper;
-import helium314.keyboard.latin.utils.Log;
 import helium314.keyboard.latin.utils.RecapitalizeMode;
 import helium314.keyboard.latin.utils.StatsUtils;
 import helium314.keyboard.latin.utils.SubtypeLocaleUtils;
@@ -137,10 +136,10 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
             // method).
             if (Intent.ACTION_USER_UNLOCKED.equals(action)) {
                 final int myPid = Process.myPid();
-                Log.i(TAG, "Killing my process: pid=" + myPid);
+                //Log.i(TAG, "Killing my process: pid=" + myPid);
                 Process.killProcess(myPid);
             } else {
-                Log.e(TAG, "Unexpected intent " + intent);
+                //Log.e(TAG, "Unexpected intent " + intent);
             }
         }
     }
@@ -206,7 +205,7 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
                     }
                     break;
                 case MSG_WAIT_FOR_DICTIONARY_LOAD:
-                    Log.i(TAG, "Timeout waiting for dictionary load");
+                    //Log.i(TAG, "Timeout waiting for dictionary load");
                     break;
                 case MSG_DEALLOCATE_MEMORY:
                     latinIme.deallocateMemory();
@@ -430,7 +429,7 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
         mKeyboardSwitcher = KeyboardSwitcher.getInstance();
         mKeyboardActionListener = new KeyboardActionListenerImpl(this, mInputLogic);
         mIsHardwareAcceleratedDrawingEnabled = this.enableHardwareAcceleration();
-        Log.i(TAG, "Hardware accelerated drawing: " + mIsHardwareAcceleratedDrawingEnabled);
+        //Log.i(TAG, "Hardware accelerated drawing: " + mIsHardwareAcceleratedDrawingEnabled);
     }
 
     @Override
@@ -520,7 +519,7 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
     @Override
     public void onConfigurationChanged(final Configuration conf) {
         SettingsValues settingsValues = mSettings.getCurrent();
-        Log.i(TAG, "onConfigurationChanged");
+        //Log.i(TAG, "onConfigurationChanged");
         SubtypeSettings.INSTANCE.reloadSystemLocales(this);
         if (settingsValues.mDisplayOrientation != conf.orientation) {
             mHandler.startOrientationChanging();
@@ -549,7 +548,7 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
     @Override
     public void onInitializeInterface() {
         mDisplayContext = KtxKt.getDisplayContext(this);
-        Log.d(TAG, "onInitializeInterface");
+        ////Log.(TAG, "onInitializeInterface");
         mKeyboardSwitcher.updateKeyboardTheme(mDisplayContext);
     }
 
@@ -669,16 +668,13 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
         currentSettingsValues = mSettings.getCurrent(); // settingsValues may have been reloaded
 
         if (editorInfo == null) {
-            Log.e(TAG, "Null EditorInfo in onStartInputView()");
+            //Log.e(TAG, "Null EditorInfo in onStartInputView()");
             if (DebugFlags.DEBUG_ENABLED) {
                 throw new NullPointerException("Null EditorInfo in onStartInputView()");
             }
             return;
         }
-        Log.i(TAG, (restarting ? "Res" : "S") +"tarting input. Cursor position = " + editorInfo.initialSelStart + "," + editorInfo.initialSelEnd);
-        if (DebugFlags.DEBUG_ENABLED) {
-            EditorInfoCompatUtils.INSTANCE.debugLog(editorInfo, TAG);
-        }
+        //Log.i(TAG, (restarting ? "Res" : "S") +"tarting input. Cursor position = " + editorInfo.initialSelStart + "," + editorInfo.initialSelEnd);
 
         // In landscape mode, this method gets called without the input view being created.
         if (mainKeyboardView == null) {
@@ -788,7 +784,7 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
     @Override
     public void onWindowHidden() {
         super.onWindowHidden();
-        Log.i(TAG, "onWindowHidden");
+        //Log.i(TAG, "onWindowHidden");
         final MainKeyboardView mainKeyboardView = mKeyboardSwitcher.getMainKeyboardView();
         if (mainKeyboardView != null) {
             mainKeyboardView.closing();
@@ -798,7 +794,7 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
 
     void onFinishInputInternal() {
         super.onFinishInput();
-        Log.i(TAG, "onFinishInput");
+        //Log.i(TAG, "onFinishInput");
 
         final MainKeyboardView mainKeyboardView = mKeyboardSwitcher.getMainKeyboardView();
         if (mainKeyboardView != null) {
@@ -808,7 +804,7 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
 
     void onFinishInputViewInternal(final boolean finishingInput) {
         super.onFinishInputView(finishingInput);
-        Log.i(TAG, "onFinishInputView");
+        //Log.i(TAG, "onFinishInputView");
         cleanupInternalStateForFinishInput();
     }
 
@@ -830,11 +826,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
                                   final int composingSpanStart, final int composingSpanEnd) {
         super.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd,
                 composingSpanStart, composingSpanEnd);
-        if (DebugFlags.DEBUG_ENABLED) {
-            Log.i(TAG, "onUpdateSelection: oss=" + oldSelStart + ", ose=" + oldSelEnd
-                    + ", nss=" + newSelStart + ", nse=" + newSelEnd
-                    + ", cs=" + composingSpanStart + ", ce=" + composingSpanEnd);
-        }
 
         // This call happens whether our view is displayed or not, but if it's not then we should
         // not attempt recorrection. This is true even with a hardware keyboard connected: if the
@@ -891,7 +882,7 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
 
     @Override
     public void hideWindow() {
-        Log.i(TAG, "hideWindow");
+        //Log.i(TAG, "hideWindow");
         if (hasSuggestionStripView() && mSettings.getCurrent().mToolbarMode == ToolbarMode.EXPANDABLE)
             mSuggestionStripView.setToolbarVisibility(false);
         mKeyboardSwitcher.onHideWindow();
@@ -907,17 +898,17 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
     @Override
     public void requestHideSelf(int flags) {
         super.requestHideSelf(flags);
-        Log.i(TAG, "requestHideSelf: " + flags);
+        //Log.i(TAG, "requestHideSelf: " + flags);
     }
 
 
     @Override
     public void onDisplayCompletions(final CompletionInfo[] applicationSpecifiedCompletions) {
         if (DebugFlags.DEBUG_ENABLED) {
-            Log.i(TAG, "Received completions:");
+            //Log.i(TAG, "Received completions:");
             if (applicationSpecifiedCompletions != null) {
                 for (int i = 0; i < applicationSpecifiedCompletions.length; i++) {
-                    Log.i(TAG, "  #" + i + ": " + applicationSpecifiedCompletions[i]);
+                    //Log.i(TAG, "  #" + i + ": " + applicationSpecifiedCompletions[i]);
                 }
             }
         }

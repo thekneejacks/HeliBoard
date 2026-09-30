@@ -12,7 +12,6 @@ import helium314.keyboard.latin.common.Constants.Subtype.ExtraValue.KEYBOARD_LAY
 import helium314.keyboard.latin.common.LocaleUtils.constructLocale
 import helium314.keyboard.latin.utils.LayoutType
 import helium314.keyboard.latin.utils.LayoutUtilsCustom
-import helium314.keyboard.latin.utils.Log
 import helium314.keyboard.latin.utils.ScriptUtils
 import helium314.keyboard.latin.utils.ScriptUtils.script
 import helium314.keyboard.latin.utils.SubtypeLocaleUtils
@@ -115,8 +114,8 @@ class RichInputMethodSubtype private constructor(val rawSubtype: InputMethodSubt
                 sNoLanguageSubtype = noLanguageSubtype
                 return noLanguageSubtype
             }
-            Log.w(TAG, "Can't find any language with QWERTY subtype")
-            Log.w(TAG, "No input method subtype found; returning dummy subtype: $DUMMY_NO_LANGUAGE_SUBTYPE")
+            //Log.w(TAG, "Can't find any language with QWERTY subtype")
+            //Log.w(TAG, "No input method subtype found; returning dummy subtype: $DUMMY_NO_LANGUAGE_SUBTYPE")
             return DUMMY_NO_LANGUAGE_SUBTYPE
         }
     }

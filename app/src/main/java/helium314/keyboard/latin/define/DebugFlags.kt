@@ -12,7 +12,6 @@ import helium314.keyboard.latin.BuildConfig
 import helium314.keyboard.latin.settings.DebugSettings
 import helium314.keyboard.latin.settings.Defaults
 import helium314.keyboard.latin.utils.DeviceProtectedUtils
-import helium314.keyboard.latin.utils.Log
 import helium314.keyboard.latin.utils.prefs
 import java.io.File
 import java.io.PrintWriter
@@ -55,8 +54,6 @@ Device: ${Build.BRAND} ${Build.DEVICE}, Android ${Build.VERSION.RELEASE}
 Locale: ${Locale.getDefault()}
 Stack trace:
 $stackTrace
-Last log:
-${Log.getLog(100).joinToString("\n")}
 """)
         defaultUncaughtExceptionHandler!!.uncaughtException(t, e)
     }

@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode
 import helium314.keyboard.latin.inputlogic.InputLogic
-import helium314.keyboard.latin.utils.Log.i
 
 object IntentUtils {
     val TAG: String = InputLogic::class.java.simpleName
@@ -20,7 +19,6 @@ object IntentUtils {
         }
 
         context.sendBroadcast(intent)
-        i(TAG, "Sent broadcast for intent number: $intentNumber")
     }
 }
 

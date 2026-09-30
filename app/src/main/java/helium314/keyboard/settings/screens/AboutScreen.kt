@@ -28,7 +28,6 @@ import helium314.keyboard.latin.R
 import helium314.keyboard.latin.common.Links
 import helium314.keyboard.latin.settings.DebugSettings
 import helium314.keyboard.latin.settings.Defaults
-import helium314.keyboard.latin.utils.Log
 import helium314.keyboard.latin.utils.SpannableStringUtils
 import helium314.keyboard.latin.utils.Theme
 import helium314.keyboard.latin.utils.getActivity
@@ -182,11 +181,6 @@ fun createAboutSettings(context: Context) = listOf(
             val uri = result.data?.data ?: return@rememberLauncherForActivityResult
             scope.launch(Dispatchers.IO) {
                 ctx.getActivity()?.contentResolver?.openOutputStream(uri)?.use { os ->
-                    os.writer().use { writer ->
-                        val logcat = Runtime.getRuntime().exec("logcat -d -b all *:W").inputStream.use { it.reader().readText() }
-                        val internal = Log.getLog().joinToString("\n")
-                        writer.write(logcat + "\n\n" + internal)
-                    }
                 }
             }
         }

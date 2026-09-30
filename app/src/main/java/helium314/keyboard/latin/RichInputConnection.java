@@ -43,8 +43,6 @@ import helium314.keyboard.latin.inputlogic.PrivateCommandPerformer;
 import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.settings.SpacingAndPunctuations;
 import helium314.keyboard.latin.utils.CapsModeUtils;
-import helium314.keyboard.latin.utils.DebugLogUtils;
-import helium314.keyboard.latin.utils.Log;
 import helium314.keyboard.latin.utils.NgramContextUtils;
 import helium314.keyboard.latin.utils.StatsUtils;
 import helium314.keyboard.latin.utils.TextRange;
@@ -182,8 +180,8 @@ public final class RichInputConnection implements PrivateCommandPerformer {
                     + "\nActual text = " + reference.length() + " " + reference;
             ((LatinIME)mParent).debugDumpStateAndCrashWithException(context);
         } else {
-            Log.e(TAG, DebugLogUtils.getStackTrace(2));
-            Log.e(TAG, "Exp <> Actual : " + mExpectedSelStart + " <> " + et.selectionStart);
+            //Log.e(TAG, DebugLogUtils.getStackTrace(2));
+            //Log.e(TAG, "Exp <> Actual : " + mExpectedSelStart + " <> " + et.selectionStart);
         }
     }
 
@@ -197,14 +195,14 @@ public final class RichInputConnection implements PrivateCommandPerformer {
             if (DBG) {
                 throw new RuntimeException("Nest level too deep");
             }
-            Log.e(TAG, "Nest level too deep : " + mNestLevel);
+            //Log.e(TAG, "Nest level too deep : " + mNestLevel);
         }
         if (DEBUG_BATCH_NESTING) checkBatchEdit();
         if (DEBUG_PREVIOUS_TEXT) checkConsistencyForDebug();
     }
 
     public void endBatchEdit() {
-        if (mNestLevel <= 0) Log.e(TAG, "Batch edit not in progress!"); // TODO: exception instead
+        if (mNestLevel <= 0) //Log.e(TAG, "Batch edit not in progress!"); // TODO: exception instead
         if (--mNestLevel == 0 && isConnected()) {
             mIC.endBatchEdit();
         }
@@ -232,7 +230,7 @@ public final class RichInputConnection implements PrivateCommandPerformer {
         mComposingText.setLength(0);
         final boolean didReloadTextSuccessfully = reloadTextCache();
         if (!didReloadTextSuccessfully) {
-            Log.d(TAG, "Will try to retrieve text later.");
+            ////Log.(TAG, "Will try to retrieve text later.");
             // selection is set to INVALID_CURSOR_POSITION if reloadTextCache return false
             return false;
         }
@@ -241,7 +239,7 @@ public final class RichInputConnection implements PrivateCommandPerformer {
             mExpectedSelEnd = newSelEnd;
             reloadTextCache();
             if (mExpectedSelStart != newSelStart || mExpectedSelEnd != newSelEnd) {
-                Log.i(TAG, "resetCachesUponCursorMove: tried to set "+newSelStart+"/"+newSelEnd+", but input field has "+mExpectedSelStart+"/"+mExpectedSelEnd);
+                //Log.i(TAG, "resetCachesUponCursorMove: tried to set "+newSelStart+"/"+newSelEnd+", but input field has "+mExpectedSelStart+"/"+mExpectedSelEnd);
             }
         }
         if (isConnected() && shouldFinishComposition) {
@@ -274,7 +272,7 @@ public final class RichInputConnection implements PrivateCommandPerformer {
             // framework bug... Fall back to ground state and return false.
             mExpectedSelStart = INVALID_CURSOR_POSITION;
             mExpectedSelEnd = INVALID_CURSOR_POSITION;
-            Log.e(TAG, "Unable to connect to the editor to retrieve text.");
+            //Log.e(TAG, "Unable to connect to the editor to retrieve text.");
             return false;
         }
         mCommittedTextBeforeComposingText.append(textBeforeCursor);
@@ -292,8 +290,8 @@ public final class RichInputConnection implements PrivateCommandPerformer {
     private void checkBatchEdit() {
         if (mNestLevel != 1) {
             // TODO: exception instead
-            Log.e(TAG, "Batch edit level incorrect : " + mNestLevel);
-            Log.e(TAG, DebugLogUtils.getStackTrace(4));
+            //Log.e(TAG, "Batch edit level incorrect : " + mNestLevel);
+            //Log.e(TAG, DebugLogUtils.getStackTrace(4));
         }
     }
 
@@ -323,8 +321,6 @@ public final class RichInputConnection implements PrivateCommandPerformer {
     public void commitText(final CharSequence text, final int newCursorPosition) {
         if (DEBUG_BATCH_NESTING) checkBatchEdit();
         if (DEBUG_PREVIOUS_TEXT) checkConsistencyForDebug();
-        if (DebugFlags.DEBUG_ENABLED)
-            Log.d(TAG, "committing "+text.length()+" characters");
         mCommittedTextBeforeComposingText.append(text);
         // TODO: the following is exceedingly error-prone. Right now when the cursor is in the
         //  middle of the composing word mComposingText only holds the part of the composing text
@@ -407,12 +403,7 @@ public final class RichInputConnection implements PrivateCommandPerformer {
         //  heavy pressing of delete, for example DEFAULT_TEXT_CACHE_SIZE - 5 times or so.
         //  getCapsMode should be updated to be able to return a "not enough info" result so that
         //  we can get more context only when needed.
-        if (TextUtils.isEmpty(mCommittedTextBeforeComposingText) && 0 != mExpectedSelStart) {
-            if (!reloadTextCache()) {
-                Log.w(TAG, "Unable to connect to the editor. "
-                        + "Setting caps mode without knowing text.");
-            }
-        }
+
         // This never calls InputConnection#getCapsMode - in fact, it's a static method that
         // never blocks or initiates IPC.
         // TODO: don't call #toString() here. Instead, all accesses to
@@ -486,7 +477,7 @@ public final class RichInputConnection implements PrivateCommandPerformer {
             // 2. the app has outdated contents in the text field, e.g. com.farmerbb.notepad returns the
             //     just deleted char right after deletion, instead of the correct one
             //     todo: understand where this inconsistent state comes from, is it really the other app's fault, or is it HeliBoard?
-            Log.w(TAG, "cached text out of sync, reloading");
+            //Log.w(TAG, "cached text out of sync, reloading");
             reloadCursorPosition();
             reloadTextCache();
         }
@@ -552,13 +543,13 @@ public final class RichInputConnection implements PrivateCommandPerformer {
         final long duration = SystemClock.uptimeMillis() - startTime;
         if (duration >= timeout) {
             final String operationName = OPERATION_NAMES[operation];
-            Log.w(TAG, "Slow InputConnection: " + operationName + " took " + duration + " ms.");
+            //Log.w(TAG, "Slow InputConnection: " + operationName + " took " + duration + " ms.");
             StatsUtils.onInputConnectionLaggy(operation, duration);
             mLastSlowInputConnectionTime = SystemClock.uptimeMillis();
         } else if (duration < timeout / 5 && hasSlowInputConnection()) {
             // we have a fast connection now, maybe the slowness was just a hickup
             mLastSlowInputConnectionTime -= SLOW_INPUTCONNECTION_PERSIST_MS / 2;
-            Log.d(TAG, "InputConnection: much faster now, reducing persist time");
+            ////Log.(TAG, "InputConnection: much faster now, reducing persist time");
         }
     }
 
@@ -567,8 +558,7 @@ public final class RichInputConnection implements PrivateCommandPerformer {
         // TODO: the following is incorrect if the cursor is not immediately after the composition.
         //  Right now we never come here in this case because we reset the composing state before we
         //  come here in this case, but we need to fix this.
-        if (DebugFlags.DEBUG_ENABLED)
-            Log.d(TAG, "deleting "+beforeLength+" characters before cursor");
+
         final int remainingChars = mComposingText.length() - beforeLength;
         if (remainingChars >= 0) {
             mComposingText.setLength(remainingChars);
@@ -604,7 +594,7 @@ public final class RichInputConnection implements PrivateCommandPerformer {
     public void sendKeyEvent(final KeyEvent keyEvent) {
         if (DEBUG_BATCH_NESTING) checkBatchEdit();
         if (DebugFlags.DEBUG_ENABLED) // no details, might be too sensitive
-            Log.d(TAG, "key event with action "+keyEvent.getAction()+", is control: "+Character.isISOControl(keyEvent.getUnicodeChar()));
+            ////Log.(TAG, "key event with action "+keyEvent.getAction()+", is control: "+Character.isISOControl(keyEvent.getUnicodeChar()));
         if (keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
             if (DEBUG_PREVIOUS_TEXT) checkConsistencyForDebug();
             // This method is only called for enter or backspace when speaking to old applications
@@ -697,7 +687,7 @@ public final class RichInputConnection implements PrivateCommandPerformer {
         //  newCursorPosition != 1.
         if (isConnected()) {
             if (DebugFlags.DEBUG_ENABLED)
-                Log.d(TAG, "setting composing text of length "+text.length()); // don't log actual text
+                ////Log.(TAG, "setting composing text of length "+text.length()); // don't log actual text
             mIC.setComposingText(text, newCursorPosition);
             if (!Settings.getValues().mInputAttributes.mShouldShowSuggestions && text.length() > 0) {
                 // We have a field that disables suggestions, but still committed text is set.
@@ -706,7 +696,7 @@ public final class RichInputConnection implements PrivateCommandPerformer {
                 // Note that the check may also fail because the text field is not yet updated, so we don't want to check everything!
                 final CharSequence lastChar = mIC.getTextBeforeCursor(1, 0);
                 if (lastChar == null || lastChar.length() == 0 || text.charAt(text.length() - 1) != lastChar.charAt(0)) {
-                    Log.w(TAG, "did set " + text + ", but got " + mIC.getTextBeforeCursor(text.length(), 0) + " as last character");
+                    //Log.w(TAG, "did set " + text + ", but got " + mIC.getTextBeforeCursor(text.length(), 0) + " as last character");
                     return false;
                 }
             }
@@ -730,7 +720,7 @@ public final class RichInputConnection implements PrivateCommandPerformer {
         if (DEBUG_BATCH_NESTING) checkBatchEdit();
         if (DEBUG_PREVIOUS_TEXT) checkConsistencyForDebug();
         if (DebugFlags.DEBUG_ENABLED)
-            Log.d(TAG, "setting selection from "+start+" to "+end);
+            ////Log.(TAG, "setting selection from "+start+" to "+end);
 
         if (start < 0 || end < 0) {
             return false;
@@ -808,7 +798,7 @@ public final class RichInputConnection implements PrivateCommandPerformer {
         if (DEBUG_PREVIOUS_TEXT) checkConsistencyForDebug();
         CharSequence text = completionInfo.getText();
         if (DebugFlags.DEBUG_ENABLED)
-            Log.d(TAG, "committing completion of length "+text.length()); // don't log actual text
+            ////Log.(TAG, "committing completion of length "+text.length()); // don't log actual text
         // text should never be null, but just in case, it's better to insert nothing than to crash
         if (null == text) text = "";
         mCommittedTextBeforeComposingText.append(text);
@@ -925,9 +915,6 @@ public final class RichInputConnection implements PrivateCommandPerformer {
             // Theoretically we should not be coming here if there isn't ". " before the
             // cursor, but the application may be changing the text while we are typing, so
             // anything goes. We should not crash.
-            Log.d(TAG, "Tried to revert double-space combo but we didn't find \""
-                    + spacingAndPunctuations.mSentenceSeparatorAndSpace
-                    + "\" just before the cursor.");
             return false;
         }
         // Double-space results in ". ". A backspace to cancel this should result in a single
@@ -950,8 +937,6 @@ public final class RichInputConnection implements PrivateCommandPerformer {
             // We may only come here if the application is changing the text while we are typing.
             // This is quite a broken case, but not logically impossible, so we shouldn't crash,
             // but some debugging log may be in order.
-            Log.d(TAG, "Tried to revert a swap of punctuation but we didn't "
-                    + "find a space just before the cursor.");
             return false;
         }
         deleteTextBeforeCursor(2);

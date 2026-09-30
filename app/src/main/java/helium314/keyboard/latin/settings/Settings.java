@@ -38,7 +38,6 @@ import helium314.keyboard.latin.utils.DeviceProtectedUtils;
 import helium314.keyboard.latin.utils.FoldableUtils;
 import helium314.keyboard.latin.utils.KtxKt;
 import helium314.keyboard.latin.utils.LayoutType;
-import helium314.keyboard.latin.utils.Log;
 import helium314.keyboard.latin.utils.ResourceUtils;
 import helium314.keyboard.latin.utils.RunInLocaleKt;
 import helium314.keyboard.latin.utils.StatsUtils;
@@ -263,7 +262,7 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
             if (mSettingsValues == null) {
                 // TODO: Introduce a static function to register this class and ensure that
                 // loadSettings must be called before "onSharedPreferenceChanged" is called.
-                Log.w(TAG, "onSharedPreferenceChanged called before loadSettings.");
+                //Log.w(TAG, "onSharedPreferenceChanged called before loadSettings.");
                 return;
             }
             ToolbarUtilsKt.clearCustomToolbarKeyCodes();
@@ -291,7 +290,7 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
         mContext = context;
         try {
             final SharedPreferences prefs = mPrefs;
-            Log.i(TAG, "loadSettings");
+            //Log.i(TAG, "loadSettings");
             mSettingsValues = RunInLocaleKt.runInLocale(context, locale,
                     ctx -> new SettingsValues(ctx, prefs, ctx.getResources(), inputAttributes));
         } finally {

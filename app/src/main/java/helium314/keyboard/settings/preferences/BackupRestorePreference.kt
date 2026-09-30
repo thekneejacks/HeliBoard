@@ -25,7 +25,6 @@ import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.utils.DeviceProtectedUtils
 import helium314.keyboard.latin.utils.ExecutorUtils
 import helium314.keyboard.latin.utils.LayoutUtilsCustom
-import helium314.keyboard.latin.utils.Log
 import helium314.keyboard.latin.utils.SubtypeSettings
 import helium314.keyboard.latin.utils.getActivity
 import helium314.keyboard.latin.utils.prefs
@@ -152,7 +151,7 @@ private fun backupLauncher(onError: (String) -> Unit): ManagedActivityResultLaun
                 }
             } catch (t: Throwable) {
                 onError("b" + t.message)
-                Log.w("AdvancedScreen", "error during backup", t)
+                //Log.w("AdvancedScreen", "error during backup", t)
             } finally {
                 wait.countDown()
             }
@@ -188,13 +187,13 @@ private fun restoreLauncher(onError: (String) -> Unit): ManagedActivityResultLau
                                 val adjustedName = entry.name.substringAfter("unprotected${File.separator}")
                                 if (backupFilePatterns.any { adjustedName.matches(it) }) {
                                     if (!restoreEntryToDir(zip, deviceProtectedFilesDir, adjustedName)) {
-                                        Log.w("AdvancedScreen", "skipping unsafe backup entry $adjustedName")
+                                        //Log.w("AdvancedScreen", "skipping unsafe backup entry $adjustedName")
                                     }
                                 }
                                 anyMatch = true
                             } else if (backupFilePatterns.any { entry.name.matches(it) }) {
                                 if (!restoreEntryToDir(zip, filesDir, entry.name)) {
-                                    Log.w("AdvancedScreen", "skipping unsafe backup entry ${entry.name}")
+                                    //Log.w("AdvancedScreen", "skipping unsafe backup entry ${entry.name}")
                                 }
                                 anyMatch = true
                             } else if (entry.name == Database.NAME) {
@@ -259,7 +258,7 @@ private fun restoreLauncher(onError: (String) -> Unit): ManagedActivityResultLau
                     }
                 }
                 onError("r" + t.message)
-                Log.w("AdvancedScreen", "error during restore", t)
+                //Log.w("AdvancedScreen", "error during restore", t)
             } finally {
                 wait.countDown()
             }

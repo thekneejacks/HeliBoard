@@ -17,7 +17,6 @@ import helium314.keyboard.latin.common.Constants
 import helium314.keyboard.latin.database.ClipboardDao
 import helium314.keyboard.latin.settings.Defaults
 import helium314.keyboard.latin.settings.Settings
-import helium314.keyboard.latin.utils.Log
 import helium314.keyboard.latin.utils.prefs
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -85,7 +84,7 @@ class ClipboardHistoryManager(
     // but KeyEvent.KEYCODE_PASTE for pasting from primary clip works fine
     // (actually we do change the primary clip, but (try to) revert immediately)
     fun pasteWithoutChangingClips(content: InputContentInfoCompat) {
-        Log.d(TAG, "trying fallback pasting with system clipboard")
+        ////Log.(TAG, "trying fallback pasting with system clipboard")
         val primaryClip = clipboardManager.primaryClip
         val tempClip = ClipData(content.description, ClipData.Item(content.contentUri))
         tempPrimaryClip = true
@@ -104,7 +103,7 @@ class ClipboardHistoryManager(
             try {
                 clipboardManager.setPrimaryClip(primaryClip)
             } catch (e: Exception) {
-                Log.i(TAG, "could not go back to old primary clip", e)
+                //Log.i(TAG, "could not go back to old primary clip", e)
                 // happens wen the clip was a file
                 // try to find it in out clipboard entries
                 val clip = clipboardDao?.getAll()?.firstOrNull { it.timeStamp == ClipboardManagerCompat.getClipTimestamp(primaryClip) }
@@ -144,7 +143,7 @@ class ClipboardHistoryManager(
                     return size <= maxSize * 1000000 // maxSize is megabytes
                 }
             } catch (e: Exception) {
-                Log.w(TAG, "error checking clip size", e) // happens with SecurityException: Permission Denial
+                //Log.w(TAG, "error checking clip size", e) // happens with SecurityException: Permission Denial
                 return false
             }
         }

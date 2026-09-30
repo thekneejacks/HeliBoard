@@ -29,7 +29,7 @@ public final class DeviceProtectedUtils {
         if (prefs.getAll() == null)
             return prefs; // happens for compose previews
         if (prefs.getAll().isEmpty()) {
-            Log.i(TAG, "Device encrypted storage is empty, copying values from credential encrypted storage");
+            //Log.i(TAG, "Device encrypted storage is empty, copying values from credential encrypted storage");
             deviceProtectedContext.moveSharedPreferencesFrom(context, android.preference.PreferenceManager.getDefaultSharedPreferencesName(context));
         }
         return prefs;

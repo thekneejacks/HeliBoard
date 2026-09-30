@@ -21,7 +21,6 @@ import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.utils.LayoutType
 import helium314.keyboard.latin.utils.LayoutUtils
 import helium314.keyboard.latin.utils.LayoutUtilsCustom
-import helium314.keyboard.latin.utils.Log
 import helium314.keyboard.latin.utils.prefs
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
@@ -87,7 +86,7 @@ object LayoutParser {
                     }
                 }
             } catch (e: Exception) {
-                Log.w(TAG, "could not parse json layout for $layoutName, falling back to simple layout parsing", e)
+                //Log.w(TAG, "could not parse json layout for $layoutName, falling back to simple layout parsing", e)
             }
         }
         // not a json, or invalid json

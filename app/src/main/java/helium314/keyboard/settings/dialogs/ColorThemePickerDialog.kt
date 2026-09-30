@@ -48,7 +48,6 @@ import helium314.keyboard.latin.settings.Defaults
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.utils.DeleteButton
 import helium314.keyboard.latin.utils.EditButton
-import helium314.keyboard.latin.utils.Log
 import helium314.keyboard.latin.utils.Theme
 import helium314.keyboard.latin.utils.getActivity
 import helium314.keyboard.latin.utils.getStringResourceOrName
@@ -76,9 +75,6 @@ fun ColorThemePickerDialog(
 ) {
     val ctx = LocalContext.current
     val prefs = ctx.prefs()
-    val b = (LocalContext.current.getActivity() as? SettingsActivity)?.prefChanged?.collectAsState()
-    if ((b?.value ?: 0) < 0)
-        Log.v("irrelevant", "stupid way to trigger recomposition on preference change")
 
     val defaultColors = KeyboardTheme.getAvailableDefaultColors(prefs, isNight)
 

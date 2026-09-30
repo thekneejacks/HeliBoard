@@ -15,7 +15,6 @@ import helium314.keyboard.latin.common.FileUtils
 import helium314.keyboard.latin.settings.Defaults
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.utils.ChecksumCalculator
-import helium314.keyboard.latin.utils.Log
 import helium314.keyboard.latin.utils.prefs
 import java.io.File
 
@@ -237,7 +236,7 @@ class ClipboardDao private constructor(private val db: Database) {
             return
         }
 
-        Log.w(TAG, "deleting ${filesToRemove.size} files and ${entriesToRemove.size} clipboard entries")
+        //Log.w(TAG, "deleting ${filesToRemove.size} files and ${entriesToRemove.size} clipboard entries")
         filesToRemove.forEach { it.delete() }
         delete(entriesToRemove)
 
@@ -281,7 +280,7 @@ class ClipboardDao private constructor(private val db: Database) {
                     clipFilesDir.mkdirs()
                     instance?.cleanupFiles(context.prefs())
                 } catch (e: Throwable) {
-                    Log.e(TAG, "can't create ClipboardDao", e)
+                    //Log.e(TAG, "can't create ClipboardDao", e)
                 }
             return instance
         }

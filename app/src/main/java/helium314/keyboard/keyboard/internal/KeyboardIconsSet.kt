@@ -9,7 +9,6 @@ import helium314.keyboard.latin.R
 import helium314.keyboard.latin.settings.Defaults
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.settings.customIconIds
-import helium314.keyboard.latin.utils.Log
 import helium314.keyboard.latin.utils.ToolbarKey
 import helium314.keyboard.latin.utils.prefs
 import java.util.Locale
@@ -38,7 +37,7 @@ class KeyboardIconsSet private constructor() {
                 icon.setBounds(0, 0, icon.intrinsicWidth, icon.intrinsicHeight)
                 iconsByName[name] = icon
             } catch (_: Resources.NotFoundException) {
-                Log.w(TAG, "Drawable resource for icon $name not found")
+                //Log.w(TAG, "Drawable resource for icon $name not found")
             }
         }
         needsReload = false

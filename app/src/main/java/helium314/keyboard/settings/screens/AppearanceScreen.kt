@@ -23,7 +23,6 @@ import helium314.keyboard.latin.R
 import helium314.keyboard.latin.settings.Defaults
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.utils.FoldableUtils
-import helium314.keyboard.latin.utils.Log
 import helium314.keyboard.latin.utils.Theme
 import helium314.keyboard.latin.utils.getActivity
 import helium314.keyboard.latin.utils.getStringResourceOrName
@@ -52,9 +51,6 @@ fun AppearanceScreen(
 ) {
     val ctx = LocalContext.current
     val prefs = ctx.prefs()
-    val b = (LocalContext.current.getActivity() as? SettingsActivity)?.prefChanged?.collectAsState()
-    if ((b?.value ?: 0) < 0)
-        Log.v("irrelevant", "stupid way to trigger recomposition on preference change")
     val dayNightMode = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && prefs.getBoolean(Settings.PREF_THEME_DAY_NIGHT, Defaults.PREF_THEME_DAY_NIGHT)
     val items = listOf(
         R.string.settings_screen_theme,
@@ -125,9 +121,6 @@ fun createAppearanceSettings(context: Context) = listOf(
     },
     Setting(context, Settings.PREF_ICON_STYLE, R.string.icon_style) { setting ->
         val ctx = LocalContext.current
-        val b = (ctx.getActivity() as? SettingsActivity)?.prefChanged?.collectAsState()
-        if ((b?.value ?: 0) < 0)
-            Log.v("irrelevant", "stupid way to trigger recomposition on preference change")
         val items = KeyboardTheme.STYLES.map { it.getStringResourceOrName("style_name_", ctx) to it }
         ListPreference(
             setting,
@@ -153,9 +146,6 @@ fun createAppearanceSettings(context: Context) = listOf(
     Setting(context, Settings.PREF_THEME_COLORS, R.string.theme_colors) { setting ->
         val ctx = LocalContext.current
         val prefs = ctx.prefs()
-        val b = (ctx.getActivity() as? SettingsActivity)?.prefChanged?.collectAsState()
-        if ((b?.value ?: 0) < 0)
-            Log.v("irrelevant", "stupid way to trigger recomposition on preference change")
         var showDialog by rememberSaveable { mutableStateOf(false) }
         Preference(
             name = setting.title,
@@ -172,10 +162,7 @@ fun createAppearanceSettings(context: Context) = listOf(
     },
     Setting(context, Settings.PREF_THEME_COLORS_NIGHT, R.string.theme_colors_night) { setting ->
         val ctx = LocalContext.current
-        val b = (ctx.getActivity() as? SettingsActivity)?.prefChanged?.collectAsState()
         val prefs = ctx.prefs()
-        if ((b?.value ?: 0) < 0)
-            Log.v("irrelevant", "stupid way to trigger recomposition on preference change")
         var showDialog by rememberSaveable { mutableStateOf(false) }
         Preference(
             name = setting.title,

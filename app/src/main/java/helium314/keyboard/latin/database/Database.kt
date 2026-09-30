@@ -6,7 +6,6 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import androidx.core.database.getStringOrNull
 import androidx.core.database.sqlite.transaction
-import helium314.keyboard.latin.utils.Log
 import java.io.File
 
 class Database private constructor(context: Context, name: String = NAME) : SQLiteOpenHelper(context, name, null, VERSION) {
@@ -47,7 +46,7 @@ class Database private constructor(context: Context, name: String = NAME) : SQLi
             try {
                 db.writableDatabase.transaction {
                     if (clipDao == null) {
-                        Log.e(TAG, "can't transfer clipboard data because ClipboardDao is null")
+                        //Log.e(TAG, "can't transfer clipboard data because ClipboardDao is null")
                     } else {
                         otherDb.readableDatabase.rawQuery("SELECT TIMESTAMP, PINNED, TEXT, FILE, MIME_TYPE FROM CLIPBOARD", null)
                             .use {

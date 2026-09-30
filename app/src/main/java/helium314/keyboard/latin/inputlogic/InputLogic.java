@@ -48,7 +48,6 @@ import helium314.keyboard.latin.settings.SettingsValues;
 import helium314.keyboard.latin.settings.SpacingAndPunctuations;
 import helium314.keyboard.latin.utils.InputTypeUtils;
 import helium314.keyboard.latin.utils.IntentUtils;
-import helium314.keyboard.latin.utils.Log;
 import helium314.keyboard.latin.utils.RecapitalizeMode;
 import helium314.keyboard.latin.utils.RecapitalizeStatus;
 import helium314.keyboard.latin.utils.ScriptUtils;
@@ -516,7 +515,7 @@ public final class InputLogic {
         int keyCode = event.getKeyCode();
         SettingsValues sv = inputTransaction.getSettingsValues();
         if (sv.mIsLocked && KeyCode.isIsBlockedWhenLocked(keyCode)) {
-            Log.w(TAG, "Blocked keycode while device was locked, this should not happen");
+            //Log.w(TAG, "Blocked keycode while device was locked, this should not happen");
         }
         switch (keyCode) {
             case KeyCode.DELETE:
@@ -634,7 +633,7 @@ public final class InputLogic {
                         mConnection.setSelection(newStart, Integer.MAX_VALUE);
                     } catch (Exception e) {
                         // better catch potential errors and just do nothing in this case
-                        Log.i(TAG, "error when trying to move cursor to last position: " + e);
+                        //Log.i(TAG, "error when trying to move cursor to last position: " + e);
                     }
                 }
                 break;
@@ -687,7 +686,7 @@ public final class InputLogic {
                     return;
                 }
                 // unknown event
-                Log.e(TAG, "unknown event, key code: " + keyCode + ", codepoint " + event.getCodePoint() + ", meta: " + event.getMetaState());
+                //Log.e(TAG, "unknown event, key code: " + keyCode + ", codepoint " + event.getCodePoint() + ", meta: " + event.getMetaState());
                 if (DebugFlags.DEBUG_ENABLED) throw new RuntimeException("Unknown event");
         }
     }
@@ -1193,7 +1192,7 @@ public final class InputLogic {
             // TODO: Refactor unlearning so that it does not incur any extra calls
             // to the InputConnection. That way it can still be performed on a slow
             // InputConnection.
-            Log.w(TAG, "Skipping unlearning due to slow InputConnection.");
+            //Log.w(TAG, "Skipping unlearning due to slow InputConnection.");
             return false;
         }
         // If we just started backspacing to delete a previous word (but have not
@@ -1390,7 +1389,7 @@ public final class InputLogic {
         if (mConnection.hasSlowInputConnection()) {
             // Since we don't unlearn when the user backspaces on a slow InputConnection,
             // turn off learning to guard against adding typos that the user later deletes.
-            Log.w(TAG, "Skipping learning due to slow InputConnection.");
+            //Log.w(TAG, "Skipping learning due to slow InputConnection.");
             // but we still want to adjust confidences for multilingual typing
             mDictionaryFacilitator.adjustConfidences(word, wasAutoCapitalized);
             return;
@@ -1426,12 +1425,12 @@ public final class InputLogic {
         long startTimeMillis = 0;
         if (DebugFlags.DEBUG_ENABLED) {
             startTimeMillis = SystemClock.elapsedRealtime();
-            Log.d(TAG, "performUpdateSuggestionStripSync()");
+            ////Log.(TAG, "performUpdateSuggestionStripSync()");
         }
         // Check if we have a suggestion engine attached.
         //if (!settingsValues.needsToLookupSuggestions()) {
         if (mWordComposer.isComposingWord()) {
-            Log.w(TAG, "Called updateSuggestionsOrPredictions but suggestions were not " + "requested!");
+            //Log.w(TAG, "Called updateSuggestionsOrPredictions but suggestions were not " + "requested!");
         }
         // Clear the suggestions strip.
         mSuggestionStripViewAccessor.setSuggestions(SuggestedWords.getEmptyInstance());
@@ -1810,13 +1809,13 @@ public final class InputLogic {
         long startTimeMillis = 0;
         if (DebugFlags.DEBUG_ENABLED) {
             startTimeMillis = SystemClock.elapsedRealtime();
-            Log.d(TAG, "commitChosenWord() : [" + chosenWord + "]");
+            ////Log.(TAG, "commitChosenWord() : [" + chosenWord + "]");
         }
         // essentially reverted https://github.com/lineageos/android_packages_inputmethods_LatinIME/commit/ee6de1466bc98e27bd414c9a7451f2aee3f9e721
         // can't find any drawback (performance, neither when setting nor when reading)
         if (DebugFlags.DEBUG_ENABLED) {
             long runTimeMillis = SystemClock.elapsedRealtime() - startTimeMillis;
-            Log.d(TAG, "commitChosenWord() : " + runTimeMillis + " ms to run " + "SuggestionSpanUtils.getTextWithSuggestionSpan()");
+            ////Log.(TAG, "commitChosenWord() : " + runTimeMillis + " ms to run " + "SuggestionSpanUtils.getTextWithSuggestionSpan()");
             startTimeMillis = SystemClock.elapsedRealtime();
         }
         // When we are composing word, get n-gram context from the 2nd previous word because the
@@ -1825,21 +1824,21 @@ public final class InputLogic {
         final NgramContext ngramContext = mConnection.getNgramContextFromNthPreviousWord(settingsValues.mSpacingAndPunctuations, mWordComposer.isComposingWord() ? 2 : 1);
         if (DebugFlags.DEBUG_ENABLED) {
             long runTimeMillis = SystemClock.elapsedRealtime() - startTimeMillis;
-            Log.d(TAG, "commitChosenWord() : " + runTimeMillis + " ms to run " + "Connection.getNgramContextFromNthPreviousWord()");
-            Log.d(TAG, "commitChosenWord() : NgramContext = " + ngramContext);
+            ////Log.(TAG, "commitChosenWord() : " + runTimeMillis + " ms to run " + "Connection.getNgramContextFromNthPreviousWord()");
+            ////Log.(TAG, "commitChosenWord() : NgramContext = " + ngramContext);
             startTimeMillis = SystemClock.elapsedRealtime();
         }
         mConnection.commitText(chosenWord, 1);
         if (DebugFlags.DEBUG_ENABLED) {
             long runTimeMillis = SystemClock.elapsedRealtime() - startTimeMillis;
-            Log.d(TAG, "commitChosenWord() : " + runTimeMillis + " ms to run " + "Connection.commitText");
+            ////Log.(TAG, "commitChosenWord() : " + runTimeMillis + " ms to run " + "Connection.commitText");
             startTimeMillis = SystemClock.elapsedRealtime();
         }
         // Add the word to the user history dictionary
         /*performAdditionToUserHistoryDictionary(settingsValues, chosenWord, ngramContext);
         if (DebugFlags.DEBUG_ENABLED) {
             long runTimeMillis = SystemClock.elapsedRealtime() - startTimeMillis;
-            Log.d(TAG, "commitChosenWord() : " + runTimeMillis + " ms to run " + "performAdditionToUserHistoryDictionary()");
+            ////Log.(TAG, "commitChosenWord() : " + runTimeMillis + " ms to run " + "performAdditionToUserHistoryDictionary()");
             startTimeMillis = SystemClock.elapsedRealtime();
         }*/
         // TODO: figure out here if this is an auto-correct or if the best word is actually
@@ -1849,7 +1848,7 @@ public final class InputLogic {
         mLastComposedWord = mWordComposer.commitWord(commitType, chosenWord, separatorString, ngramContext);
         if (DebugFlags.DEBUG_ENABLED) {
             long runTimeMillis = SystemClock.elapsedRealtime() - startTimeMillis;
-            Log.d(TAG, "commitChosenWord() : " + runTimeMillis + " ms to run " + "WordComposer.commitWord()");
+            ////Log.(TAG, "commitChosenWord() : " + runTimeMillis + " ms to run " + "WordComposer.commitWord()");
         }
     }
 
@@ -2003,7 +2002,7 @@ public final class InputLogic {
             mConnection.commitText(primaryClip, 1);
             return;
         }
-        Log.d(TAG, "pasting non-text content");
+        ////Log.(TAG, "pasting non-text content");
         if (AppWorkarounds.INSTANCE.doesntCareAboutKeycodePaste(packageName) || Build.VERSION.SDK_INT < Build.VERSION_CODES.N)
             sendDownUpKeyEventWithMetaState(KeyEvent.KEYCODE_V, KeyEvent.META_CTRL_ON);
         else sendDownUpKeyEvent(KeyEvent.KEYCODE_PASTE);

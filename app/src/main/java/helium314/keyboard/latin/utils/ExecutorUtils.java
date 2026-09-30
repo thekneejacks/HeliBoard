@@ -42,8 +42,6 @@ public class ExecutorUtils {
         @Override
         public Thread newThread(final Runnable runnable) {
             Thread thread = new Thread(runnable, TAG);
-            thread.setUncaughtExceptionHandler((thread1, ex) ->
-                    Log.w(mName, runnable.getClass().getSimpleName(), ex));
             return thread;
         }
     }
@@ -81,7 +79,7 @@ public class ExecutorUtils {
             //noinspection ResultOfMethodCallIgnored
             executorService.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            Log.wtf(TAG, "Failed to shut down: " + name);
+            //Log.wtf(TAG, "Failed to shut down: " + name);
         }
         if (executorService == sExecutorServiceForTests) {
             // Don't do anything to the test service.

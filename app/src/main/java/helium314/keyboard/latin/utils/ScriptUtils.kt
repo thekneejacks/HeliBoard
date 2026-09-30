@@ -158,7 +158,7 @@ object ScriptUtils {
     fun Locale.script(): String {
         if (script.isNotEmpty()) return script
         if (country.equals("ZZ", true)) {
-            Log.w("ScriptUtils", "old _ZZ locale found: $this")
+            //Log.w("ScriptUtils", "old _ZZ locale found: $this")
             return SCRIPT_LATIN
         }
         return when (language) {

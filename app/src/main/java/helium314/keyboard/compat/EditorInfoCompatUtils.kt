@@ -9,7 +9,6 @@ package helium314.keyboard.compat
 import android.os.Build
 import android.text.InputType
 import android.view.inputmethod.EditorInfo
-import helium314.keyboard.latin.utils.Log
 import java.util.Locale
 
 object EditorInfoCompatUtils {
@@ -29,20 +28,7 @@ object EditorInfoCompatUtils {
         }
     }
 
-    fun debugLog(editorInfo: EditorInfo, tag: String) {
-        val format = HexFormat {
-            upperCase = true
-            number {
-                prefix = "0x"
-                minLength = 8
-            }
-        }
-        val allCaps = (editorInfo.inputType and InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS) != 0
-        val sentenceCaps = (editorInfo.inputType and InputType.TYPE_TEXT_FLAG_CAP_SENTENCES) != 0
-        val wordCaps = (editorInfo.inputType and InputType.TYPE_TEXT_FLAG_CAP_WORDS) != 0
-        Log.d(tag, "editorInfo: inputType: ${editorInfo.inputType.toHexString(format)}, imeOptions: ${editorInfo.imeOptions.toHexString(format)}, "
-            + "all caps: $allCaps, sentence caps: $sentenceCaps, word caps: $wordCaps")
-    }
+
 
     @JvmStatic
     fun getHintLocales(editorInfo: EditorInfo?): List<Locale> {

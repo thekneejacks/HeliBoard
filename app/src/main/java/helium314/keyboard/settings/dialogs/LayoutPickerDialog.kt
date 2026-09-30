@@ -18,7 +18,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,7 +41,6 @@ import helium314.keyboard.latin.utils.EditButton
 import helium314.keyboard.latin.utils.LayoutType
 import helium314.keyboard.latin.utils.LayoutUtils
 import helium314.keyboard.latin.utils.LayoutUtilsCustom
-import helium314.keyboard.latin.utils.Log
 import helium314.keyboard.latin.utils.SubtypeSettings
 import helium314.keyboard.latin.utils.Theme
 import helium314.keyboard.latin.utils.getActivity
@@ -63,9 +61,6 @@ fun LayoutPickerDialog(
 ) {
     val ctx = LocalContext.current
     val prefs = ctx.prefs()
-    val b = (ctx.getActivity() as? SettingsActivity)?.prefChanged?.collectAsState()
-    if ((b?.value ?: 0) < 0)
-        Log.v("irrelevant", "stupid way to trigger recomposition on preference change")
 
     val currentLayout = Settings.readDefaultLayoutName(layoutType, prefs)
     val internalLayouts = LayoutUtils.getAvailableLayouts(layoutType, ctx)

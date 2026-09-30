@@ -52,7 +52,6 @@ import helium314.keyboard.latin.utils.LayoutType
 import helium314.keyboard.latin.utils.LayoutType.Companion.displayNameId
 import helium314.keyboard.latin.utils.LayoutUtils
 import helium314.keyboard.latin.utils.LayoutUtilsCustom
-import helium314.keyboard.latin.utils.Log
 import helium314.keyboard.latin.utils.ScriptUtils
 import helium314.keyboard.latin.utils.ScriptUtils.script
 import helium314.keyboard.latin.utils.SubtypeLocaleUtils
@@ -89,9 +88,6 @@ fun SubtypeScreen(
 ) {
     val ctx = LocalContext.current
     val prefs = ctx.prefs()
-    val b = (LocalContext.current.getActivity() as? SettingsActivity)?.prefChanged?.collectAsState()
-    if ((b?.value ?: 0) < 0)
-        Log.v("irrelevant", "stupid way to trigger recomposition on preference change")
     var currentSubtypeString by rememberSaveable { mutableStateOf(initialSubtype.toPref()) }
     val currentSubtype = currentSubtypeString.toSettingsSubtype()
     fun setCurrentSubtype(subtype: SettingsSubtype) {

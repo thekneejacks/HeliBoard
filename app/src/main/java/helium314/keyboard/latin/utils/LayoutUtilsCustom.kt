@@ -38,42 +38,42 @@ object LayoutUtilsCustom {
                 return checkKeys(keys)
             }
         } catch (e: SerializationException) {
-            Log.w(TAG, "json parsing error", e)
+            //Log.w(TAG, "json parsing error", e)
             if (layoutContent.trimEnd().endsWith("]") && layoutContent.contains("},"))
                 return false // we're sure enough it's a json
         } catch (e: Exception) {
-            Log.w(TAG, "json layout parsed, but considered invalid", e)
+            //Log.w(TAG, "json layout parsed, but considered invalid", e)
             return false
         }
         try {
             val keys = LayoutParser.parseSimpleString(layoutContent).map { row -> row.map { it.toKeyParams(params) } }
             return checkKeys(keys)
-        } catch (e: Exception) { Log.w(TAG, "error parsing custom simple layout", e) }
+        } catch (e: Exception) {  }
         if (layoutContent.trimStart().startsWith("[") && layoutContent.trimEnd().endsWith("]")) {
             // layout can't be loaded, assume it's json -> load json layout again because the error message shown to the user is from the most recent error
             try {
                 LayoutParser.parseJsonString(layoutContent).map { row -> row.mapNotNull { it.compute(params)?.toKeyParams(params) } }
-            } catch (e: Exception) { Log.w(TAG, "json parsing error", e) }
+            } catch (e: Exception) {  }
         }
         return false
     }
 
     fun checkKeys(keys: List<List<Key.KeyParams>>): Boolean {
         if (keys.isEmpty() || keys.any { it.isEmpty() }) {
-            Log.w(TAG, "empty rows")
+            //Log.w(TAG, "empty rows")
             return false
         }
         if (keys.size > 8) {
-            Log.w(TAG, "too many rows")
+            //Log.w(TAG, "too many rows")
             return false
         }
         if (keys.any { row -> row.size > 20 }) {
-            Log.w(TAG, "too many keys in one row")
+            //Log.w(TAG, "too many keys in one row")
             return false
         }
         if (keys.any { row -> row.any {
                 if ((it.mLabel?.length ?: 0) > 20) {
-                    Log.w(TAG, "too long text on key: ${it.mLabel}")
+                    //Log.w(TAG, "too long text on key: ${it.mLabel}")
                     true
                 } else false
             } }) {
@@ -81,7 +81,7 @@ object LayoutUtilsCustom {
         }
         if (keys.any { row -> row.any {
                 if ((it.mPopupKeys?.size ?: 0) > 20) {
-                    Log.w(TAG, "too many popup keys on key ${it.mLabel}")
+                    //Log.w(TAG, "too many popup keys on key ${it.mLabel}")
                     true
                 } else false
             } }) {
@@ -89,7 +89,7 @@ object LayoutUtilsCustom {
         }
         if (keys.any { row -> row.any { true == it.mPopupKeys?.any { popupKey ->
                 if ((popupKey.mLabel?.length ?: 0) > 10) {
-                    Log.w(TAG, "too long text on popup key: ${popupKey.mLabel}")
+                    //Log.w(TAG, "too long text on popup key: ${popupKey.mLabel}")
                     true
                 } else false
             } } }) {
@@ -152,7 +152,7 @@ object LayoutUtilsCustom {
     fun removeMissingLayouts(context: Context) {
         val prefs = context.prefs()
         fun remove(type: LayoutType, name: String) {
-            Log.w(TAG, "removing custom layout ${getDisplayName(name)} / $name without file")
+            //Log.w(TAG, "removing custom layout ${getDisplayName(name)} / $name without file")
             SubtypeSettings.onRenameLayout(type, name, null, context)
         }
         LayoutType.entries.forEach { type ->

@@ -10,8 +10,6 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 
-import helium314.keyboard.latin.utils.Log;
-
 public final class PointerTrackerQueue {
     private static final String TAG = PointerTrackerQueue.class.getSimpleName();
     private static final boolean DEBUG = false;
@@ -39,7 +37,7 @@ public final class PointerTrackerQueue {
     public void add(final Element pointer) {
         synchronized (mExpandableArrayOfActivePointers) {
             if (DEBUG) {
-                Log.d(TAG, "add: " + pointer + " " + this);
+                ////Log.(TAG, "add: " + pointer + " " + this);
             }
             final ArrayList<Element> expandableArray = mExpandableArrayOfActivePointers;
             final int arraySize = mArraySize;
@@ -55,7 +53,7 @@ public final class PointerTrackerQueue {
     public void remove(final Element pointer) {
         synchronized (mExpandableArrayOfActivePointers) {
             if (DEBUG) {
-                Log.d(TAG, "remove: " + pointer + " " + this);
+                ////Log.(TAG, "remove: " + pointer + " " + this);
             }
             final ArrayList<Element> expandableArray = mExpandableArrayOfActivePointers;
             final int arraySize = mArraySize;
@@ -64,7 +62,7 @@ public final class PointerTrackerQueue {
                 final Element element = expandableArray.get(index);
                 if (element == pointer) {
                     if (newIndex != index) {
-                        Log.w(TAG, "Found duplicated element in remove: " + pointer);
+                        //Log.w(TAG, "Found duplicated element in remove: " + pointer);
                     }
                     continue; // Remove this element from the expandableArray.
                 }
@@ -86,9 +84,6 @@ public final class PointerTrackerQueue {
 
     public void releaseAllPointersOlderThan(final Element pointer, final long eventTime) {
         synchronized (mExpandableArrayOfActivePointers) {
-            if (DEBUG) {
-                Log.d(TAG, "releaseAllPointerOlderThan: " + pointer + " " + this);
-            }
             final ArrayList<Element> expandableArray = mExpandableArrayOfActivePointers;
             final int arraySize = mArraySize;
             int newIndex, index;
@@ -113,10 +108,6 @@ public final class PointerTrackerQueue {
                 final Element element = expandableArray.get(index);
                 if (element == pointer) {
                     count++;
-                    if (count > 1) {
-                        Log.w(TAG, "Found duplicated element in releaseAllPointersOlderThan: "
-                                + pointer);
-                    }
                 }
                 if (newIndex != index) {
                     // Shift this element toward the beginning of the expandableArray.
@@ -136,9 +127,9 @@ public final class PointerTrackerQueue {
         synchronized (mExpandableArrayOfActivePointers) {
             if (DEBUG) {
                 if (pointer == null) {
-                    Log.d(TAG, "releaseAllPointers: " + this);
+                    ////Log.(TAG, "releaseAllPointers: " + this);
                 } else {
-                    Log.d(TAG, "releaseAllPointerExcept: " + pointer + " " + this);
+                    ////Log.(TAG, "releaseAllPointerExcept: " + pointer + " " + this);
                 }
             }
             final ArrayList<Element> expandableArray = mExpandableArrayOfActivePointers;
@@ -148,10 +139,6 @@ public final class PointerTrackerQueue {
                 final Element element = expandableArray.get(index);
                 if (element == pointer) {
                     count++;
-                    if (count > 1) {
-                        Log.w(TAG, "Found duplicated element in releaseAllPointersExcept: "
-                                + pointer);
-                    }
                 } else {
                     element.onPhantomUpEvent(eventTime);
                     continue; // Remove this element from the expandableArray.
@@ -198,7 +185,7 @@ public final class PointerTrackerQueue {
     public void cancelAllPointerTrackers() {
         synchronized (mExpandableArrayOfActivePointers) {
             if (DEBUG) {
-                Log.d(TAG, "cancelAllPointerTracker: " + this);
+                ////Log.(TAG, "cancelAllPointerTracker: " + this);
             }
             final int arraySize = mArraySize;
             for (int index = 0; index < arraySize; index++) {

@@ -21,7 +21,7 @@ import java.util.Arrays;
 import helium314.keyboard.compat.AppWorkarounds;
 import helium314.keyboard.latin.common.StringUtilsKt;
 import helium314.keyboard.latin.utils.InputTypeUtils;
-import helium314.keyboard.latin.utils.Log;
+
 
 /**
  * Class to hold attributes of the input field.
@@ -64,14 +64,10 @@ public final class InputAttributes {
             // TYPE_CLASS_TEXT field, these special cases cannot happen, by construction
             // of the flags.
             if (null == editorInfo) {
-                Log.w(TAG, "No editor info for this field. Bug?");
+                //Log.w(TAG, "No editor info for this field. Bug?");
             } else if (InputType.TYPE_NULL == mInputType) {
                 // TODO: We should honor TYPE_NULL specification.
-                Log.i(TAG, "InputType.TYPE_NULL is specified");
-            } else if (inputClass == 0) {
-                // TODO: is this check still necessary?
-                Log.w(TAG, String.format("Unexpected input class: inputType=0x%08x"
-                        + " imeOptions=0x%08x", mInputType, editorInfo.imeOptions));
+                //Log.i(TAG, "InputType.TYPE_NULL is specified");
             }
             mShouldShowSuggestions = false;
             mMayOverrideShowingSuggestions = false;
@@ -157,9 +153,9 @@ public final class InputAttributes {
         final String variationString = toVariationString(
                 inputClass, inputType & InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
         final String flagsString = toFlagsString(inputType & InputType.TYPE_MASK_FLAGS);
-        Log.i(TAG, "Input class: " + inputClassString);
-        Log.i(TAG, "Variation: " + variationString);
-        Log.i(TAG, "Flags: " + flagsString);
+        //Log.i(TAG, "Input class: " + inputClassString);
+        //Log.i(TAG, "Variation: " + variationString);
+        //Log.i(TAG, "Flags: " + flagsString);
     }
 
     private static String toInputClassString(final int inputClass) {

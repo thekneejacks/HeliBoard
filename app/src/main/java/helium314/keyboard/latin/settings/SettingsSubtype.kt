@@ -13,7 +13,6 @@ import helium314.keyboard.latin.define.DebugFlags
 import helium314.keyboard.latin.settings.Defaults.default
 import helium314.keyboard.latin.utils.LayoutType
 import helium314.keyboard.latin.utils.LayoutType.Companion.toExtraValue
-import helium314.keyboard.latin.utils.Log
 import helium314.keyboard.latin.utils.POPUP_KEYS_ORDER_DEFAULT
 import helium314.keyboard.latin.utils.ScriptUtils
 import helium314.keyboard.latin.utils.ScriptUtils.script
@@ -97,13 +96,6 @@ data class SettingsSubtype(val locale: Locale, val extraValues: String) {
         /** Creates a SettingsSubtype from the given InputMethodSubtype.
          *  Will strip some extra values that are set when creating the InputMethodSubtype from SettingsSubtype */
         fun InputMethodSubtype.toSettingsSubtype(): SettingsSubtype {
-            if (DebugFlags.DEBUG_ENABLED && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && locale().toLanguageTag() == "und") {
-                @Suppress("deprecation") // it's debug logging, better get all information
-                (Log.e(
-                    SettingsSubtype::class.simpleName,
-                    "unknown language, should not happen ${locale}, $languageTag, $extraValue, ${hashCode()}, $nameResId"
-                ))
-            }
             val filteredExtraValue = extraValue.split(",").filterNot {
                 it.isBlank()
                         || it == ExtraValue.ASCII_CAPABLE

@@ -41,7 +41,6 @@ import helium314.keyboard.latin.define.DebugFlags;
 import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.settings.SettingsValues;
 import helium314.keyboard.latin.utils.KtxKt;
-import helium314.keyboard.latin.utils.Log;
 
 public final class PointerTracker implements PointerTrackerQueue.Element,
         BatchInputArbiterListener {
@@ -286,14 +285,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
             return false;
         }
         final boolean ignoreModifierKey = mIsInDraggingFinger && key.isModifier();
-        if (DEBUG_LISTENER) {
-            Log.d(TAG, String.format(Locale.US, "[%d] onPress    : %s%s%s%s", mPointerId,
-                Constants.printableCode(key.getCode()),
-                ignoreModifierKey ? " ignoreModifier" : "",
-                key.isEnabled() ? "" : " disabled",
-                repeatCount > 0 ? " repeatCount=" + repeatCount : "")
-            );
-        }
         if (ignoreModifierKey) {
             return false;
         }
@@ -320,9 +311,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
         if (DEBUG_LISTENER) {
             final String output = code == KeyCode.MULTIPLE_CODE_POINTS
                     ? key.getOutputText() : Constants.printableCode(code);
-            Log.d(TAG, String.format(Locale.US, "[%d] onCodeInput: %4d %4d %s%s%s%s", mPointerId, x, y,
-                    output, ignoreModifierKey ? " ignoreModifier" : "",
-                    altersCode ? " altersCode" : "", key.isEnabled() ? "" : " disabled"));
         }
         if (ignoreModifierKey) {
             return;
@@ -350,12 +338,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
             return;
         }
         final boolean ignoreModifierKey = mIsInDraggingFinger && key.isModifier();
-        if (DEBUG_LISTENER) {
-            Log.d(TAG, String.format(Locale.US, "[%d] onRelease  : %s%s%s%s", mPointerId,
-                    Constants.printableCode(primaryCode),
-                    withSliding ? " sliding" : "", ignoreModifierKey ? " ignoreModifier" : "",
-                    key.isEnabled() ?  "": " disabled"));
-        }
         if (ignoreModifierKey) {
             return;
         }
@@ -366,14 +348,14 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
 
     private void callListenerOnFinishSlidingInput() {
         if (DEBUG_LISTENER) {
-            Log.d(TAG, String.format(Locale.US, "[%d] onFinishSlidingInput", mPointerId));
+            ////Log.(TAG, String.format(Locale.US, "[%d] onFinishSlidingInput", mPointerId));
         }
         sListener.onFinishSlidingInput();
     }
 
     private void callListenerOnCancelInput() {
         if (DEBUG_LISTENER) {
-            Log.d(TAG, String.format(Locale.US, "[%d] onCancelInput", mPointerId));
+            ////Log.(TAG, String.format(Locale.US, "[%d] onCancelInput", mPointerId));
         }
         sListener.onCancelInput();
     }
@@ -551,7 +533,7 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
     @Override
     public void onStartBatchInput() {
         if (DEBUG_LISTENER) {
-            Log.d(TAG, String.format(Locale.US, "[%d] onStartBatchInput", mPointerId));
+            ////Log.(TAG, String.format(Locale.US, "[%d] onStartBatchInput", mPointerId));
         }
         sListener.onStartBatchInput();
         dismissAllPopupKeysPanels();
@@ -569,10 +551,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
     // Implements {@link BatchInputArbiterListener}.
     @Override
     public void onUpdateBatchInput(final InputPointers aggregatedPointers, final long eventTime) {
-        if (DEBUG_LISTENER) {
-            Log.d(TAG, String.format(Locale.US, "[%d] onUpdateBatchInput: batchPoints=%d", mPointerId,
-                    aggregatedPointers.getPointerSize()));
-        }
         sListener.onUpdateBatchInput(aggregatedPointers);
     }
 
@@ -590,10 +568,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
         if (mIsTrackingForActionDisabled) {
             return;
         }
-        if (DEBUG_LISTENER) {
-            Log.d(TAG, String.format(Locale.US, "[%d] onEndBatchInput   : batchPoints=%d",
-                    mPointerId, aggregatedPointers.getPointerSize()));
-        }
         sListener.onEndBatchInput(aggregatedPointers);
     }
 
@@ -605,7 +579,7 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
         }
         sInGesture = false;
         if (DEBUG_LISTENER) {
-            Log.d(TAG, String.format(Locale.US, "[%d] onCancelBatchInput", mPointerId));
+            ////Log.(TAG, String.format(Locale.US, "[%d] onCancelBatchInput", mPointerId));
         }
         sListener.onCancelBatchInput();
     }
@@ -652,10 +626,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
         if (deltaT < sParams.mTouchNoiseThresholdTime) {
             final int distance = getDistance(x, y, mLastX, mLastY);
             if (distance < sParams.mTouchNoiseThresholdDistance) {
-                if (DEBUG_MODE)
-                    Log.w(TAG, String.format(Locale.US, "[%d] onDownEvent:"
-                            + " ignore potential noise: time=%d distance=%d",
-                            mPointerId, deltaT, distance));
                 cancelTrackingForAction();
                 return;
             }
@@ -854,12 +824,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
             final float radiusRatio =
                     mBogusMoveEventDetector.getDistanceFromDownEvent(x, y)
                     / keyDiagonal;
-            Log.w(TAG, String.format(Locale.US, "[%d] onMoveEvent:"
-                    + " bogus down-move-up event (raidus=%.2f key diagonal) is "
-                    + " translated to up[%d,%d,%s]/down[%d,%d,%s] events",
-                    mPointerId, radiusRatio,
-                    lastX, lastY, Constants.printableCode(oldKey.getCode()),
-                    x, y, Constants.printableCode(key.getCode())));
         }
         onUpEventInternal(x, y, eventTime);
         onDownEventInternal(x, y, eventTime);
@@ -895,10 +859,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
         // Caveat: When in chording input mode with a modifier key, we don't use this hack.
         else if (getActivePointerTrackerCount() > 1
                 && !sPointerTrackerQueue.hasModifierKeyOlderThan(this)) {
-            if (DEBUG_MODE) {
-                Log.w(TAG, String.format(Locale.US, "[%d] onMoveEvent:"
-                        + " detected sliding finger while multi touching", mPointerId));
-            }
             onUpEvent(x, y, eventTime);
             cancelTrackingForAction();
             setReleasedKeyGraphics(oldKey, true);
@@ -1229,21 +1189,10 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
         final int keyHysteresisDistanceSquared = mKeyDetector.getKeyHysteresisDistanceSquared(mIsInSlidingKeyInput);
         final int distanceFromKeyEdgeSquared = curKey.squaredDistanceToEdge(x, y);
         if (distanceFromKeyEdgeSquared >= keyHysteresisDistanceSquared) {
-            if (DEBUG_MODE) {
-                final float distanceToEdgeRatio = (float)Math.sqrt(distanceFromKeyEdgeSquared) / mKeyboard.mMostCommonKeyWidth;
-                Log.d(TAG, String.format(Locale.US, "[%d] isMajorEnoughMoveToBeOnNewKey:"
-                        +" %.2f key width from key edge", mPointerId, distanceToEdgeRatio));
-            }
             return true;
         }
         if (!mIsAllowedDraggingFinger && sTypingTimeRecorder.isInFastTyping(eventTime)
                 && mBogusMoveEventDetector.hasTraveledLongDistance(x, y)) {
-            if (DEBUG_MODE) {
-                final float keyDiagonal = (float)Math.hypot(mKeyboard.mMostCommonKeyWidth, mKeyboard.mMostCommonKeyHeight);
-                final float lengthFromDownRatio = mBogusMoveEventDetector.getAccumulatedDistanceFromDownKey() / keyDiagonal;
-                Log.d(TAG, String.format(Locale.US, "[%d] isMajorEnoughMoveToBeOnNewKey:"
-                        + " %.2f key diagonal from virtual down point", mPointerId, lengthFromDownRatio));
-            }
             return true;
         }
         return false;
@@ -1350,7 +1299,5 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
             final long eventTime) {
         final Key key = mKeyDetector.detectHitKey(x, y);
         final String code = (key == null ? "none" : Constants.printableCode(key.getCode()));
-        Log.d(TAG, String.format(Locale.US, "[%d]%s%s %4d %4d %5d %s", mPointerId,
-                (mIsTrackingForActionDisabled ? "-" : " "), title, x, y, eventTime, code));
     }
 }

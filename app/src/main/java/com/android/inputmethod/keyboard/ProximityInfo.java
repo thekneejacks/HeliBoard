@@ -14,13 +14,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
-
 import helium314.keyboard.keyboard.Key;
 import helium314.keyboard.keyboard.internal.TouchPositionCorrection;
 import helium314.keyboard.latin.common.Constants;
 import helium314.keyboard.latin.utils.JniUtils;
-import helium314.keyboard.latin.utils.Log;
 
 public class ProximityInfo {
     private static final String TAG = ProximityInfo.class.getSimpleName();
@@ -73,7 +70,6 @@ public class ProximityInfo {
         try {
             mNativeProximityInfo = createNativeProximityInfo(touchPositionCorrection);
         } catch (Throwable e) {
-            Log.e(TAG, "could not create proximity info", e);
             mNativeProximityInfo = 0;
         }
     }
@@ -136,7 +132,7 @@ public class ProximityInfo {
                     if (sb.length() > 0) sb.append(" ");
                     sb.append(Constants.printableCode(code));
                 }
-                Log.d(TAG, "proxmityChars["+i+"]: " + sb);
+                //Log.(TAG, "proxmityChars["+i+"]: " + sb);
             }
         }
 
@@ -167,7 +163,7 @@ public class ProximityInfo {
 
         if (touchPositionCorrection.isValid()) {
             if (DEBUG) {
-                Log.d(TAG, "touchPositionCorrection: ON");
+                //Log.(TAG, "touchPositionCorrection: ON");
             }
             sweetSpotCenterXs = new float[keyCount];
             sweetSpotCenterYs = new float[keyCount];
@@ -197,20 +193,11 @@ public class ProximityInfo {
                     sweetSpotRadii[infoIndex] =
                             touchPositionCorrection.getRadius(row) * hitBoxDiagonal;
                 }
-                if (DEBUG) {
-                    Log.d(TAG, String.format(Locale.US,
-                            "  [%2d] row=%d x/y/r=%7.2f/%7.2f/%5.2f %s code=%s", infoIndex, row,
-                            sweetSpotCenterXs[infoIndex], sweetSpotCenterYs[infoIndex],
-                            sweetSpotRadii[infoIndex], (row < rows ? "correct" : "default"),
-                            Constants.printableCode(key.getCode())));
-                }
                 infoIndex++;
             }
         } else {
             sweetSpotCenterXs = sweetSpotCenterYs = sweetSpotRadii = null;
-            if (DEBUG) {
-                Log.d(TAG, "touchPositionCorrection: OFF");
-            }
+
         }
 
         // TODO: Stop passing proximityCharsArray
@@ -218,10 +205,6 @@ public class ProximityInfo {
                 mMostCommonKeyWidth, mMostCommonKeyHeight, proximityCharsArray, keyCount,
                 keyXCoordinates, keyYCoordinates, keyWidths, keyHeights, keyCharCodes,
                 sweetSpotCenterXs, sweetSpotCenterYs, sweetSpotRadii);
-    }
-
-    public long getNativeProximityInfo() {
-        return mNativeProximityInfo;
     }
 
     @Override

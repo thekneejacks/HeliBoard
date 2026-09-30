@@ -23,7 +23,6 @@ import helium314.keyboard.latin.R
 import helium314.keyboard.latin.common.FileUtils
 import helium314.keyboard.latin.settings.Defaults
 import helium314.keyboard.latin.settings.Settings
-import helium314.keyboard.latin.utils.Log
 import helium314.keyboard.latin.utils.getActivity
 import helium314.keyboard.latin.utils.prefs
 import helium314.keyboard.settings.Setting
@@ -41,9 +40,6 @@ fun BackgroundImagePref(setting: Setting, isLandscape: Boolean) {
     var isNight by rememberSaveable { mutableStateOf(false) }
     val ctx = LocalContext.current
     fun getFile() = Settings.getCustomBackgroundFile(ctx, isNight, isLandscape)
-    val b = (ctx.getActivity() as? SettingsActivity)?.prefChanged?.collectAsState()
-    if ((b?.value ?: 0) < 0) // necessary to reload dayNightPref
-        Log.v("irrelevant", "stupid way to trigger recomposition on preference change")
     val dayNightPref = ctx.prefs().getBoolean(Settings.PREF_THEME_DAY_NIGHT, Defaults.PREF_THEME_DAY_NIGHT)
     if (!dayNightPref)
         isNight = false

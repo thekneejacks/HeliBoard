@@ -11,7 +11,6 @@ import helium314.keyboard.latin.common.ColorType
 import helium314.keyboard.latin.common.Constants.Separators
 import helium314.keyboard.latin.common.Constants.Subtype.ExtraValue
 import helium314.keyboard.latin.common.LocaleUtils.constructLocale
-import helium314.keyboard.latin.common.StringUtils
 import helium314.keyboard.latin.common.encodeBase36
 import helium314.keyboard.latin.settings.Defaults
 import helium314.keyboard.latin.settings.Settings
@@ -19,7 +18,6 @@ import helium314.keyboard.latin.settings.SettingsSubtype
 import helium314.keyboard.latin.settings.SettingsSubtype.Companion.toSettingsSubtype
 import helium314.keyboard.latin.settings.createPrefKeyForBooleanSettings
 import helium314.keyboard.latin.utils.DeviceProtectedUtils
-import helium314.keyboard.latin.utils.JsonUtils
 import helium314.keyboard.latin.utils.LayoutType
 import helium314.keyboard.latin.utils.LayoutType.Companion.folder
 import helium314.keyboard.latin.utils.LayoutUtilsCustom
@@ -664,13 +662,6 @@ private object AppUpgrade {
                     putFloat(createPrefKeyForBooleanSettings(Settings.PREF_KEY_GAP_SCALE_PREFIX, 3, 2), 1.1f)
                 }
                 remove("narrow_key_gaps")
-            }
-        }
-        if (oldVersion <= 4005) {
-            if (prefs.contains("emoji_recent_keys")) {
-                val old = JsonUtils.jsonStrToList(prefs.getString("emoji_recent_keys", ""))
-                    .mapNotNull { it as? String ?: (it as? Int)?.let { StringUtils.newSingleCodePointString(it) } }
-                prefs.edit { remove("emoji_recent_keys")  }
             }
         }
         upgradeToolbarPrefs(prefs)

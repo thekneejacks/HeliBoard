@@ -16,7 +16,6 @@ import helium314.keyboard.keyboard.KeyboardSwitcher
 import helium314.keyboard.latin.R
 import helium314.keyboard.latin.settings.Defaults
 import helium314.keyboard.latin.settings.Settings
-import helium314.keyboard.latin.utils.Log
 import helium314.keyboard.latin.utils.Theme
 import helium314.keyboard.latin.utils.ToolbarMode
 import helium314.keyboard.latin.utils.getActivity
@@ -38,9 +37,6 @@ fun ToolbarScreen(
     onClickBack: () -> Unit,
 ) {
     val prefs = LocalContext.current.prefs()
-    val b = (LocalContext.current.getActivity() as? SettingsActivity)?.prefChanged?.collectAsState()
-    if ((b?.value ?: 0) < 0)
-        Log.v("irrelevant", "stupid way to trigger recomposition on preference change")
     val toolbarMode = Settings.readToolbarMode(prefs)
     val clipboardToolbarVisible = toolbarMode != ToolbarMode.HIDDEN
         || !prefs.getBoolean(Settings.PREF_TOOLBAR_HIDING_GLOBAL, Defaults.PREF_TOOLBAR_HIDING_GLOBAL)

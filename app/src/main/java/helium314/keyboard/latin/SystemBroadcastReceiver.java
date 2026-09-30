@@ -19,7 +19,6 @@ import android.view.inputmethod.InputMethodManager;
 import helium314.keyboard.keyboard.KeyboardLayoutSet;
 import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.utils.KtxKt;
-import helium314.keyboard.latin.utils.Log;
 import helium314.keyboard.latin.utils.UncachedInputMethodManagerUtils;
 import helium314.keyboard.settings.SettingsActivity;
 
@@ -54,13 +53,13 @@ public final class SystemBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(final Context context, final Intent intent) {
         final String intentAction = intent.getAction();
         if (Intent.ACTION_MY_PACKAGE_REPLACED.equals(intentAction)) {
-            Log.i(TAG, "Package has been replaced: " + context.getPackageName());
+            //Log.i(TAG, "Package has been replaced: " + context.getPackageName());
             toggleAppIcon(context);
         } else if (Intent.ACTION_BOOT_COMPLETED.equals(intentAction)) {
-            Log.i(TAG, "Boot has been completed");
+            //Log.i(TAG, "Boot has been completed");
             toggleAppIcon(context);
         } else if (Intent.ACTION_LOCALE_CHANGED.equals(intentAction)) {
-            Log.i(TAG, "System locale changed");
+            //Log.i(TAG, "System locale changed");
             KeyboardLayoutSet.Companion.onSystemLocaleChanged();
         }
 
@@ -78,7 +77,7 @@ public final class SystemBroadcastReceiver extends BroadcastReceiver {
                 && UncachedInputMethodManagerUtils.isThisImeCurrent(context, imm);
         if (!isCurrentImeOfCurrentUser) {
             final int myPid = Process.myPid();
-            Log.i(TAG, "Killing my process: pid=" + myPid);
+            //Log.i(TAG, "Killing my process: pid=" + myPid);
             Process.killProcess(myPid);
         }
     }

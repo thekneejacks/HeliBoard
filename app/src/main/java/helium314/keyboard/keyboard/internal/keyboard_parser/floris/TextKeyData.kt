@@ -24,7 +24,6 @@ import helium314.keyboard.latin.common.LocaleUtils.constructLocale
 import helium314.keyboard.latin.common.StringUtils
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.utils.LayoutType
-import helium314.keyboard.latin.utils.Log
 import helium314.keyboard.latin.utils.ToolbarKey
 import helium314.keyboard.latin.utils.toolbarKeyStrings
 import kotlinx.serialization.SerialName
@@ -238,7 +237,7 @@ sealed interface KeyData : AbstractKeyData {
                 return this
             val id = Settings.getInstance().getStringResIdByName("label_$this")
             if (id == 0) {
-                Log.w("TextKeyData", "no resource for label $this in ${params.mId}")
+                //Log.w("TextKeyData", "no resource for label $this in ${params.mId}")
                 return this
             }
             return getStringInLocale(id, params)

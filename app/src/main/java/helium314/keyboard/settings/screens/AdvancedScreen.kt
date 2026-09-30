@@ -27,7 +27,6 @@ import helium314.keyboard.latin.common.splitOnWhitespace
 import helium314.keyboard.latin.settings.DebugSettings
 import helium314.keyboard.latin.settings.Defaults
 import helium314.keyboard.latin.settings.Settings
-import helium314.keyboard.latin.utils.Log
 import helium314.keyboard.latin.utils.NextScreenIcon
 import helium314.keyboard.latin.utils.Theme
 import helium314.keyboard.latin.utils.checkTimestampFormat
@@ -53,9 +52,6 @@ fun AdvancedSettingsScreen(
     onClickBack: () -> Unit,
 ) {
     val prefs = LocalContext.current.prefs()
-    val b = (LocalContext.current.getActivity() as? SettingsActivity)?.prefChanged?.collectAsState()
-    if ((b?.value ?: 0) < 0)
-        Log.v("irrelevant", "stupid way to trigger recomposition on preference change")
     val items = listOf(
         Settings.PREF_ALWAYS_INCOGNITO_MODE,
         Settings.PREF_KEY_LONGPRESS_TIMEOUT,

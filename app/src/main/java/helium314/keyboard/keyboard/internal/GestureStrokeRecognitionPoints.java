@@ -6,13 +6,10 @@
 
 package helium314.keyboard.keyboard.internal;
 
-import java.util.Locale;
-
 import helium314.keyboard.latin.common.Constants;
 import helium314.keyboard.latin.common.InputPointers;
 import helium314.keyboard.latin.common.ResizableIntArray;
 import helium314.keyboard.latin.settings.Settings;
-import helium314.keyboard.latin.utils.Log;
 
 /**
  * This class holds event points to recognize a gesture stroke.
@@ -84,15 +81,6 @@ public final class GestureStrokeRecognitionPoints {
                 keyWidth * mRecognitionParams.mSamplingMinimumDistance);
         mGestureRecognitionSpeedThreshold = (int)(
                 keyWidth * mRecognitionParams.mRecognitionSpeedThreshold);
-        if (DEBUG) {
-            Log.d(TAG, String.format(Locale.US,
-                    "[%d] setKeyboardGeometry: keyWidth=%3d tT=%3d >> %3d tD=%3d >> %3d",
-                    mPointerId, keyWidth,
-                    mRecognitionParams.mDynamicTimeThresholdFrom,
-                    mRecognitionParams.mDynamicTimeThresholdTo,
-                    mGestureDynamicDistanceThresholdFrom,
-                    mGestureDynamicDistanceThresholdTo));
-        }
     }
 
     // TODO: Make this package private
@@ -106,10 +94,6 @@ public final class GestureStrokeRecognitionPoints {
         reset();
         if (elapsedTimeSinceLastTyping < Settings.getValues().mGestureFastTypingCooldown) {
             mAfterFastTyping = true;
-        }
-        if (DEBUG) {
-            Log.d(TAG, String.format(Locale.US, "[%d] onDownEvent: dT=%3d%s", mPointerId,
-                    elapsedTimeSinceLastTyping, mAfterFastTyping ? " afterFastTyping" : ""));
         }
         // Call {@link #addEventPoint(int,int,int,boolean)} to record this down event point as a
         // major event point.
@@ -158,13 +142,6 @@ public final class GestureStrokeRecognitionPoints {
         final int timeThreshold = getGestureDynamicTimeThreshold(deltaTime);
         final boolean isStartOfAGesture = deltaTime >= timeThreshold
                 && deltaDistance >= distanceThreshold;
-        if (DEBUG) {
-            Log.d(TAG, String.format(Locale.US, "[%d] isStartOfAGesture: dT=%3d tT=%3d dD=%3d tD=%3d%s%s",
-                    mPointerId, deltaTime, timeThreshold,
-                    deltaDistance, distanceThreshold,
-                    mAfterFastTyping ? " afterFastTyping" : "",
-                    isStartOfAGesture ? " startOfAGesture" : ""));
-        }
         return isStartOfAGesture;
     }
 
@@ -174,10 +151,6 @@ public final class GestureStrokeRecognitionPoints {
         if (lastIndex >= 0) {
             final int x = mXCoordinates.get(lastIndex);
             final int y = mYCoordinates.get(lastIndex);
-            if (DEBUG) {
-                Log.d(TAG, String.format(Locale.US, "[%d] duplicateLastPointWith: %d,%d|%d", mPointerId,
-                        x, y, time));
-            }
             // TODO: Have appendMajorPoint()
             appendPoint(x, y, time);
             updateIncrementalRecognitionSize(x, y, time);
@@ -201,9 +174,6 @@ public final class GestureStrokeRecognitionPoints {
         // time than the next {@link MotionEvent}. To maintain the monotonicity of the event time,
         // drop the successive point here.
         if (lastIndex >= 0 && mEventTimes.get(lastIndex) > time) {
-            Log.w(TAG, String.format(Locale.US, "[%d] drop stale event: %d,%d|%d last: %d,%d|%d", mPointerId,
-                    x, y, time, mXCoordinates.get(lastIndex), mYCoordinates.get(lastIndex),
-                    mEventTimes.get(lastIndex)));
             return;
         }
         mEventTimes.add(time);
@@ -233,16 +203,10 @@ public final class GestureStrokeRecognitionPoints {
             final int pixelsPerSec = pixels * MSEC_PER_SEC;
             if (DEBUG_SPEED) {
                 final float speed = (float)pixelsPerSec / msecs / mKeyWidth;
-                Log.d(TAG, String.format(Locale.US, "[%d] detectFastMove: speed=%5.2f", mPointerId, speed));
+                ////Log.(TAG, String.format(Locale.US, "[%d] detectFastMove: speed=%5.2f", mPointerId, speed));
             }
             // Equivalent to (pixels / msecs < mStartSpeedThreshold / MSEC_PER_SEC)
             if (!hasDetectedFastMove() && pixelsPerSec > mDetectFastMoveSpeedThreshold * msecs) {
-                if (DEBUG) {
-                    final float speed = (float)pixelsPerSec / msecs / mKeyWidth;
-                    Log.d(TAG, String.format(Locale.US,
-                            "[%d] detectFastMove: speed=%5.2f T=%3d points=%3d fastMove",
-                            mPointerId, speed, time, size));
-                }
                 mDetectFastMoveTime = time;
                 mDetectFastMoveX = x;
                 mDetectFastMoveY = y;

@@ -2,13 +2,11 @@
 package helium314.keyboard.latin
 
 import android.app.Application
-import android.os.Build
 import helium314.keyboard.latin.define.DebugFlags
 import helium314.keyboard.latin.settings.Defaults
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.utils.FoldableUtils
 import helium314.keyboard.latin.utils.LayoutUtilsCustom
-import helium314.keyboard.latin.utils.Log
 import helium314.keyboard.latin.utils.SubtypeSettings
 import helium314.keyboard.latin.utils.prefs
 import helium314.keyboard.latin.utils.upgradeToolbarPrefs
@@ -27,13 +25,6 @@ class App : Application() {
         val scope = CoroutineScope(Dispatchers.Default)
         scope.launch { // do some uncritical work in background for faster startup
             LayoutUtilsCustom.removeMissingLayouts(this@App)
-            val packageInfo = packageManager.getPackageInfo(packageName, 0)
-            @Suppress("DEPRECATION")
-            Log.i(
-                "startup", "Starting ${applicationInfo.processName} version ${packageInfo.versionName} (${
-                    packageInfo.versionCode
-                }) on Android ${Build.VERSION.RELEASE} (SDK ${Build.VERSION.SDK_INT})"
-            )
         }
 
         RichInputMethodManager.init(this)

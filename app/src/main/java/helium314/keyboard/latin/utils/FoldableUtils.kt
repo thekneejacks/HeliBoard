@@ -30,27 +30,20 @@ object FoldableUtils {
             if (field == value) return
             // we could reload the keyboard at this point, but according to a user this is not necessary
             // https://github.com/HeliBorg/HeliBoard/issues/1063#issuecomment-4178571414
-            Log.v(TAG, "set isFolded to $value")
+            //Log.v(TAG, "set isFolded to $value")
             field = value
         }
 
     /** set [isFoldable] */
     fun init(context: Context) {
         isFoldable = getFeatureString(context) != null || hasFoldSensor(context)
-        Log.i(TAG, if (isFoldable) "foldable" else "not foldable")
+        //Log.i(TAG, if (isFoldable) "foldable" else "not foldable")
     }
 
     private fun hasFoldSensor(context: Context): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
                 && context.packageManager.hasSystemFeature(PackageManager.FEATURE_SENSOR_HINGE_ANGLE))
             return true
-        if (DebugFlags.DEBUG_ENABLED) {
-            val sm = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-            sm.getSensorList(Sensor.TYPE_ALL).forEach {
-                if (it.name.contains("hinge", true) || it.name.contains("fold", true))
-                    Log.v(TAG, "no default hinge sensor, but found ${it.name} with range ${it.maximumRange}")
-            }
-        }
         return false
     }
 
@@ -87,10 +80,10 @@ object FoldableUtils {
 
                 // do we have use for anything other than state? featureType might be useful for debugging
                 if (DebugFlags.DEBUG_ENABLED)
-                    Log.d(TAG, "found: type $featureType, state $state")
+                    ////Log.(TAG, "found: type $featureType, state $state")
                 return (state != PATTERN_STATE_FLAT && state != PATTERN_STATE_HALF_OPENED) // or go for FEATURE_TYPE_FOLD/HINGE?
             } catch (e: Exception) {
-                Log.w(TAG, "error when checking $it", e)
+                //Log.w(TAG, "error when checking $it", e)
             }
         }
 
@@ -106,11 +99,9 @@ object FoldableUtils {
                 if (uri != displayFeaturesUri) return
                 val featuresString = getFeatureString(context)
                 if (featuresString == null) {
-                    Log.w(TAG, "$DISPLAY_FEATURES are unexpectedly null")
+                    //Log.w(TAG, "$DISPLAY_FEATURES are unexpectedly null")
                     return
                 }
-                if (DebugFlags.DEBUG_ENABLED)
-                    Log.v(TAG, "$DISPLAY_FEATURES changed: $featuresString")
                 isFolded = extractFoldedState(featuresString)
             }
         }
@@ -125,8 +116,6 @@ object FoldableUtils {
                 // maybe we should use the sensor range? wait for bug reports + logs
                 if (!sensorForDebug)
                     isFolded = (angle ?: 180f) < 40
-                if (DebugFlags.DEBUG_ENABLED)
-                    Log.v(TAG, "sensor changed: ${event.values?.toList()}")
             }
         }
 
@@ -136,7 +125,7 @@ object FoldableUtils {
             if (featureString != null) {
                 context.contentResolver.registerContentObserver(displayFeaturesUri, false, featureStringObserver)
                 isFolded = extractFoldedState(featureString)
-                Log.v(TAG, "using $DISPLAY_FEATURES, folded: $isFolded")
+                //Log.v(TAG, "using $DISPLAY_FEATURES, folded: $isFolded")
             }
             if (hasFoldSensor(context) && (featureString == null || DebugFlags.DEBUG_ENABLED)) {
                 sensorForDebug = featureString != null
@@ -144,7 +133,7 @@ object FoldableUtils {
                 // -> we could try other sensors
                 val sm = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
                 sm.registerListener(sensorListener, sm.getDefaultSensor(Sensor.TYPE_HINGE_ANGLE), SensorManager.SENSOR_DELAY_UI)
-                Log.v(TAG, "using sensor, for debugging only: $sensorForDebug")
+                //Log.v(TAG, "using sensor, for debugging only: $sensorForDebug")
             }
         }
 

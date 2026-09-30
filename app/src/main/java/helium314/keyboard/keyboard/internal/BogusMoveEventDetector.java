@@ -11,8 +11,6 @@ import android.util.DisplayMetrics;
 
 import helium314.keyboard.latin.R;
 import helium314.keyboard.latin.common.Constants;
-import helium314.keyboard.latin.define.DebugFlags;
-import helium314.keyboard.latin.utils.Log;
 
 // This hack is applied to certain classes of tablets.
 public final class BogusMoveEventDetector {
@@ -37,12 +35,6 @@ public final class BogusMoveEventDetector {
         final int densityDpi = res.getDisplayMetrics().densityDpi;
         final boolean hasLowDensityScreen = (densityDpi < DisplayMetrics.DENSITY_HIGH);
         final boolean needsTheHack = isLargeTablet || (isSmallTablet && hasLowDensityScreen);
-        if (DebugFlags.DEBUG_ENABLED) {
-            final int sw = res.getConfiguration().smallestScreenWidthDp;
-            Log.d(TAG, "needsProximateBogusDownMoveUpEventHack=" + needsTheHack
-                    + " smallestScreenWidthDp=" + sw + " densityDpi=" + densityDpi
-                    + " screenMetrics=" + screenMetrics);
-        }
         sNeedsProximateBogusDownMoveUpEventHack = needsTheHack;
     }
 

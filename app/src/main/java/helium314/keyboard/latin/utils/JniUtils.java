@@ -85,9 +85,7 @@ public final class JniUtils {
                     sHaveGestureLib = false;
                 }
             } catch (Throwable t) { // catch everything, maybe provided library simply doesn't work
-                if (!(t instanceof IllegalStateException) || !"SharedPreferences in credential encrypted storage are not available until after user is unlocked".equals(t.getMessage()))
-                    // but don't log if device is locked, here we expect the exception and only load system library, if possible
-                    Log.w(TAG, "Could not load user-supplied library", t);
+
             }
         }
 
@@ -97,7 +95,7 @@ public final class JniUtils {
                 System.loadLibrary(JNI_LIB_NAME_GOOGLE);
                 sHaveGestureLib = true;
             } catch (UnsatisfiedLinkError ul) {
-                Log.w(TAG, "Could not load system glide typing library " + JNI_LIB_NAME_GOOGLE + ": " + ul.getMessage());
+                //Log.w(TAG, "Could not load system glide typing library " + JNI_LIB_NAME_GOOGLE + ": " + ul.getMessage());
             }
         }
         if (!sHaveGestureLib) {
@@ -105,7 +103,7 @@ public final class JniUtils {
             try {
                 System.loadLibrary(JNI_LIB_NAME);
             } catch (UnsatisfiedLinkError ul) {
-                Log.w(TAG, "Could not load native library " + JNI_LIB_NAME, ul);
+                //Log.w(TAG, "Could not load native library " + JNI_LIB_NAME, ul);
             }
         }
     }

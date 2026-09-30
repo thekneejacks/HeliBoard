@@ -44,12 +44,10 @@ import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.settings.SettingsKt;
 import helium314.keyboard.latin.settings.SettingsValues;
 import helium314.keyboard.latin.suggestions.SuggestionStripView;
-import helium314.keyboard.latin.utils.CapsModeUtils;
 import helium314.keyboard.latin.utils.FloatingKeyboardUtils;
 import helium314.keyboard.latin.utils.FoldableUtils;
 import helium314.keyboard.latin.utils.KtxKt;
 import helium314.keyboard.latin.utils.LanguageOnSpacebarUtils;
-import helium314.keyboard.latin.utils.Log;
 import helium314.keyboard.latin.utils.RecapitalizeMode;
 import helium314.keyboard.latin.utils.ResourceUtils;
 import helium314.keyboard.latin.utils.ScriptUtils;
@@ -159,7 +157,7 @@ public final class KeyboardSwitcher {
         try {
             mState.onLoadKeyboard(currentAutoCapsState, currentRecapitalizeState, settingsValues.mOneHandedModeEnabled);
         } catch (KeyboardLayoutSet.Companion.KeyboardLayoutSetException e) {
-            Log.e(TAG, "loading keyboard failed: " + e.getKeyboardId(), e.getCause());
+            //Log.e(TAG, "loading keyboard failed: " + e.getKeyboardId(), e.getCause());
             try {
                 final InputMethodSubtype defaults = SubtypeUtilsAdditional.INSTANCE.createDefaultSubtype(mRichImm.getCurrentSubtypeLocale());
                 mKeyboardLayoutSet = builder.setKeyboardGeometry(keyboardWidth, keyboardHeight)
@@ -172,7 +170,7 @@ public final class KeyboardSwitcher {
                 mState.onLoadKeyboard(currentAutoCapsState, currentRecapitalizeState, false);
                 showToast("error loading the keyboard, falling back to defaults", false);
             } catch (KeyboardLayoutSet.Companion.KeyboardLayoutSetException e2) {
-                Log.e(TAG, "even fallback to defaults failed: " + e2.getKeyboardId(), e2.getCause());
+                //Log.e(TAG, "even fallback to defaults failed: " + e2.getKeyboardId(), e2.getCause());
             }
         }
     }
@@ -255,7 +253,7 @@ public final class KeyboardSwitcher {
 
     public void onLongPressAlphaSymbolForNumpad() {
         if (SwitchActions.DEBUG_ACTION) {
-            Log.d(TAG, "onLongPressAlphaSymbol");
+            ////Log.(TAG, "onLongPressAlphaSymbol");
         }
         mState.onLongPressAlphaSymbolForNumpad();
     }
@@ -293,7 +291,7 @@ public final class KeyboardSwitcher {
 
     public void onToggleKeyboard(@NonNull final KeyboardSwitchState toggleState) {
         KeyboardSwitchState currentState = getKeyboardSwitchState();
-        Log.w(TAG, "onToggleKeyboard() : Current = " + currentState + " : Toggle = " + toggleState);
+        //Log.w(TAG, "onToggleKeyboard() : Current = " + currentState + " : Toggle = " + toggleState);
         if (currentState == toggleState) {
             mLatinIME.stopShowingInputView();
             mLatinIME.hideWindow();
@@ -311,7 +309,7 @@ public final class KeyboardSwitcher {
 
     public void updateShiftState(final int autoCapsFlags, @Nullable final RecapitalizeMode recapitalizeMode) {
         if (SwitchActions.DEBUG_ACTION) {
-            Log.d(TAG, "updateShiftState: " + " autoCapsFlags=" + CapsModeUtils.flagsToString(autoCapsFlags) + " recapitalizeMode=" + recapitalizeMode);
+            ////Log.(TAG, "updateShiftState: " + " autoCapsFlags=" + CapsModeUtils.flagsToString(autoCapsFlags) + " recapitalizeMode=" + recapitalizeMode);
         }
         mState.onUpdateShiftState(autoCapsFlags, recapitalizeMode);
     }
@@ -483,7 +481,7 @@ public final class KeyboardSwitcher {
 
     @SuppressLint("InflateParams")
     public View onCreateInputView(@NonNull Context displayContext, boolean isHardwareAcceleratedDrawingEnabled) {
-        Log.d(TAG, "create new input view");
+        ////Log.(TAG, "create new input view");
         if (mKeyboardView != null) {
             mKeyboardView.closing();
         }
@@ -558,7 +556,7 @@ public final class KeyboardSwitcher {
         @Override
         public void setAlphabetKeyboard(@NonNull ShiftMode shiftMode) {
             if (DEBUG_ACTION) {
-                Log.d(TAG, "setAlphabetKeyboard");
+                ////Log.(TAG, "setAlphabetKeyboard");
             }
             setKeyboard(shiftMode.element, KeyboardSwitchState.OTHER);
         }
@@ -566,7 +564,7 @@ public final class KeyboardSwitcher {
         @Override
         public void setSymbolsKeyboard() {
             if (DEBUG_ACTION) {
-                Log.d(TAG, "setSymbolsKeyboard");
+                ////Log.(TAG, "setSymbolsKeyboard");
             }
             setKeyboard(KeyboardElement.SYMBOLS, KeyboardSwitchState.OTHER);
         }
@@ -574,7 +572,7 @@ public final class KeyboardSwitcher {
         @Override
         public void setSymbolsShiftedKeyboard() {
             if (DEBUG_ACTION) {
-                Log.d(TAG, "setSymbolsShiftedKeyboard");
+                ////Log.(TAG, "setSymbolsShiftedKeyboard");
             }
             setKeyboard(KeyboardElement.SYMBOLS_SHIFTED, KeyboardSwitchState.SYMBOLS_SHIFTED);
         }
@@ -582,7 +580,7 @@ public final class KeyboardSwitcher {
         @Override
         public void setEmojiKeyboard() {
             if (DEBUG_ACTION) {
-                Log.d(TAG, "setEmojiKeyboard");
+                ////Log.(TAG, "setEmojiKeyboard");
             }
             mMainKeyboardFrame.setVisibility(View.VISIBLE);
             // The visibility of {@link #mKeyboardView} must be aligned with {@link #MainKeyboardFrame}.
@@ -598,7 +596,7 @@ public final class KeyboardSwitcher {
         @Override
         public void setClipboardKeyboard() {
             if (DEBUG_ACTION) {
-                Log.d(TAG, "setClipboardKeyboard");
+                ////Log.(TAG, "setClipboardKeyboard");
             }
             mMainKeyboardFrame.setVisibility(View.VISIBLE);
             // The visibility of {@link #mKeyboardView} must be aligned with {@link #MainKeyboardFrame}.
@@ -615,7 +613,7 @@ public final class KeyboardSwitcher {
         @Override
         public void setNumpadKeyboard() {
             if (DEBUG_ACTION) {
-                Log.d(TAG, "setNumpadKeyboard");
+                ////Log.(TAG, "setNumpadKeyboard");
             }
             setKeyboard(KeyboardElement.NUMPAD, KeyboardSwitchState.OTHER);
         }
@@ -623,7 +621,7 @@ public final class KeyboardSwitcher {
         @Override
         public void setDpadKeyboard() {
             if (DEBUG_ACTION) {
-                Log.d(TAG, "setDpadKeyboard");
+                ////Log.(TAG, "setDpadKeyboard");
             }
             setKeyboard(KeyboardElement.DPAD, KeyboardSwitchState.OTHER);
         }
@@ -631,7 +629,7 @@ public final class KeyboardSwitcher {
         @Override
         public void startDoubleTapShiftKeyTimer() {
             if (DEBUG_TIMER_ACTION) {
-                Log.d(TAG, "startDoubleTapShiftKeyTimer");
+                ////Log.(TAG, "startDoubleTapShiftKeyTimer");
             }
             MainKeyboardView keyboardView = getMainKeyboardView();
             if (keyboardView != null) {
@@ -642,7 +640,7 @@ public final class KeyboardSwitcher {
         @Override
         public void cancelDoubleTapShiftKeyTimer() {
             if (DEBUG_TIMER_ACTION) {
-                Log.d(TAG, "cancelDoubleTapShiftKeyTimer");
+                ////Log.(TAG, "cancelDoubleTapShiftKeyTimer");
             }
             MainKeyboardView keyboardView = getMainKeyboardView();
             if (keyboardView != null) {
@@ -673,7 +671,7 @@ public final class KeyboardSwitcher {
         @Override
         public boolean popDoubleTapShiftKeyTimer() {
             if (DEBUG_TIMER_ACTION) {
-                Log.d(TAG, "isInDoubleTapShiftKeyTimeout");
+                ////Log.(TAG, "isInDoubleTapShiftKeyTimeout");
             }
             MainKeyboardView keyboardView = getMainKeyboardView();
             return keyboardView != null && keyboardView.popDoubleTapShiftKeyTimer();
