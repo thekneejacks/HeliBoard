@@ -756,7 +756,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
     private void resetKeySelectionByDraggingFinger() {
         mIsInDraggingFinger = false;
         mIsInSlidingKeyInput = false;
-        sDrawingProxy.showSlidingKeyInputPreview(null);
     }
 
     private boolean isSwiper(final int code) {
@@ -826,9 +825,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
             final int translatedY = mPopupKeysPanel.translateY(y);
             mPopupKeysPanel.onMoveEvent(translatedX, translatedY, mPointerId, eventTime);
             onMoveKey(x, y);
-            if (mIsInSlidingKeyInput) {
-                sDrawingProxy.showSlidingKeyInputPreview(this);
-            }
             return;
         }
         onMoveEventInternal(x, y, eventTime);
@@ -1024,9 +1020,8 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
                 dragFingerOutFromOldKey(oldKey, x, y);
             }
         }
-        if (mIsInSlidingKeyInput) {
-            sDrawingProxy.showSlidingKeyInputPreview(this);
-        }
+
+
     }
 
     private void onUpEvent(final int x, final int y, final long eventTime) {

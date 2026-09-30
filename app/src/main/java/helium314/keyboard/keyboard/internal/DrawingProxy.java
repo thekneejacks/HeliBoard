@@ -46,11 +46,4 @@ public interface DrawingProxy {
     int FADE_IN = 0;
     int FADE_OUT = 1;
 
-    /**
-     * Show sliding-key input preview.
-     * @param tracker the {@link PointerTracker} that is currently doing the sliding-key input.
-     * null to dismiss the sliding-key input preview.
-     */
-    void showSlidingKeyInputPreview(@Nullable PointerTracker tracker);
-
 }

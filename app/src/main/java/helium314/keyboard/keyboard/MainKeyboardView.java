@@ -42,7 +42,6 @@ import helium314.keyboard.keyboard.internal.KeyPreviewDrawParams;
 import helium314.keyboard.keyboard.internal.KeyPreviewView;
 import helium314.keyboard.keyboard.internal.NonDistinctMultitouchHelper;
 import helium314.keyboard.keyboard.internal.PopupKeySpec;
-import helium314.keyboard.keyboard.internal.SlidingKeyInputDrawingPreview;
 import helium314.keyboard.keyboard.internal.TimerHandler;
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
 import helium314.keyboard.latin.R;
@@ -91,7 +90,6 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
     // Drawing preview placer view
     private final DrawingPreviewPlacerView mDrawingPreviewPlacerView;
     private final int[] mOriginCoords = CoordinateUtils.newInstance();
-    private final SlidingKeyInputDrawingPreview mSlidingKeyInputDrawingPreview;
 
     // Key preview
     private final KeyPreviewDrawParams mKeyPreviewDrawParams;
@@ -186,8 +184,6 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
         final int gestureTrailFadeoutDuration = Settings.getValues().mGestureTrailFadeoutDuration;
         mGestureFloatingPreviewTextLingerTimeout = gestureTrailFadeoutDuration / 4;
 
-        mSlidingKeyInputDrawingPreview = new SlidingKeyInputDrawingPreview(mainKeyboardViewAttr);
-        mSlidingKeyInputDrawingPreview.setDrawingView(drawingPreviewPlacerView);
         mainKeyboardViewAttr.recycle();
 
         mDrawingPreviewPlacerView = drawingPreviewPlacerView;
@@ -388,19 +384,6 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
         }
     }
 
-    public void setSlidingKeyInputPreviewEnabled(final boolean enabled) {
-        mSlidingKeyInputDrawingPreview.setPreviewEnabled(enabled);
-    }
-
-    @Override
-    public void showSlidingKeyInputPreview(@Nullable final PointerTracker tracker) {
-        locatePreviewPlacerView();
-        if (tracker != null) {
-            mSlidingKeyInputDrawingPreview.setPreviewPosition(tracker);
-        } else {
-            mSlidingKeyInputDrawingPreview.dismissSlidingKeyInputPreview();
-        }
-    }
 
     // Note that this method is called from a non-UI thread.
     @SuppressWarnings("static-method")
@@ -488,8 +471,6 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
         onDismissPopupKeysPanel();
         // Dismiss all key previews that may be being showed.
         PointerTracker.setReleasedKeyGraphicsToAllKeys();
-        // Dismiss sliding key input preview that may be being showed.
-        mSlidingKeyInputDrawingPreview.dismissSlidingKeyInputPreview();
         panel.showInParent(mDrawingPreviewPlacerView);
         mPopupKeysPanel = panel;
     }
@@ -558,7 +539,6 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
     public void cancelAllOngoingEvents() {
         mTimerHandler.cancelAllMessages();
         PointerTracker.setReleasedKeyGraphicsToAllKeys();
-        mSlidingKeyInputDrawingPreview.dismissSlidingKeyInputPreview();
         PointerTracker.dismissAllPopupKeysPanels();
         PointerTracker.cancelAllPointerTrackers();
     }

@@ -771,7 +771,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
 
         mainKeyboardView.setMainDictionaryAvailability(false);
         mainKeyboardView.setKeyPreviewPopupEnabled(currentSettingsValues.mKeyPreviewPopupOn);
-        mainKeyboardView.setSlidingKeyInputPreviewEnabled(currentSettingsValues.mSlidingKeyInputPreviewEnabled);
         if (TRACE) Debug.startMethodTracing("/data/trace/latinime");
     }
 
