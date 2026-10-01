@@ -79,8 +79,6 @@ object FoldableUtils {
                 val state = matcher.group(6)
 
                 // do we have use for anything other than state? featureType might be useful for debugging
-                if (DebugFlags.DEBUG_ENABLED)
-                    ////Log.(TAG, "found: type $featureType, state $state")
                 return (state != PATTERN_STATE_FLAT && state != PATTERN_STATE_HALF_OPENED) // or go for FEATURE_TYPE_FOLD/HINGE?
             } catch (e: Exception) {
                 //Log.w(TAG, "error when checking $it", e)

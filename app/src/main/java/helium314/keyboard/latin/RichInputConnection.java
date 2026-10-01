@@ -593,8 +593,6 @@ public final class RichInputConnection implements PrivateCommandPerformer {
 
     public void sendKeyEvent(final KeyEvent keyEvent) {
         if (DEBUG_BATCH_NESTING) checkBatchEdit();
-        if (DebugFlags.DEBUG_ENABLED) // no details, might be too sensitive
-            ////Log.(TAG, "key event with action "+keyEvent.getAction()+", is control: "+Character.isISOControl(keyEvent.getUnicodeChar()));
         if (keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
             if (DEBUG_PREVIOUS_TEXT) checkConsistencyForDebug();
             // This method is only called for enter or backspace when speaking to old applications
@@ -686,8 +684,6 @@ public final class RichInputConnection implements PrivateCommandPerformer {
         // TODO: support values of newCursorPosition != 1. At this time, this is never called with
         //  newCursorPosition != 1.
         if (isConnected()) {
-            if (DebugFlags.DEBUG_ENABLED)
-                ////Log.(TAG, "setting composing text of length "+text.length()); // don't log actual text
             mIC.setComposingText(text, newCursorPosition);
             if (!Settings.getValues().mInputAttributes.mShouldShowSuggestions && text.length() > 0) {
                 // We have a field that disables suggestions, but still committed text is set.
@@ -719,8 +715,6 @@ public final class RichInputConnection implements PrivateCommandPerformer {
     public boolean setSelection(final int start, final int end) {
         if (DEBUG_BATCH_NESTING) checkBatchEdit();
         if (DEBUG_PREVIOUS_TEXT) checkConsistencyForDebug();
-        if (DebugFlags.DEBUG_ENABLED)
-            ////Log.(TAG, "setting selection from "+start+" to "+end);
 
         if (start < 0 || end < 0) {
             return false;
@@ -797,8 +791,6 @@ public final class RichInputConnection implements PrivateCommandPerformer {
         if (DEBUG_BATCH_NESTING) checkBatchEdit();
         if (DEBUG_PREVIOUS_TEXT) checkConsistencyForDebug();
         CharSequence text = completionInfo.getText();
-        if (DebugFlags.DEBUG_ENABLED)
-            ////Log.(TAG, "committing completion of length "+text.length()); // don't log actual text
         // text should never be null, but just in case, it's better to insert nothing than to crash
         if (null == text) text = "";
         mCommittedTextBeforeComposingText.append(text);
