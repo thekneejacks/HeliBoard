@@ -15,7 +15,6 @@ import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode
 import helium314.keyboard.latin.common.Constants
 import helium314.keyboard.latin.define.DebugFlags
 import helium314.keyboard.latin.settings.Settings
-import helium314.keyboard.latin.utils.CapsModeUtils
 import helium314.keyboard.latin.utils.RecapitalizeMode
 
 /**
@@ -34,7 +33,6 @@ class KeyboardState(private val switchActions: SwitchActions) {
         fun setAlphabetKeyboard(shiftMode: ShiftMode)
 
         fun setNumpadKeyboard()
-        fun setDpadKeyboard()
         fun setSymbolsKeyboard()
         fun setSymbolsShiftedKeyboard()
 
@@ -167,7 +165,6 @@ class KeyboardState(private val switchActions: SwitchActions) {
             Utility.SYMBOLS -> switchActions.setSymbolsKeyboard()
             Utility.SYMBOLS_SHIFTED -> switchActions.setSymbolsShiftedKeyboard()
             Utility.NUMPAD -> switchActions.setNumpadKeyboard()
-            Utility.DPAD -> switchActions.setDpadKeyboard()
         }
         mode = layout.mode()
         if (layout is Alphabet) shiftMode = layout.shiftMode
@@ -216,7 +213,7 @@ class KeyboardState(private val switchActions: SwitchActions) {
             KeyCode.SHIFT -> onPressShift()
             KeyCode.CAPS_LOCK -> {} // Nothing to do here. See onReleaseKey.
             KeyCode.SYMBOL_ALPHA -> onPressAlphaSymbol(autoCapsFlags, recapitalizeMode)
-            KeyCode.ALPHA, KeyCode.SYMBOL, KeyCode.NUMPAD, KeyCode.DPAD -> {} // don't start sliding, causes issues with fully customizable layouts (also does not allow chording, but can be fixed later)
+            KeyCode.ALPHA, KeyCode.SYMBOL, KeyCode.NUMPAD -> {} // don't start sliding, causes issues with fully customizable layouts (also does not allow chording, but can be fixed later)
             else -> {
                 shiftKeyState = shiftKeyState.chordIfPressing()
                 symbolKeyState = symbolKeyState.chordIfPressing()
@@ -265,7 +262,6 @@ class KeyboardState(private val switchActions: SwitchActions) {
             KeyCode.SYMBOL       -> if (withSliding) slideInto(Utility.SYMBOLS)
             KeyCode.ALPHA        -> if (withSliding) slideInto(Alphabet(shiftMode, autoCapsFlags, recapitalizeMode))
             KeyCode.NUMPAD       -> if (withSliding) slideInto(Utility.NUMPAD)
-            KeyCode.DPAD         -> if (withSliding) slideInto(Utility.DPAD)
         }
     }
 
@@ -467,7 +463,6 @@ class KeyboardState(private val switchActions: SwitchActions) {
             KeyCode.ALPHA -> resetToAlpha(autoCapsFlags, recapitalizeMode)
             // Note: Printing clipboard content is handled in InputLogic.handleFunctionalEvent
             KeyCode.NUMPAD -> toggleLayout(Utility.NUMPAD, autoCapsFlags, recapitalizeMode)
-            KeyCode.DPAD -> toggleLayout(Utility.DPAD, autoCapsFlags, recapitalizeMode)
             KeyCode.SYMBOL -> toggleLayout(Utility.SYMBOLS, autoCapsFlags, recapitalizeMode)
             KeyCode.TOGGLE_ONE_HANDED_MODE -> switchActions.setOneHandedModeEnabled(!Settings.getValues().mOneHandedModeEnabled)
             KeyCode.SWITCH_ONE_HANDED_MODE -> switchActions.switchOneHandedMode()
@@ -486,15 +481,11 @@ class KeyboardState(private val switchActions: SwitchActions) {
         return "[keyboard=$keyboard shift=$shiftKeyState symbol=$symbolKeyState]"
     }
 
-    private fun stateToString(autoCapsFlags: Int, recapitalizeMode: RecapitalizeMode?) =
-        "$this autoCapsFlags=${CapsModeUtils.flagsToString(autoCapsFlags)} recapitalizeMode=$recapitalizeMode"
-
     enum class Mode {
         ALPHABET,
         SYMBOLS,
         SYMBOLS_SHIFTED,
         NUMPAD,
-        DPAD,
     ;
         fun directive(shiftMode: ShiftMode, autoCapsFlags: Int, recapitalizeMode: RecapitalizeMode?): LayoutDirective {
             return when (this) {
@@ -502,7 +493,6 @@ class KeyboardState(private val switchActions: SwitchActions) {
                 SYMBOLS -> Utility.SYMBOLS
                 SYMBOLS_SHIFTED -> Utility.SYMBOLS_SHIFTED
                 NUMPAD -> Utility.NUMPAD
-                DPAD -> Utility.DPAD
             }
         }
     }

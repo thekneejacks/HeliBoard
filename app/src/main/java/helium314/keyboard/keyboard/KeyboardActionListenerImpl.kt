@@ -161,10 +161,6 @@ class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inp
             toggleLayout(LayoutDirective.Utility.NUMPAD, latinIME.currentAutoCapsState, latinIME.currentRecapitalizeState)
             true
         }
-        KeyboardActionListener.SwipeAction.TOGGLE_DPAD -> {
-            toggleLayout(LayoutDirective.Utility.DPAD, latinIME.currentAutoCapsState, latinIME.currentRecapitalizeState)
-            true
-        }
         else -> false
     }
 
@@ -173,10 +169,6 @@ class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inp
         KeyboardActionListener.SwipeAction.SWITCH_LANGUAGE -> onLanguageSlide(steps)
         KeyboardActionListener.SwipeAction.TOGGLE_NUMPAD -> {
             toggleLayout(LayoutDirective.Utility.NUMPAD, latinIME.currentAutoCapsState, latinIME.currentRecapitalizeState)
-            true
-        }
-        KeyboardActionListener.SwipeAction.TOGGLE_DPAD -> {
-            toggleLayout(LayoutDirective.Utility.DPAD, latinIME.currentAutoCapsState, latinIME.currentRecapitalizeState)
             true
         }
         KeyboardActionListener.SwipeAction.HIDE_KEYBOARD -> {

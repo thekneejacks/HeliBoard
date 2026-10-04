@@ -20,7 +20,6 @@ import helium314.keyboard.latin.utils.ToolbarKey.CLOSE_HISTORY
 import helium314.keyboard.latin.utils.ToolbarKey.COPY
 import helium314.keyboard.latin.utils.ToolbarKey.CUT
 import helium314.keyboard.latin.utils.ToolbarKey.DOWN
-import helium314.keyboard.latin.utils.ToolbarKey.DPAD
 import helium314.keyboard.latin.utils.ToolbarKey.EMOJI
 import helium314.keyboard.latin.utils.ToolbarKey.FLOATING
 import helium314.keyboard.latin.utils.ToolbarKey.FULL_LEFT
@@ -82,7 +81,6 @@ fun getCodeForToolbarKey(key: ToolbarKey) = Settings.getInstance().getCustomTool
     VOICE -> KeyCode.VOICE_INPUT
     CLIPBOARD -> KeyCode.CLIPBOARD
     NUMPAD -> KeyCode.NUMPAD
-    DPAD -> KeyCode.DPAD
     UNDO -> KeyCode.UNDO
     REDO -> KeyCode.REDO
     SETTINGS -> KeyCode.SETTINGS
@@ -136,7 +134,7 @@ fun getCodeForToolbarKeyLongClick(key: ToolbarKey) = Settings.getInstance().getC
 
 // names need to be aligned with resources strings (using lowercase of key.name)
 enum class ToolbarKey {
-    VOICE, CLIPBOARD, NUMPAD, DPAD, UNDO, REDO, SETTINGS, SELECT_ALL, SELECT_WORD, COPY, CUT, PASTE, ONE_HANDED, FLOATING, SPLIT,
+    VOICE, CLIPBOARD, NUMPAD, UNDO, REDO, SETTINGS, SELECT_ALL, SELECT_WORD, COPY, CUT, PASTE, ONE_HANDED, FLOATING, SPLIT,
     INCOGNITO, AUTOCORRECT, CLEAR_CLIPBOARD, CLOSE_HISTORY, EMOJI, LEFT, RIGHT, UP, DOWN, WORD_LEFT, WORD_RIGHT,
     PAGE_UP, PAGE_DOWN, FULL_LEFT, FULL_RIGHT, PAGE_START, PAGE_END
 }

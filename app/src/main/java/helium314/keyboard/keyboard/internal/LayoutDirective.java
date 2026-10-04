@@ -33,7 +33,6 @@ public sealed interface LayoutDirective {
         SYMBOLS(KeyboardState.Mode.SYMBOLS),
         SYMBOLS_SHIFTED(KeyboardState.Mode.SYMBOLS_SHIFTED),
         NUMPAD(KeyboardState.Mode.NUMPAD),
-        DPAD(KeyboardState.Mode.DPAD),
     ;
         private final KeyboardState.Mode mMode;
 

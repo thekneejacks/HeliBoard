@@ -491,7 +491,7 @@ public final class InputLogic {
                 var keyboard = KeyboardSwitcher.getInstance().getKeyboard();
                 if (keyboard != null) {
                     KeyboardElement element = keyboard.mId.getElement();
-                    if (!element.isAlphabet() && element != KeyboardElement.DPAD) {
+                    if (!element.isAlphabet()) {
                         // recapitalization and follow-up code should only trigger for alphabet/d-pad shift, see #1256
                         break;
                     }

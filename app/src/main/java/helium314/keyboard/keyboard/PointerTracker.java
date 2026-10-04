@@ -304,7 +304,7 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
             final int y, final long eventTime, final boolean isKeyRepeat) {
         int keyCode = key.getCode();
         final boolean ignoreModifierKey = mIsInDraggingFinger && key.isModifier()
-                && keyCode != KeyCode.NUMPAD && keyCode != KeyCode.DPAD; // we allow these to be activated from sliding input
+                && keyCode != KeyCode.NUMPAD; // we allow these to be activated from sliding input
         final boolean altersCode = key.altCodeWhileTyping() && sTimerProxy.isTypingState() && !isClearlyInsideKey(key, x, y);
         final int code = altersCode ? key.getAltCode() : primaryCode;
         if (DEBUG_LISTENER) {
@@ -714,7 +714,7 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
             int code = key.getCode();
             if (key.isModifier() && code != KeyCode.CTRL_LOCK && code != KeyCode.ALT_LOCK && code != KeyCode.FN_LOCK && code != KeyCode.META_LOCK) {
                 KeyboardElement element = mKeyboard.mId.getElement();
-                mIsInSlidingKeyInput = !(code == KeyCode.SHIFT && (element == KeyboardElement.ALPHABET_SHIFT_LOCKED || element == KeyboardElement.DPAD));
+                mIsInSlidingKeyInput = !(code == KeyCode.SHIFT && (element == KeyboardElement.ALPHABET_SHIFT_LOCKED));
             } else {
                 mIsInSlidingKeyInput = false;
             }
@@ -884,7 +884,7 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
 
     private boolean oneShotSwipe(KeyboardActionListener.SwipeAction swipeSetting) {
         return switch (swipeSetting) {
-            case NONE, TOGGLE_NUMPAD, TOGGLE_DPAD, HIDE_KEYBOARD -> true;
+            case NONE, TOGGLE_NUMPAD, HIDE_KEYBOARD -> true;
             default -> false;
         };
     }

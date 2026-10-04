@@ -31,7 +31,6 @@ object Defaults {
         LayoutType.NUMBER_ROW -> "number_row"
         LayoutType.NUMPAD -> "numpad"
         LayoutType.NUMPAD_LANDSCAPE -> "numpad_landscape"
-        LayoutType.DPAD -> "dpad"
         LayoutType.PHONE -> "phone"
         LayoutType.PHONE_SYMBOLS -> "phone_symbols"
         LayoutType.EMOJI_BOTTOM -> "emoji_bottom_row"
@@ -44,9 +43,6 @@ object Defaults {
     const val PREF_AUTO_CAP = true
     @JvmField
     var PREF_POPUP_ON = true
-    const val PREF_AUTO_CORRECTION = true
-    const val PREF_MORE_AUTO_CORRECTION = false
-    const val PREF_AUTO_CORRECT_CONFIDENCE = 0.24f
     const val PREF_KEY_USE_DOUBLE_SPACE_PERIOD = true
     const val PREF_LANGUAGE_SWITCH_KEY = "internal"
     const val PREF_VARIABLE_TOOLBAR_DIRECTION = true

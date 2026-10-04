@@ -226,8 +226,6 @@ public final class KeyboardSwitcher {
     public enum KeyboardSwitchState {
         HIDDEN(null),
         SYMBOLS_SHIFTED(KeyboardElement.SYMBOLS_SHIFTED),
-        EMOJI(KeyboardElement.EMOJI_RECENTS),
-        CLIPBOARD(KeyboardElement.CLIPBOARD),
         OTHER(null);
 
         @Nullable final KeyboardElement mKeyboardElement;
@@ -244,32 +242,10 @@ public final class KeyboardSwitcher {
                 || !mKeyboardView.isShown());
         if (hidden) {
             return KeyboardSwitchState.HIDDEN;
-        } else if (isShowingEmojiPalettes()) {
-            return KeyboardSwitchState.EMOJI;
-        } else if (isShowingClipboardHistory()) {
-            return KeyboardSwitchState.CLIPBOARD;
         } else if (isShowingKeyboardId(KeyboardElement.SYMBOLS_SHIFTED)) {
             return KeyboardSwitchState.SYMBOLS_SHIFTED;
         }
         return KeyboardSwitchState.OTHER;
-    }
-
-    public void onToggleKeyboard(@NonNull final KeyboardSwitchState toggleState) {
-        KeyboardSwitchState currentState = getKeyboardSwitchState();
-        //Log.w(TAG, "onToggleKeyboard() : Current = " + currentState + " : Toggle = " + toggleState);
-        if (currentState == toggleState) {
-            mLatinIME.stopShowingInputView();
-            mLatinIME.hideWindow();
-            resetKeyboardStateToAlphabet();
-        } else {
-            mLatinIME.startShowingInputView(true);
-                mMainKeyboardFrame.setVisibility(View.VISIBLE);
-                mKeyboardView.setVisibility(View.VISIBLE);
-                if (toggleState == KeyboardSwitchState.SYMBOLS_SHIFTED)
-                    // possible other states OTHER and HIDDEN have keyboardElement null, which we just ignore
-                    // might need to be adjusted when functionality is extended
-                    mState.setLayout(LayoutDirective.Utility.SYMBOLS_SHIFTED);
-        }
     }
 
     public void updateShiftState(final int autoCapsFlags, @Nullable final RecapitalizeMode recapitalizeMode) {
@@ -501,14 +477,6 @@ public final class KeyboardSwitcher {
                 ////Log.(TAG, "setNumpadKeyboard");
             }
             setKeyboard(KeyboardElement.NUMPAD, KeyboardSwitchState.OTHER);
-        }
-
-        @Override
-        public void setDpadKeyboard() {
-            if (DEBUG_ACTION) {
-                ////Log.(TAG, "setDpadKeyboard");
-            }
-            setKeyboard(KeyboardElement.DPAD, KeyboardSwitchState.OTHER);
         }
 
         @Override

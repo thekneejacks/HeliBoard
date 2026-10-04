@@ -87,10 +87,6 @@ public class KeyPreviewView extends TextView {
         setTextScaleX(maxWidth / width);
     }
 
-    public static void clearTextCache() {
-        sNoScaleXTextSet.clear();
-    }
-
     private static float getTextWidth(final String text, final TextPaint paint) {
         if (TextUtils.isEmpty(text)) {
             return 0.0f;

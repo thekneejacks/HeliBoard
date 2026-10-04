@@ -151,12 +151,8 @@ public final class Constants {
 
     // Key events coming any faster than this are long-presses.
     public static final int LONG_PRESS_MILLISECONDS = 200;
-    // TODO: Set this value appropriately.
-    public static final int GET_SUGGESTED_WORDS_TIMEOUT = BuildConfig.DEBUG ? 500 : 200; // debug build is slow, and timeout is annoying for testing
     // How many continuous deletes at which to start deleting at a higher speed.
     public static final int DELETE_ACCELERATE_AT = 20;
-
-    public static final String WORD_SEPARATOR = " ";
 
     public static boolean isValidCoordinate(final int coordinate) {
         // Detect {@link NOT_A_COORDINATE}, {@link SUGGESTION_STRIP_COORDINATE},
@@ -226,8 +222,6 @@ public final class Constants {
             case KeyCode.SWITCH_ONE_HANDED_MODE -> "switchOneHandedMode";
             case KeyCode.SPLIT_LAYOUT -> "splitLayout";
             case KeyCode.NUMPAD -> "numpad";
-            case KeyCode.DPAD -> "dpad";
-            case KeyCode.EMOJI_SEARCH -> "emojiSearch";
             default -> {
                 if (code < CODE_SPACE) yield String.format("\\u%02X", code);
                 if (code < 0x100) yield String.format("%c", code);

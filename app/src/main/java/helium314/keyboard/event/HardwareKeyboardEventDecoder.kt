@@ -55,21 +55,8 @@ class HardwareKeyboardEventDecoder(val mDeviceId: Int) : HardwareEventDecoder {
             } else Event.createHardwareKeypressEvent(codePointAndFlags, keyCode, metaState, null, isKeyRepeat)
             // If not Enter, then this is just a regular keypress event for a normal character
             // that can be committed right away, taking into account the current state.
-        } else if (isDpadDirection(keyCode)) {
-            Event.createHardwareKeypressEvent(codePointAndFlags, keyCode, metaState, null, isKeyRepeat)
-//        } else if (KeyEvent.isModifierKey(keyCode)) {
-//            todo: we could synchronize meta state across HW and SW keyboard, but that's more work for little benefit (especially with shift & caps lock)
         } else {
             Event.notHandledEvent
-        }
-    }
-
-    companion object {
-        private fun isDpadDirection(keyCode: Int) = when (keyCode) {
-            KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT,
-            KeyEvent.KEYCODE_DPAD_DOWN_LEFT, KeyEvent.KEYCODE_DPAD_DOWN_RIGHT, KeyEvent.KEYCODE_DPAD_UP_RIGHT,
-            KeyEvent.KEYCODE_DPAD_UP_LEFT -> true
-            else -> false
         }
     }
 }

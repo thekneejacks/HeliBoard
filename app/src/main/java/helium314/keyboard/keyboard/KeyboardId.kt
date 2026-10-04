@@ -97,32 +97,17 @@ enum class KeyboardElement(val descriptionResId: Int) {
     ALPHABET_SHIFT_LOCKED(R.string.spoken_description_shiftmode_locked),
     SYMBOLS(R.string.spoken_description_mode_symbol),
     SYMBOLS_SHIFTED(R.string.spoken_description_mode_symbol_shift),
-    DPAD(R.string.spoken_description_mode_dpad),
     NUMPAD(R.string.spoken_description_mode_numpad),
     NUMBER(R.string.spoken_description_mode_number),
     PHONE(R.string.spoken_description_mode_phone),
-    PHONE_SYMBOLS(R.string.spoken_description_mode_phone_shift),
-    EMOJI_RECENTS(R.string.spoken_description_emoji_category_recents),
-    EMOJI_SMILEYS(R.string.spoken_description_emoji_category_eight_smiley),
-    EMOJI_PEOPLE(R.string.spoken_description_emoji_category_eight_smiley_people),
-    EMOJI_NATURE(R.string.spoken_description_emoji_category_eight_animals_nature),
-    EMOJI_FOOD(R.string.spoken_description_emoji_category_eight_food_drink),
-    EMOJI_TRAVEL_PLACES(R.string.spoken_description_emoji_category_eight_travel_places),
-    EMOJI_ACTIVITIES(R.string.spoken_description_emoji_category_eight_activity),
-    EMOJI_OBJECTS(R.string.spoken_description_emoji_category_objects),
-    EMOJI_SYMBOLS(R.string.spoken_description_emoji_category_symbols),
-    EMOJI_FLAGS(R.string.spoken_description_emoji_category_flags),
-    EMOJI_EMOTICONS(R.string.spoken_description_emoji_category_emoticons),
-    EMOJI_BOTTOM_ROW(R.string.spoken_description_emoji),
-    CLIPBOARD(R.string.spoken_description_mode_clipboard),
-    CLIPBOARD_BOTTOM_ROW(R.string.spoken_description_mode_clipboard);
+    PHONE_SYMBOLS(R.string.spoken_description_mode_phone_shift),;
 
     val isAlphabet get() = this < SYMBOLS
     val isAlphaOrSymbol get() = this <= SYMBOLS_SHIFTED
     val isAlphabetShifted get() = isAlphabet && this != ALPHABET
     val isAlphabetShiftedManually get() = this == ALPHABET_MANUAL_SHIFTED || this == ALPHABET_SHIFT_LOCKED
     val isNumberLayout get() = this in NUMPAD..PHONE_SYMBOLS
-    val takesFunctionalKeys get() = this <= DPAD
+    val takesFunctionalKeys get() = this <= NUMPAD
     val capsMode get() = when (this) {
         ALPHABET_AUTOMATIC_SHIFTED -> CapsMode.AUTO
         ALPHABET_MANUAL_SHIFTED -> CapsMode.MANUAL

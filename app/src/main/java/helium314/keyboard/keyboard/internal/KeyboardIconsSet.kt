@@ -113,7 +113,6 @@ class KeyboardIconsSet private constructor() {
                     ToolbarKey.VOICE -> R.drawable.sym_keyboard_voice_lxx
                     ToolbarKey.CLIPBOARD -> R.drawable.sym_keyboard_clipboard_lxx
                     ToolbarKey.NUMPAD -> R.drawable.sym_keyboard_numpad_key_lxx
-                    ToolbarKey.DPAD -> R.drawable.ic_dpad
                     ToolbarKey.UNDO -> R.drawable.ic_undo
                     ToolbarKey.REDO -> R.drawable.ic_redo
                     ToolbarKey.SETTINGS -> R.drawable.sym_keyboard_settings_lxx
