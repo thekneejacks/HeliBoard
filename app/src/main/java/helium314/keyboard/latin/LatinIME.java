@@ -154,7 +154,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
         private static final int MSG_PENDING_IMS_CALLBACK = 1;
         private static final int MSG_UPDATE_SUGGESTION_STRIP = 2;
         private static final int MSG_RESUME_SUGGESTIONS = 4;
-        private static final int MSG_REOPEN_DICTIONARIES = 5;
         private static final int MSG_RESET_CACHES = 7;
         private static final int MSG_WAIT_FOR_DICTIONARY_LOAD = 8;
         private static final int MSG_DEALLOCATE_MEMORY = 9;
@@ -214,70 +213,18 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
             }
         }
 
-        public void postUpdateSuggestionStrip(final int inputStyle) {
-            sendMessageDelayed(obtainMessage(MSG_UPDATE_SUGGESTION_STRIP, inputStyle,
-                    0 /* ignored */), mDelayInMillisecondsToUpdateSuggestions);
-        }
-
-        public void postReopenDictionaries() {
-            sendMessage(obtainMessage(MSG_REOPEN_DICTIONARIES));
-        }
-
-        public void postResumeSuggestions(final boolean shouldDelay) {
-            final LatinIME latinIme = getOwnerInstance();
-            if (latinIme == null) {
-                return;
-            }
-            if (!latinIme.mSettings.getCurrent().needsToLookupSuggestions()) {
-                return;
-            }
-            removeMessages(MSG_RESUME_SUGGESTIONS);
-            final int message = MSG_RESUME_SUGGESTIONS;
-            if (shouldDelay) {
-                sendMessageDelayed(obtainMessage(message),
-                        mDelayInMillisecondsToUpdateSuggestions);
-            } else {
-                sendMessage(obtainMessage(message));
-            }
-        }
-
         public void postResetCaches(final boolean tryResumeSuggestions, final int remainingTries) {
             removeMessages(MSG_RESET_CACHES);
             sendMessage(obtainMessage(MSG_RESET_CACHES, tryResumeSuggestions ? 1 : 0,
                     remainingTries, null));
         }
 
-        public void postWaitForDictionaryLoad() {
-            sendMessageDelayed(obtainMessage(MSG_WAIT_FOR_DICTIONARY_LOAD),
-                    DELAY_WAIT_FOR_DICTIONARY_LOAD_MILLIS);
-        }
-
-        public void cancelWaitForDictionaryLoad() {
-            removeMessages(MSG_WAIT_FOR_DICTIONARY_LOAD);
-        }
-
-        public boolean hasPendingWaitForDictionaryLoad() {
-            return hasMessages(MSG_WAIT_FOR_DICTIONARY_LOAD);
-        }
-
         public void cancelUpdateSuggestionStrip() {
             removeMessages(MSG_UPDATE_SUGGESTION_STRIP);
         }
 
-        public void cancelResumeSuggestions() {
-            removeMessages(MSG_RESUME_SUGGESTIONS);
-        }
-
-        public boolean hasPendingUpdateSuggestions() {
-            return hasMessages(MSG_UPDATE_SUGGESTION_STRIP);
-        }
-
         public boolean hasPendingResumeSuggestions() {
             return hasMessages(MSG_RESUME_SUGGESTIONS);
-        }
-
-        public boolean hasPendingReopenDictionaries() {
-            return hasMessages(MSG_REOPEN_DICTIONARIES);
         }
 
         public void postUpdateShiftState() {
@@ -727,9 +674,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
                 // initialSelStart and initialSelEnd sometimes are lying. Make a best effort to
                 // work around this bug.
                 mInputLogic.mConnection.tryFixIncorrectCursorPosition();
-                if (mInputLogic.mConnection.isCursorTouchingWord(currentSettingsValues.mSpacingAndPunctuations, true)) {
-                    mHandler.postResumeSuggestions(true /* shouldDelay */);
-                }
                 needToCallLoadKeyboardLater = false;
             }
         } else {
@@ -853,10 +797,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
      */
     @Override
     public void onExtractedTextClicked() {
-        if (mSettings.getCurrent().needsToLookupSuggestions()) {
-            return;
-        }
-
         super.onExtractedTextClicked();
     }
 
@@ -871,10 +811,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
      */
     @Override
     public void onExtractedCursorMovement(final int dx, final int dy) {
-        if (mSettings.getCurrent().needsToLookupSuggestions()) {
-            return;
-        }
-
         super.onExtractedCursorMovement(dx, dy);
     }
 
@@ -1192,7 +1128,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
         // the screen. Anything we do right now will delay this, so wait until the next frame
         // before we do the rest, like reopening dictionaries and updating suggestions. So we
         // post a message.
-        mHandler.postReopenDictionaries();
         loadSettings();
         if (mKeyboardSwitcher.getMainKeyboardView() != null) {
             // Reload keyboard because the current language has been changed.

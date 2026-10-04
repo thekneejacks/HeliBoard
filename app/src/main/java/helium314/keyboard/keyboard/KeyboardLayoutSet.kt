@@ -14,13 +14,11 @@ import helium314.keyboard.keyboard.internal.KeyboardParams
 import helium314.keyboard.keyboard.internal.UniqueKeysCache
 import helium314.keyboard.keyboard.internal.keyboard_parser.LayoutParser
 import helium314.keyboard.keyboard.internal.keyboard_parser.LocaleKeyboardInfos
-import helium314.keyboard.latin.RichInputMethodManager.Companion.getInstance
 import helium314.keyboard.latin.RichInputMethodSubtype
 import helium314.keyboard.latin.RichInputMethodSubtype.Companion.emojiSubtype
 import helium314.keyboard.latin.RichInputMethodSubtype.Companion.noLanguageSubtype
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.utils.InputTypeUtils
-import helium314.keyboard.latin.utils.ResourceUtils
 import helium314.keyboard.latin.utils.ScriptUtils
 import helium314.keyboard.latin.utils.ScriptUtils.script
 import helium314.keyboard.latin.utils.SubtypeLocaleUtils.clearSubtypeDisplayNameCache
@@ -115,7 +113,6 @@ class KeyboardLayoutSet internal constructor(private val mContext: Context, priv
         var numberRowEnabled = false
         var numberRowInSymbols = false
         var languageSwitchKeyEnabled = false
-        var emojiKeyEnabled = false
         var oneHandedModeEnabled = false
         var isSpellChecker = false
         var keyboardWidth = 0
@@ -177,16 +174,6 @@ class KeyboardLayoutSet internal constructor(private val mContext: Context, priv
             return this
         }
 
-        fun setEmojiKeyEnabled(enabled: Boolean): Builder {
-            params.emojiKeyEnabled = enabled
-            return this
-        }
-
-        fun disableTouchPositionCorrectionData(): Builder {
-            params.disableTouchPositionCorrectionDataForTest = true
-            return this
-        }
-
         fun setSplitLayoutEnabled(enabled: Boolean): Builder {
             params.isSplitLayoutEnabled = enabled
             return this
@@ -209,18 +196,6 @@ class KeyboardLayoutSet internal constructor(private val mContext: Context, priv
 
         companion object {
             private val EMPTY_EDITOR_INFO = EditorInfo()
-
-            fun buildEmojiClipBottomRow(context: Context, ei: EditorInfo?): KeyboardLayoutSet {
-                val builder = Builder(context, ei)
-                builder.params.mode = KeyboardMode.TEXT
-                builder.params.emojiSearchAvailable = false
-                val width = ResourceUtils.getKeyboardWidth(context, Settings.getValues())
-                // actually the keyboard does not have full height, but at this point we use it to get correct key heights
-                val height = ResourceUtils.getKeyboardHeight(context.resources, Settings.getValues())
-                builder.setKeyboardGeometry(width, height)
-                builder.setSubtype(getInstance().currentSubtype)
-                return builder.build()
-            }
 
             private fun getKeyboardMode(editorInfo: EditorInfo): KeyboardMode {
                 val inputType = editorInfo.inputType

@@ -141,7 +141,6 @@ public final class KeyboardSwitcher {
                 .setNumberRowEnabled(settingsValues.mShowsNumberRow)
                 .setNumberRowInSymbolsEnabled(settingsValues.mShowsNumberRowInSymbols)
                 .setLanguageSwitchKeyEnabled(settingsValues.isLanguageSwitchKeyEnabled())
-                .setEmojiKeyEnabled(settingsValues.mShowsEmojiKey)
                 .setSplitLayoutEnabled(settingsValues.mIsSplitKeyboardEnabled)
                 .setOneHandedModeEnabled(settingsValues.mOneHandedModeEnabled)
                 .setInternalAction(internalAction)
@@ -157,7 +156,6 @@ public final class KeyboardSwitcher {
                         .setNumberRowEnabled(settingsValues.mShowsNumberRow)
                         .setNumberRowInSymbolsEnabled(settingsValues.mShowsNumberRowInSymbols)
                         .setLanguageSwitchKeyEnabled(settingsValues.isLanguageSwitchKeyEnabled())
-                        .setEmojiKeyEnabled(settingsValues.mShowsEmojiKey)
                         .build();
                 mState.onLoadKeyboard(currentAutoCapsState, currentRecapitalizeState, false);
                 showToast("error loading the keyboard, falling back to defaults", false);

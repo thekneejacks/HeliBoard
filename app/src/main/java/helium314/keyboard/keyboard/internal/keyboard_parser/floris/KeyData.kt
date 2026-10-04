@@ -217,8 +217,6 @@ class KeyboardStateSelector(
     val emojiSearchAvailable: AbstractKeyData? = null,
 ) : AbstractKeyData {
     override fun compute(params: KeyboardParams, isPopup: Boolean): KeyData? {
-        if (params.mId.emojiKeyEnabled)
-            emojiKeyEnabled?.compute(params)?.let { return it }
         if (params.mId.languageSwitchKeyEnabled)
             languageKeyEnabled?.compute(params)?.let { return it }
         if (params.mId.element == KeyboardElement.SYMBOLS)

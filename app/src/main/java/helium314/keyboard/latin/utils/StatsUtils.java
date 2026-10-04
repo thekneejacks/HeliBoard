@@ -56,32 +56,17 @@ public final class StatsUtils {
     public static void onWordCommitUserTyped(final String commitWord, final boolean isBatchMode) {
     }
 
-    public static void onWordCommitAutoCorrect(final String commitWord, final boolean isBatchMode) {
-    }
-
-    public static void onWordCommitSuggestionPickedManually(
-            final String commitWord, final boolean isBatchMode) {
-    }
-
     public static void onDoubleSpacePeriod() {
     }
 
     public static void onLoadSettings(SettingsValues settingsValues) {
     }
 
-    public static void onInvalidWordIdentification(final String invalidWord) {
-    }
-
     public static void onSubtypeChanged(final InputMethodSubtype oldSubtype,
             final InputMethodSubtype newSubtype) {
-    }
-
-    public static void onSettingsActivity(final String entryPoint) {
     }
 
     public static void onInputConnectionLaggy(final int operation, final long duration) {
     }
 
-    public static void onDecoderLaggy(final int operation, final long duration) {
-    }
 }
