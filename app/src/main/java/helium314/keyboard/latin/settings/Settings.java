@@ -29,7 +29,6 @@ import helium314.keyboard.latin.R;
 import helium314.keyboard.latin.RichInputMethodManager;
 import helium314.keyboard.latin.RichInputMethodSubtype;
 import helium314.keyboard.latin.common.StringUtils;
-import helium314.keyboard.latin.utils.FoldableUtils;
 import helium314.keyboard.latin.utils.KtxKt;
 import helium314.keyboard.latin.utils.LayoutType;
 import helium314.keyboard.latin.utils.ResourceUtils;
@@ -54,11 +53,6 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     public static final String PREF_LANGUAGE_SWITCH_KEY = "language_switch_key";
     public static final String PREF_VARIABLE_TOOLBAR_DIRECTION = "var_toolbar_direction";
     public static final String PREF_ADDITIONAL_SUBTYPES = "additional_subtypes";
-    public static final String PREF_ENABLE_SPLIT_KEYBOARD = "split_keyboard";
-    public static final String PREF_ENABLE_SPLIT_KEYBOARD_LANDSCAPE = "split_keyboard_landscape";
-    public static final String PREF_ENABLE_SPLIT_KEYBOARD_FOLDED = "split_keyboard_folded";
-    public static final String PREF_ENABLE_SPLIT_KEYBOARD_FOLDED_LANDSCAPE = "split_keyboard_folded_landscape";
-    public static final String PREF_SPLIT_SPACER_SCALE_PREFIX = "split_spacer_scale";
     public static final String PREF_KEYBOARD_HEIGHT_SCALE_PREFIX = "keyboard_height_scale";
     public static final String PREF_BOTTOM_ROW_SCALE_PREFIX = "bottom_row_scale";
     public static final String PREF_BOTTOM_PADDING_SCALE_PREFIX = "bottom_padding_scale";
@@ -277,7 +271,7 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
 
     public void writeOneHandedModeEnabled(final boolean enabled) {
         final boolean landscape = mSettingsValues.mDisplayOrientation == Configuration.ORIENTATION_LANDSCAPE;
-        int index = SettingsKt.findIndexOfDefaultSetting(landscape, mSettingsValues.mIsSplitKeyboardEnabled, FoldableUtils.INSTANCE.isFolded());
+        int index = SettingsKt.findIndexOfDefaultSetting(landscape, false, false);
         String key = SettingsKt.createPrefKeyForBooleanSettings(PREF_ONE_HANDED_MODE_PREFIX, index, 3);
         mPrefs.edit().putBoolean(key, enabled).apply();
     }
@@ -290,7 +284,7 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
 
     public void writeOneHandedModeScale(final Float scale) {
         final boolean landscape = mSettingsValues.mDisplayOrientation == Configuration.ORIENTATION_LANDSCAPE;
-        int index = SettingsKt.findIndexOfDefaultSetting(landscape, mSettingsValues.mIsSplitKeyboardEnabled, FoldableUtils.INSTANCE.isFolded());
+        int index = SettingsKt.findIndexOfDefaultSetting(landscape, false, false);
         String key = SettingsKt.createPrefKeyForBooleanSettings(PREF_ONE_HANDED_SCALE_PREFIX, index, 3);
         mPrefs.edit().putFloat(key, scale).apply();
     }
@@ -303,30 +297,9 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
 
     public void writeOneHandedModeGravity(final int gravity) {
         final boolean landscape = mSettingsValues.mDisplayOrientation == Configuration.ORIENTATION_LANDSCAPE;
-        int index = SettingsKt.findIndexOfDefaultSetting(landscape, mSettingsValues.mIsSplitKeyboardEnabled, FoldableUtils.INSTANCE.isFolded());
+        int index = SettingsKt.findIndexOfDefaultSetting(landscape, false, false);
         String key = SettingsKt.createPrefKeyForBooleanSettings(PREF_ONE_HANDED_GRAVITY_PREFIX, index, 3);
         mPrefs.edit().putInt(key, gravity).apply();
-    }
-
-    public void writeSplitKeyboardEnabled(boolean enabled, boolean isLandscape, boolean isFolded) {
-        String pref = isLandscape
-                        ? (isFolded ? PREF_ENABLE_SPLIT_KEYBOARD_FOLDED_LANDSCAPE : PREF_ENABLE_SPLIT_KEYBOARD_LANDSCAPE)
-                        : (isFolded ? PREF_ENABLE_SPLIT_KEYBOARD_FOLDED : PREF_ENABLE_SPLIT_KEYBOARD);
-        mPrefs.edit().putBoolean(pref, enabled).apply();
-    }
-
-    public static boolean readSplitKeyboardEnabled(SharedPreferences prefs, boolean isLandscape, boolean isFolded) {
-        String pref = isLandscape
-                      ? (isFolded ? PREF_ENABLE_SPLIT_KEYBOARD_FOLDED_LANDSCAPE : PREF_ENABLE_SPLIT_KEYBOARD_LANDSCAPE)
-                      : (isFolded ? PREF_ENABLE_SPLIT_KEYBOARD_FOLDED : PREF_ENABLE_SPLIT_KEYBOARD);
-        return prefs.getBoolean(pref, Defaults.PREF_ENABLE_SPLIT_KEYBOARD);
-    }
-
-    public static float readSplitSpacerScale(SharedPreferences prefs, boolean landscape, boolean folded) {
-        int index = SettingsKt.findIndexOfDefaultSetting(landscape, folded);
-        final Float[] defaults = Defaults.PREF_SPLIT_SPACER_SCALE;
-        final float defaultValue = defaults[index];
-        return prefs.getFloat(SettingsKt.createPrefKeyForBooleanSettings(PREF_SPLIT_SPACER_SCALE_PREFIX, index, 2), defaultValue);
     }
 
     public static float readBottomPaddingScale(SharedPreferences prefs, boolean landscape, boolean folded) {

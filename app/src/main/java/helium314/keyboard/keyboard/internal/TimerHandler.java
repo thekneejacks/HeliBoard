@@ -5,9 +5,6 @@
  */
 
 package helium314.keyboard.keyboard.internal;
-
-import android.os.Message;
-import android.os.SystemClock;
 import android.view.ViewConfiguration;
 
 import androidx.annotation.NonNull;
@@ -40,35 +37,6 @@ public final class TimerHandler extends LeakGuardHandlerWrapper<DrawingProxy>
         mGestureRecognitionUpdateTime = gestureRecognitionUpdateTime;
     }
 
-    @Override
-    public void handleMessage(Message msg) {
-        DrawingProxy drawingProxy = getOwnerInstance();
-        if (drawingProxy == null) {
-            return;
-        }
-        switch (msg.what) {
-        case MSG_TYPING_STATE_EXPIRED -> {
-            drawingProxy.startWhileTypingAnimation(DrawingProxy.FADE_IN);
-        }
-        case MSG_REPEAT_KEY -> {
-            PointerTracker tracker1 = (PointerTracker)msg.obj;
-            tracker1.onKeyRepeat(msg.arg1 /* code */, msg.arg2 /* repeatCount */);
-        }
-        case MSG_LONGPRESS_KEY, MSG_LONGPRESS_SHIFT_KEY, MSG_LONGPRESS_ALPHA_SYMBOL_KEY -> {
-            cancelLongPressTimers();
-            PointerTracker tracker2 = (PointerTracker)msg.obj;
-            tracker2.onLongPressed();
-        }
-        case MSG_UPDATE_BATCH_INPUT -> {
-            PointerTracker tracker3 = (PointerTracker)msg.obj;
-            tracker3.updateBatchInputByTimer(SystemClock.uptimeMillis());
-            startUpdateBatchInputTimer(tracker3);
-        }
-        case MSG_DISMISS_KEY_PREVIEW -> {
-            drawingProxy.onKeyReleased((Key)msg.obj, false /* withAnimation */);
-        }
-        }
-    }
 
     @Override
     public void startKeyRepeatTimerOf(@NonNull PointerTracker tracker,
@@ -139,7 +107,6 @@ public final class TimerHandler extends LeakGuardHandlerWrapper<DrawingProxy>
             return;
         }
 
-        boolean isTyping = isTypingState();
         removeMessages(MSG_TYPING_STATE_EXPIRED);
         DrawingProxy drawingProxy = getOwnerInstance();
         if (drawingProxy == null) {
@@ -149,18 +116,11 @@ public final class TimerHandler extends LeakGuardHandlerWrapper<DrawingProxy>
         // When user hits the space or the enter key, just cancel the while-typing timer.
         int typedCode = typedKey.getCode();
         if (typedCode == Constants.CODE_SPACE || typedCode == Constants.CODE_ENTER) {
-            if (isTyping) {
-                drawingProxy.startWhileTypingAnimation(DrawingProxy.FADE_IN);
-            }
             return;
         }
 
         sendMessageDelayed(
                 obtainMessage(MSG_TYPING_STATE_EXPIRED), mIgnoreAltCodeKeyTimeout);
-        if (isTyping) {
-            return;
-        }
-        drawingProxy.startWhileTypingAnimation(DrawingProxy.FADE_OUT);
     }
 
     @Override
@@ -217,14 +177,6 @@ public final class TimerHandler extends LeakGuardHandlerWrapper<DrawingProxy>
     @Override
     public void cancelAllUpdateBatchInputTimers() {
         removeMessages(MSG_UPDATE_BATCH_INPUT);
-    }
-
-    public void postDismissKeyPreview(@NonNull Key key, long delay) {
-        sendMessageDelayed(obtainMessage(MSG_DISMISS_KEY_PREVIEW, key), delay);
-    }
-
-    public void postDismissGestureFloatingPreviewText(long delay) {
-        sendMessageDelayed(obtainMessage(MSG_DISMISS_GESTURE_FLOATING_PREVIEW_TEXT), delay);
     }
 
     public void cancelAllMessages() {

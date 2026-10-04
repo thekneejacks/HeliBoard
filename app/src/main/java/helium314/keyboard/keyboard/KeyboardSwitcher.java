@@ -39,7 +39,6 @@ import helium314.keyboard.latin.settings.SettingsKt;
 import helium314.keyboard.latin.settings.SettingsValues;
 import helium314.keyboard.latin.suggestions.SuggestionStripView;
 import helium314.keyboard.latin.utils.FloatingKeyboardUtils;
-import helium314.keyboard.latin.utils.FoldableUtils;
 import helium314.keyboard.latin.utils.KtxKt;
 import helium314.keyboard.latin.utils.RecapitalizeMode;
 import helium314.keyboard.latin.utils.ResourceUtils;
@@ -126,7 +125,6 @@ public final class KeyboardSwitcher {
                 .setNumberRowEnabled(settingsValues.mShowsNumberRow)
                 .setNumberRowInSymbolsEnabled(settingsValues.mShowsNumberRowInSymbols)
                 .setLanguageSwitchKeyEnabled(settingsValues.isLanguageSwitchKeyEnabled())
-                .setSplitLayoutEnabled(settingsValues.mIsSplitKeyboardEnabled)
                 .setOneHandedModeEnabled(settingsValues.mOneHandedModeEnabled)
                 .setInternalAction(internalAction)
                 .build();
@@ -266,17 +264,6 @@ public final class KeyboardSwitcher {
         // oneHandeMode is always disabled when floating, and we shouldn't mess up the setting
         if (enabled != settings.getCurrent().mOneHandedModeEnabled)
             settings.writeOneHandedModeEnabled(enabled);
-        reloadKeyboard();
-    }
-
-    public void toggleSplitKeyboardMode() {
-        final Settings settings = Settings.getInstance();
-        settings.writeSplitKeyboardEnabled(
-            !settings.getCurrent().mIsSplitKeyboardEnabled,
-            mCurrentOrientation == Configuration.ORIENTATION_LANDSCAPE,
-            FoldableUtils.INSTANCE.isFolded()
-        );
-        setOneHandedModeEnabled(settings.getCurrent().mOneHandedModeEnabled, true);
         reloadKeyboard();
     }
 

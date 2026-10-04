@@ -169,9 +169,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
     private boolean mKeySwipeAllowed = false;
     private static boolean sInKeySwipe = false;
 
-    // Touchpad mode for cursor control
-    private final TouchpadHandler mTouchpadHandler = new TouchpadHandler();
-
     private final BatchInputArbiter mBatchInputArbiter;
     private final GestureStrokeDrawingPoints mGestureStrokeDrawingPoints;
 
@@ -902,8 +899,7 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
             int dX = x - mStartX;
             int dY = y - mStartY;
 
-            // Touchpad mode
-            mTouchpadHandler.enableTouchpadMove(x, y, sListener);
+
 
             // Vertical movement
             int stepsY = dY / sPointerStep;
@@ -1053,8 +1049,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
             mKeySwipeAllowed = false;
             sInKeySwipe = false;
 
-            // Touchpad mode
-            mTouchpadHandler.disableTouchpadMode();
 
             if (mInHorizontalSwipe || mInVerticalSwipe) {
                 mInHorizontalSwipe = false;

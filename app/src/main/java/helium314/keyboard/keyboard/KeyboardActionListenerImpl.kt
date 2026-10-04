@@ -175,19 +175,6 @@ class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inp
             latinIME.requestHideSelf(0)
             true
         }
-        KeyboardActionListener.SwipeAction.TOUCHPAD_MODE -> {
-            // Activate touchpad mode - the actual cursor movement will be handled in PointerTracker
-
-            // Activation and ensure enough room for navigation.
-            val requiredSteps = 8
-
-            if (abs(steps) >= requiredSteps) {
-                TouchpadHandler.setTouchpadModeActive(true)
-                true
-            } else {
-                false
-            }
-        }
         else -> false
     }
 

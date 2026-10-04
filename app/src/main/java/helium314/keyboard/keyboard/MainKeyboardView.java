@@ -61,7 +61,6 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
     private final int mLanguageOnSpacebarFinalAlpha;
     private final ObjectAnimator mLanguageOnSpacebarFadeoutAnimator;
     private boolean mHasMultipleEnabledIMEsOrSubtypes;
-    private int mLanguageOnSpacebarAnimAlpha = Constants.Color.ALPHA_OPAQUE;
     private final float mLanguageOnSpacebarTextRatio;
     private float mLanguageOnSpacebarTextSize;
     private final int mLanguageOnSpacebarTextColor;
@@ -208,42 +207,7 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
         return animator;
     }
 
-    private static void cancelAndStartAnimators(final ObjectAnimator animatorToCancel,
-            final ObjectAnimator animatorToStart) {
-        if (animatorToCancel == null || animatorToStart == null) {
-            // TODO: Stop using null as a no-operation animator.
-            return;
-        }
-        float startFraction = 0.0f;
-        if (animatorToCancel.isStarted()) {
-            animatorToCancel.cancel();
-            startFraction = 1.0f - animatorToCancel.getAnimatedFraction();
-        }
-        final long startTime = (long)(animatorToStart.getDuration() * startFraction);
-        animatorToStart.start();
-        animatorToStart.setCurrentPlayTime(startTime);
-    }
-
     // Implements {@link DrawingProxy#startWhileTypingAnimation(int)}.
-    /**
-     * Called when a while-typing-animation should be started.
-     * @param fadeInOrOut {@link DrawingProxy#FADE_IN} starts while-typing-fade-in animation.
-     * {@link DrawingProxy#FADE_OUT} starts while-typing-fade-out animation.
-     */
-    @Override
-    public void startWhileTypingAnimation(final int fadeInOrOut) {
-        switch (fadeInOrOut) {
-            case DrawingProxy.FADE_IN -> cancelAndStartAnimators(
-                    mAltCodeKeyWhileTypingFadeoutAnimator, mAltCodeKeyWhileTypingFadeinAnimator);
-            case DrawingProxy.FADE_OUT -> cancelAndStartAnimators(
-                    mAltCodeKeyWhileTypingFadeinAnimator, mAltCodeKeyWhileTypingFadeoutAnimator);
-        }
-    }
-
-    public void setLanguageOnSpacebarAnimAlpha(final int alpha) {
-        mLanguageOnSpacebarAnimAlpha = alpha;
-        invalidateKey(mSpaceKey);
-    }
 
     public void setKeyboardActionListener(final KeyboardActionListener listener) {
         mKeyboardActionListener = listener;
@@ -441,13 +405,6 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
         final int pointY = key.getY() + mKeyPreviewDrawParams.getVisibleOffset();
         popupKeysKeyboardView.showPopupKeysPanel(this, this, pointX, pointY, mKeyboardActionListener);
         return popupKeysKeyboardView;
-    }
-
-    public boolean isInDraggingFinger() {
-        if (isShowingPopupKeysPanel()) {
-            return true;
-        }
-        return PointerTracker.isAnyInDraggingFinger();
     }
 
     @Override

@@ -121,8 +121,6 @@ class KeyboardLayoutSet internal constructor(private val mContext: Context, priv
         var internalAction: InternalAction? = null
         var emojiSearchAvailable = false
 
-        // Indicates if the user has enabled the split-layout preference and the required ProductionFlags are enabled.
-        var isSplitLayoutEnabled = false
     }
 
     class Builder(private val mContext: Context, ei: EditorInfo?) {
@@ -171,11 +169,6 @@ class KeyboardLayoutSet internal constructor(private val mContext: Context, priv
 
         fun setLanguageSwitchKeyEnabled(enabled: Boolean): Builder {
             params.languageSwitchKeyEnabled = enabled
-            return this
-        }
-
-        fun setSplitLayoutEnabled(enabled: Boolean): Builder {
-            params.isSplitLayoutEnabled = enabled
             return this
         }
 

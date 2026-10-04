@@ -607,9 +607,6 @@ public final class InputLogic {
             case KeyCode.REDO:
                 sendDownUpKeyEventWithMetaState(KeyEvent.KEYCODE_Z, KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON);
                 break;
-            case KeyCode.SPLIT_LAYOUT:
-                KeyboardSwitcher.getInstance().toggleSplitKeyboardMode();
-                break;
             case KeyCode.TIMESTAMP:
                 mLatinIME.onTextInput(TimestampKt.getTimestamp(mLatinIME));
                 break;

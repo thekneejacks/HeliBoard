@@ -64,7 +64,6 @@ import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.settings.SettingsValues;
 import helium314.keyboard.latin.suggestions.SuggestionStripView;
 import helium314.keyboard.latin.utils.FloatingKeyboardUtils;
-import helium314.keyboard.latin.utils.FoldableUtils;
 import helium314.keyboard.latin.utils.InputMethodPickerKt;
 import helium314.keyboard.latin.utils.JniUtils;
 import helium314.keyboard.latin.utils.KtxKt;
@@ -85,16 +84,8 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
     private static final boolean TRACE = false;
 
     private static final int EXTENDED_TOUCHABLE_REGION_HEIGHT = 100;
-    private static final int PERIOD_FOR_AUDIO_AND_HAPTIC_FEEDBACK_IN_KEY_REPEAT = 2;
     private static final int PENDING_IMS_CALLBACK_DURATION_MILLIS = 800;
-    static final long DELAY_WAIT_FOR_DICTIONARY_LOAD_MILLIS = TimeUnit.SECONDS.toMillis(2);
     static final long DELAY_DEALLOCATE_MEMORY_MILLIS = TimeUnit.SECONDS.toMillis(10);
-
-    /**
-     * The name of the scheme used by the Package Manager to warn of a new package installation,
-     * replacement or removal.
-     */
-    private static final String SCHEME_PACKAGE = "package";
 
     final Settings mSettings;
     public final KeyboardActionListener mKeyboardActionListener;
@@ -122,7 +113,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
     @Nullable
     private Context mDisplayContext;
 
-    FoldableUtils.FoldableObserver foldableObserver;
 
     final static class RestartAfterDeviceUnlockReceiver extends BroadcastReceiver {
         @Override
@@ -389,8 +379,7 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
         loadSettings();
         mClipboardHistoryManager.onCreate();
         mHandler.onCreate();
-        if (FoldableUtils.INSTANCE.isFoldable())
-            foldableObserver = new FoldableUtils.FoldableObserver(this);
+
 
         // Register to receive ringer mode change.
         /*final IntentFilter filter = new IntentFilter();
@@ -437,8 +426,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
     public void onDestroy() {
         mClipboardHistoryManager.onDestroy();
         mSettings.onDestroy();
-        if (foldableObserver != null)
-            foldableObserver.unregister(this);
         //unregisterReceiver(mRingerModeChangeReceiver);
         unregisterReceiver(mRestartAfterDeviceUnlockReceiver);
         super.onDestroy();
