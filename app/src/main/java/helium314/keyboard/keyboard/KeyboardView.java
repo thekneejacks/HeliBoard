@@ -6,8 +6,6 @@
 
 package helium314.keyboard.keyboard;
 
-import static helium314.keyboard.keyboard.KeyboardTheme.STYLE_ROUNDED;
-
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -458,7 +456,7 @@ public class KeyboardView extends View {
             blendAlpha(paint, params.mAnimAlpha);
             final float labelCharHeight = TypefaceUtils.getReferenceCharHeight(paint);
             final float labelCharWidth = TypefaceUtils.getReferenceCharWidth(paint);
-            final boolean isFunctionalKeyAndRoundedStyle = mColors.getThemeStyle().equals(STYLE_ROUNDED) && key.hasFunctionalBackground();
+            final boolean isFunctionalKeyAndRoundedStyle = false;
             final float hintX, hintBaseline;
             if (key.hasHintLabel()) {
                 // The hint label is placed just right of the key label. Used mainly on
@@ -497,7 +495,7 @@ public class KeyboardView extends View {
             canvas.drawText(hintLabel, 0, hintLabel.length(), hintX, hintBaseline + adjustmentY, paint);
         } else if (hintIcon != null) {
             int iconSize = (int) (key.selectHintTextSize(params) * mHintFontSizeMultiplier);
-            boolean isFunctionalKeyAndRoundedStyle = mColors.getThemeStyle().equals(STYLE_ROUNDED) && (key.hasFunctionalBackground() || key.hasActionKeyBackground());
+            boolean isFunctionalKeyAndRoundedStyle = false;
             float hintX, hintBaseline;
             if (key.hasHintLabel()) {
                 // The hint icon is placed just right of the key label. Used mainly on "phone number" layout.
@@ -548,21 +546,13 @@ public class KeyboardView extends View {
         }
         final int keyWidth = key.getDrawWidth();
         final int keyHeight = key.getHeight();
-        final float labelCharWidth = TypefaceUtils.getReferenceCharWidth(paint);
         final float hintX;
-        final float hintBaseline = paint.ascent();
         paint.setTypeface(params.mTypeface);
         paint.setTextSize(params.mHintLetterSize);
         paint.setColor(params.mHintLabelColor);
         paint.setTextAlign(Align.CENTER);
-        if (mColors.getThemeStyle().equals(STYLE_ROUNDED)) {
-            if (key.getBackgroundType() == Key.BACKGROUND_TYPE_SPACEBAR)
-                hintX = keyWidth + hintBaseline + labelCharWidth * 0.1f;
-            else
-                hintX = key.hasFunctionalBackground() || key.hasActionKeyBackground() ? keyWidth / 2.0f : keyWidth - mKeyHintLetterPadding - labelCharWidth / 2.0f;
-        } else {
-            hintX = keyWidth - mKeyHintLetterPadding - TypefaceUtils.getReferenceCharWidth(paint) / 2.0f;
-        }
+        hintX = keyWidth - mKeyHintLetterPadding - TypefaceUtils.getReferenceCharWidth(paint) / 2.0f;
+
         final float hintY = keyHeight - mKeyPopupHintLetterPadding;
         canvas.drawText(mKeyPopupHintLetter, hintX, hintY, paint);
     }

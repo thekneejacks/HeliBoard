@@ -4,13 +4,8 @@ import android.content.Context
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
-import helium314.keyboard.keyboard.KeyboardTheme
 import helium314.keyboard.latin.R
-import helium314.keyboard.latin.settings.Defaults
-import helium314.keyboard.latin.settings.Settings
-import helium314.keyboard.latin.settings.customIconIds
 import helium314.keyboard.latin.utils.ToolbarKey
-import helium314.keyboard.latin.utils.prefs
 import java.util.Locale
 
 class KeyboardIconsSet private constructor() {
@@ -19,14 +14,8 @@ class KeyboardIconsSet private constructor() {
     private val iconsByName = HashMap<String, Drawable>(80)
 
     fun loadIcons(context: Context) {
-        val prefs = context.prefs()
-        val iconStyle = prefs.getString(Settings.PREF_ICON_STYLE, Defaults.PREF_ICON_STYLE(prefs))
-        val defaultIds = when (iconStyle) {
-            KeyboardTheme.STYLE_ROUNDED -> keyboardIconsRounded
-            else -> keyboardIconsMaterial
-        }
-        val overrideIds = customIconIds(context, prefs)
-        val ids = if (overrideIds.isEmpty()) defaultIds else defaultIds + overrideIds
+        val defaultIds = keyboardIconsMaterial
+        val ids = defaultIds
         if (!needsReload && ids == iconIds) return
         iconIds = ids
         iconsByName.clear()
@@ -152,69 +141,6 @@ class KeyboardIconsSet private constructor() {
                     ToolbarKey.FULL_RIGHT -> R.drawable.ic_to_end
                     ToolbarKey.PAGE_START -> R.drawable.ic_page_start
                     ToolbarKey.PAGE_END -> R.drawable.ic_page_end
-                    ToolbarKey.SPLIT -> R.drawable.ic_ime_switcher
-                })
-            }
-        } }
-
-        private val keyboardIconsRounded by lazy { hashMapOf(
-            NAME_SHIFT_KEY to                   R.drawable.sym_keyboard_shift_rounded,
-            NAME_SHIFT_KEY_SHIFTED to           R.drawable.sym_keyboard_shift_rounded,
-            NAME_SHIFT_KEY_LOCKED to            R.drawable.sym_keyboard_shift_lock_rounded,
-            NAME_DELETE_KEY to                  R.drawable.sym_keyboard_delete_rounded,
-//            NAME_SPACE_KEY to                   null,
-            NAME_ENTER_KEY to                   R.drawable.sym_keyboard_return_rounded,
-            NAME_GO_KEY to                      R.drawable.sym_keyboard_go_rounded,
-            NAME_SEARCH_KEY to                  R.drawable.sym_keyboard_search_rounded,
-            NAME_SEND_KEY to                    R.drawable.sym_keyboard_send_rounded,
-            NAME_DONE_KEY to                    R.drawable.sym_keyboard_done_rounded,
-            NAME_NEXT_KEY to                    R.drawable.ic_arrow_right_rounded,
-            NAME_PREVIOUS_KEY to                R.drawable.ic_arrow_left_rounded,
-            NAME_TAB_KEY to                     R.drawable.sym_keyboard_tab_rounded,
-            NAME_SPACE_KEY_FOR_NUMBER_LAYOUT to R.drawable.sym_keyboard_space_rounded,
-            NAME_SHORTCUT_KEY_DISABLED to       R.drawable.sym_keyboard_voice_off_rounded,
-            NAME_LANGUAGE_SWITCH_KEY to         R.drawable.sym_keyboard_language_switch_lxx,
-            NAME_ZWNJ_KEY to                    R.drawable.sym_keyboard_zwnj_lxx,
-            NAME_ZWJ_KEY to                     R.drawable.sym_keyboard_zwj_lxx,
-            NAME_STOP_ONEHANDED_KEY to          R.drawable.sym_keyboard_stop_onehanded_rounded,
-            NAME_SWITCH_ONEHANDED_KEY to        R.drawable.ic_arrow_left_rounded,
-            NAME_RESIZE_ONEHANDED_KEY to        R.drawable.ic_arrow_horizontal_rounded,
-            NAME_TOOLBAR_KEY to                 R.drawable.ic_arrow_right_rounded,
-            NAME_BIN to                         R.drawable.ic_bin_rounded,
-        ).apply {
-            ToolbarKey.entries.forEach {
-                put(it.name.lowercase(Locale.US), when (it) {
-                    ToolbarKey.VOICE -> R.drawable.sym_keyboard_voice_rounded
-                    ToolbarKey.CLIPBOARD -> R.drawable.sym_keyboard_clipboard_rounded
-                    ToolbarKey.NUMPAD -> R.drawable.sym_keyboard_numpad_key_lxx
-                    ToolbarKey.DPAD -> R.drawable.ic_dpad_rounded
-                    ToolbarKey.UNDO -> R.drawable.ic_undo_rounded
-                    ToolbarKey.REDO -> R.drawable.ic_redo_rounded
-                    ToolbarKey.SETTINGS -> R.drawable.sym_keyboard_settings_rounded
-                    ToolbarKey.SELECT_ALL -> R.drawable.ic_select_all_rounded
-                    ToolbarKey.SELECT_WORD -> R.drawable.ic_select_rounded
-                    ToolbarKey.COPY -> R.drawable.sym_keyboard_copy_rounded
-                    ToolbarKey.CUT -> R.drawable.sym_keyboard_cut_rounded
-                    ToolbarKey.PASTE -> R.drawable.sym_keyboard_paste_rounded
-                    ToolbarKey.ONE_HANDED -> R.drawable.sym_keyboard_start_onehanded_rounded
-                    ToolbarKey.FLOATING -> R.drawable.ic_drag_indicator
-                    ToolbarKey.INCOGNITO -> R.drawable.sym_keyboard_incognito_lxx
-                    ToolbarKey.AUTOCORRECT -> R.drawable.ic_autocorrect_rounded
-                    ToolbarKey.CLEAR_CLIPBOARD -> R.drawable.sym_keyboard_clear_clipboard_rounded
-                    ToolbarKey.CLOSE_HISTORY -> R.drawable.ic_close_rounded
-                    ToolbarKey.EMOJI -> R.drawable.sym_keyboard_smiley_rounded
-                    ToolbarKey.LEFT -> R.drawable.ic_dpad_left_rounded
-                    ToolbarKey.RIGHT -> R.drawable.ic_dpad_right_rounded
-                    ToolbarKey.UP -> R.drawable.ic_dpad_up_rounded
-                    ToolbarKey.DOWN -> R.drawable.ic_dpad_down_rounded
-                    ToolbarKey.WORD_LEFT -> R.drawable.ic_word_left_rounded
-                    ToolbarKey.WORD_RIGHT -> R.drawable.ic_word_right_rounded
-                    ToolbarKey.PAGE_UP -> R.drawable.ic_page_up_rounded
-                    ToolbarKey.PAGE_DOWN -> R.drawable.ic_page_down_rounded
-                    ToolbarKey.FULL_LEFT -> R.drawable.ic_to_start_rounded
-                    ToolbarKey.FULL_RIGHT -> R.drawable.ic_to_end_rounded
-                    ToolbarKey.PAGE_START -> R.drawable.ic_page_start_rounded
-                    ToolbarKey.PAGE_END -> R.drawable.ic_page_end_rounded
                     ToolbarKey.SPLIT -> R.drawable.ic_ime_switcher
                 })
             }

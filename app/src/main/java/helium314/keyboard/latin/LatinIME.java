@@ -485,16 +485,12 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
                 cleanupInternalStateForFinishInput();
             }
         }
-        // KeyboardSwitcher will check by itself if theme update is necessary
-        mKeyboardSwitcher.updateKeyboardTheme(KtxKt.getDisplayContext(this));
         super.onConfigurationChanged(conf);
     }
 
     @Override
     public void onInitializeInterface() {
         mDisplayContext = KtxKt.getDisplayContext(this);
-        ////Log.(TAG, "onInitializeInterface");
-        mKeyboardSwitcher.updateKeyboardTheme(mDisplayContext);
     }
 
     @Override
@@ -608,7 +604,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
                 mSuggestionStripView.updateVoiceKey();
         }
 
-        switcher.updateKeyboardTheme(mDisplayContext);
         MainKeyboardView mainKeyboardView = switcher.getMainKeyboardView();
         currentSettingsValues = mSettings.getCurrent(); // settingsValues may have been reloaded
 

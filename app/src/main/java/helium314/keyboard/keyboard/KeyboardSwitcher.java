@@ -18,9 +18,6 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodSubtype;
 import android.widget.FrameLayout;
-import android.widget.HorizontalScrollView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -95,17 +92,6 @@ public final class KeyboardSwitcher {
         mIsHardwareAcceleratedDrawingEnabled = mLatinIME.enableHardwareAcceleration();
     }
 
-    public void updateKeyboardTheme(@NonNull Context displayContext) {
-        final boolean themeUpdated = updateKeyboardThemeAndContextThemeWrapper(
-                displayContext, KeyboardTheme.getKeyboardTheme(displayContext));
-        if (themeUpdated) {
-            Settings settings = Settings.getInstance();
-            settings.loadSettings(displayContext, settings.getCurrent().mLocale, settings.getCurrent().mInputAttributes);
-            if (mKeyboardView != null)
-                mLatinIME.setInputView(onCreateInputView(displayContext, mIsHardwareAcceleratedDrawingEnabled));
-        }
-    }
-
     private boolean updateKeyboardThemeAndContextThemeWrapper(final Context context, final KeyboardTheme keyboardTheme) {
         final Resources res = context.getResources();
         if (mThemeNeedsReload
@@ -114,8 +100,7 @@ public final class KeyboardSwitcher {
                 || mCurrentDpi != res.getDisplayMetrics().densityDpi
                 || mCurrentOrientation != res.getConfiguration().orientation
                 || (mCurrentUiMode & Configuration.UI_MODE_NIGHT_MASK) != (res.getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK)
-                || !mThemeContext.getResources().equals(res)
-                || Settings.getValues().mColors.haveColorsChanged(context)) {
+                || !mThemeContext.getResources().equals(res) ){
             mThemeNeedsReload = false;
             mKeyboardTheme = keyboardTheme;
             mThemeContext = new ContextThemeWrapper(context, keyboardTheme.mStyleId);
@@ -203,14 +188,6 @@ public final class KeyboardSwitcher {
     public void onFinishSlidingInput(final int currentAutoCapsState,
             @Nullable final RecapitalizeMode currentRecapitalizeState) {
         mState.onFinishSlidingInput(currentAutoCapsState, currentRecapitalizeState);
-    }
-
-    public void setEmojiKeyboard() {
-        mState.setLayout(LayoutDirective.Utility.EMOJI);
-    }
-
-    public void setClipboardKeyboard() {
-        mState.setLayout(LayoutDirective.Utility.CLIPBOARD);
     }
 
     public boolean isImeSuppressedByHardwareKeyboard(
@@ -335,15 +312,8 @@ public final class KeyboardSwitcher {
 
     public void reloadMainKeyboard() {
         // Reload the entire keyboard, and switch to the previous layout
-        final boolean wasEmoji = isShowingEmojiPalettes();
-        final boolean wasClipboard = isShowingClipboardHistory();
         loadKeyboard(mLatinIME.getCurrentInputEditorInfo(), Settings.getValues(),
                 mLatinIME.getCurrentAutoCapsState(), mLatinIME.getCurrentRecapitalizeState(), null);
-        if (wasEmoji) {
-            setEmojiKeyboard();
-        } else if (wasClipboard) {
-            setClipboardKeyboard();
-        }
     }
 
     /**
@@ -444,7 +414,7 @@ public final class KeyboardSwitcher {
         if (mThemeNeedsReload) // necessary in some cases (e.g. theme switch) when mThemeNeedsReload is set before first keyboard load
             Settings.getInstance().loadSettings(displayContext, Settings.getValues().mLocale, Settings.getValues().mInputAttributes);
 
-        updateKeyboardThemeAndContextThemeWrapper(displayContext, KeyboardTheme.getKeyboardTheme(displayContext));
+        updateKeyboardThemeAndContextThemeWrapper(displayContext, KeyboardTheme.getKeyboardTheme());
         mCurrentInputView = (InputView)LayoutInflater.from(mThemeContext).inflate(R.layout.input_view, null);
         mMainKeyboardFrame = mCurrentInputView.findViewById(R.id.main_keyboard_frame);
 
@@ -523,34 +493,6 @@ public final class KeyboardSwitcher {
                 ////Log.(TAG, "setSymbolsShiftedKeyboard");
             }
             setKeyboard(KeyboardElement.SYMBOLS_SHIFTED, KeyboardSwitchState.SYMBOLS_SHIFTED);
-        }
-
-        @Override
-        public void setEmojiKeyboard() {
-            if (DEBUG_ACTION) {
-                ////Log.(TAG, "setEmojiKeyboard");
-            }
-            mMainKeyboardFrame.setVisibility(View.VISIBLE);
-            // The visibility of {@link #mKeyboardView} must be aligned with {@link #MainKeyboardFrame}.
-            // @see #getVisibleKeyboardView() and
-            // @see LatinIME#onComputeInset(android.inputmethodservice.InputMethodService.Insets)
-            mKeyboardView.setVisibility(View.GONE);
-            mSuggestionStripView.setVisibility(View.GONE);
-            mStripContainer.setVisibility(getSecondaryStripVisibility());
-        }
-
-        @Override
-        public void setClipboardKeyboard() {
-            if (DEBUG_ACTION) {
-                ////Log.(TAG, "setClipboardKeyboard");
-            }
-            mMainKeyboardFrame.setVisibility(View.VISIBLE);
-            // The visibility of {@link #mKeyboardView} must be aligned with {@link #MainKeyboardFrame}.
-            // @see #getVisibleKeyboardView() and
-            // @see LatinIME#onComputeInset(android.inputmethodservice.InputMethodService.Insets)
-            mKeyboardView.setVisibility(View.GONE);
-            mSuggestionStripView.setVisibility(View.GONE);
-            mStripContainer.setVisibility(getSecondaryStripVisibility());
         }
 
         @Override
