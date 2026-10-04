@@ -17,8 +17,6 @@ import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.style.CharacterStyle;
 import android.view.KeyEvent;
-import android.view.inputmethod.CompletionInfo;
-import android.view.inputmethod.CorrectionInfo;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.ExtractedText;
 import android.view.inputmethod.ExtractedTextRequest;
@@ -38,12 +36,10 @@ import helium314.keyboard.latin.common.ConstantsKt;
 import helium314.keyboard.latin.common.StringUtils;
 import helium314.keyboard.latin.common.StringUtilsKt;
 import helium314.keyboard.latin.common.UnicodeSurrogate;
-import helium314.keyboard.latin.define.DebugFlags;
 import helium314.keyboard.latin.inputlogic.PrivateCommandPerformer;
 import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.settings.SpacingAndPunctuations;
 import helium314.keyboard.latin.utils.CapsModeUtils;
-import helium314.keyboard.latin.utils.NgramContextUtils;
 import helium314.keyboard.latin.utils.StatsUtils;
 import helium314.keyboard.latin.utils.TextRange;
 
@@ -774,61 +770,6 @@ public final class RichInputConnection implements PrivateCommandPerformer {
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
             KeyboardSwitcher.getInstance().showToast(mParent.getString(R.string.toast_msg_clipboard_copy), true);
         }
-    }
-
-    public void commitCorrection(final CorrectionInfo correctionInfo) {
-        if (DEBUG_BATCH_NESTING) checkBatchEdit();
-        if (DEBUG_PREVIOUS_TEXT) checkConsistencyForDebug();
-        // This has no effect on the text field and does not change its content. It only makes
-        // TextView flash the text for a second based on indices contained in the argument.
-        if (isConnected()) {
-            mIC.commitCorrection(correctionInfo);
-        }
-        if (DEBUG_PREVIOUS_TEXT) checkConsistencyForDebug();
-    }
-
-    public void commitCompletion(final CompletionInfo completionInfo) {
-        if (DEBUG_BATCH_NESTING) checkBatchEdit();
-        if (DEBUG_PREVIOUS_TEXT) checkConsistencyForDebug();
-        CharSequence text = completionInfo.getText();
-        // text should never be null, but just in case, it's better to insert nothing than to crash
-        if (null == text) text = "";
-        mCommittedTextBeforeComposingText.append(text);
-        mExpectedSelStart += text.length() - mComposingText.length();
-        mExpectedSelEnd = mExpectedSelStart;
-        mComposingText.setLength(0);
-        if (isConnected()) {
-            mIC.commitCompletion(completionInfo);
-        }
-        if (DEBUG_PREVIOUS_TEXT) checkConsistencyForDebug();
-    }
-
-    @NonNull
-    public NgramContext getNgramContextFromNthPreviousWord(
-            final SpacingAndPunctuations spacingAndPunctuations, final int n) {
-        mIC = mParent.getCurrentInputConnection();
-        if (!isConnected()) {
-            return NgramContext.EMPTY_PREV_WORDS_INFO;
-        }
-        final CharSequence prev = getTextBeforeCursor(NUM_CHARS_TO_GET_BEFORE_CURSOR, 0);
-        if (DEBUG_PREVIOUS_TEXT && null != prev) {
-            final int checkLength = NUM_CHARS_TO_GET_BEFORE_CURSOR - 1;
-            final String reference = prev.length() <= checkLength ? prev.toString()
-                    : prev.subSequence(prev.length() - checkLength, prev.length()).toString();
-            // TODO: right now the following works because mComposingText holds the part of the
-            //  composing text that is before the cursor, but this is very confusing. We should
-            //  fix it.
-            final StringBuilder internal = new StringBuilder()
-                    .append(mCommittedTextBeforeComposingText).append(mComposingText);
-            if (internal.length() > checkLength) {
-                internal.delete(0, internal.length() - checkLength);
-                if (!(reference.equals(internal.toString()))) {
-                    final String context = "Expected text = " + internal + "\nActual text = " + reference;
-                    ((LatinIME)mParent).debugDumpStateAndCrashWithException(context);
-                }
-            }
-        }
-        return NgramContextUtils.getNgramContextFromNthPreviousWord(prev, spacingAndPunctuations, n);
     }
 
     /**

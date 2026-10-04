@@ -40,7 +40,6 @@ public final class LastComposedWord {
     public final String mTypedWord;
     public final CharSequence mCommittedWord;
     public final String mSeparatorString;
-    public final NgramContext mNgramContext;
     public final CapsMode mCapitalizedMode;
     public final InputPointers mInputPointers =
             new InputPointers(DecoderSpecificConstants.DICTIONARY_MAX_WORD_LENGTH);
@@ -49,12 +48,12 @@ public final class LastComposedWord {
 
     public static final LastComposedWord NOT_A_COMPOSED_WORD =
             new LastComposedWord(new ArrayList<Event>(), null, "", "",
-            NOT_A_SEPARATOR, null, CapsMode.OFF);
+            NOT_A_SEPARATOR,  CapsMode.OFF);
 
     // Warning: this is using the passed objects as is and fully expects them to be
     // immutable. Do not fiddle with their contents after you passed them to this constructor.
     public LastComposedWord(ArrayList<Event> events, InputPointers inputPointers, String typedWord,
-            CharSequence committedWord, String separatorString, NgramContext ngramContext, CapsMode capitalizedMode) {
+            CharSequence committedWord, String separatorString, CapsMode capitalizedMode) {
         if (inputPointers != null) {
             mInputPointers.copy(inputPointers);
         }
@@ -63,7 +62,6 @@ public final class LastComposedWord {
         mCommittedWord = committedWord;
         mSeparatorString = separatorString;
         mActive = true;
-        mNgramContext = ngramContext;
         mCapitalizedMode = capitalizedMode;
     }
 

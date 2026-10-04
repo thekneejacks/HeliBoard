@@ -36,7 +36,6 @@ import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
 import helium314.keyboard.latin.CapsMode;
 import helium314.keyboard.latin.LastComposedWord;
 import helium314.keyboard.latin.LatinIME;
-import helium314.keyboard.latin.NgramContext;
 import helium314.keyboard.latin.RichInputConnection;
 import helium314.keyboard.latin.WordComposer;
 import helium314.keyboard.latin.common.Constants;
@@ -46,7 +45,6 @@ import helium314.keyboard.latin.common.StringUtilsKt;
 import helium314.keyboard.latin.define.DebugFlags;
 import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.settings.SettingsValues;
-import helium314.keyboard.latin.settings.SpacingAndPunctuations;
 import helium314.keyboard.latin.utils.InputTypeUtils;
 import helium314.keyboard.latin.utils.IntentUtils;
 import helium314.keyboard.latin.utils.RecapitalizeMode;
@@ -1579,41 +1577,6 @@ public final class InputLogic {
     }
 
     /**
-     * Get n-gram context from the nth previous word before the cursor as context
-     * for the suggestion process.
-     *
-     * @param spacingAndPunctuations the current spacing and punctuations settings.
-     * @param nthPreviousWord        reverse index of the word to get (1-indexed)
-     * @return the information of previous words
-     */
-    public NgramContext getNgramContextFromNthPreviousWordForSuggestion(final SpacingAndPunctuations spacingAndPunctuations, final int nthPreviousWord) {
-        if (spacingAndPunctuations.mCurrentLanguageHasSpaces) {
-            // If we are typing in a language with spaces we can just look up the previous
-            // word information from textview.
-            return mConnection.getNgramContextFromNthPreviousWord(spacingAndPunctuations, nthPreviousWord);
-        }
-        if (LastComposedWord.NOT_A_COMPOSED_WORD == mLastComposedWord) {
-            return NgramContext.BEGINNING_OF_SENTENCE;
-        }
-        return new NgramContext(new NgramContext.WordInfo(mLastComposedWord.mCommittedWord.toString()));
-    }
-
-    /**
-     * Tests the passed word for resumability.
-     * <p>
-     * We can resume suggestions on words whose first code point is a word code point (with some
-     * nuances: check the code for details).
-     *
-     * @param settings the current values of the settings.
-     * @param word     the word to evaluate.
-     * @return whether it's fine to resume suggestions on this word.
-     */
-    private static boolean isResumableWord(final SettingsValues settings, final String word) {
-        final int firstCodePoint = word.codePointAt(0);
-        return settings.isWordCodePoint(firstCodePoint) && Constants.CODE_SINGLE_QUOTE != firstCodePoint && Constants.CODE_DASH != firstCodePoint;
-    }
-
-    /**
      * @param actionId the action to perform
      */
     private void performEditorAction(final int actionId) {
@@ -1809,49 +1772,8 @@ public final class InputLogic {
      */
     private void commitChosenWord(final SettingsValues settingsValues, final String chosenWord, final int commitType, final String separatorString) {
         long startTimeMillis = 0;
-        if (DebugFlags.DEBUG_ENABLED) {
-            startTimeMillis = SystemClock.elapsedRealtime();
-            ////Log.(TAG, "commitChosenWord() : [" + chosenWord + "]");
-        }
-        // essentially reverted https://github.com/lineageos/android_packages_inputmethods_LatinIME/commit/ee6de1466bc98e27bd414c9a7451f2aee3f9e721
-        // can't find any drawback (performance, neither when setting nor when reading)
-        if (DebugFlags.DEBUG_ENABLED) {
-            long runTimeMillis = SystemClock.elapsedRealtime() - startTimeMillis;
-            ////Log.(TAG, "commitChosenWord() : " + runTimeMillis + " ms to run " + "SuggestionSpanUtils.getTextWithSuggestionSpan()");
-            startTimeMillis = SystemClock.elapsedRealtime();
-        }
-        // When we are composing word, get n-gram context from the 2nd previous word because the
-        // 1st previous word is the word to be committed. Otherwise get n-gram context from the 1st
-        // previous word.
-        final NgramContext ngramContext = mConnection.getNgramContextFromNthPreviousWord(settingsValues.mSpacingAndPunctuations, mWordComposer.isComposingWord() ? 2 : 1);
-        if (DebugFlags.DEBUG_ENABLED) {
-            long runTimeMillis = SystemClock.elapsedRealtime() - startTimeMillis;
-            ////Log.(TAG, "commitChosenWord() : " + runTimeMillis + " ms to run " + "Connection.getNgramContextFromNthPreviousWord()");
-            ////Log.(TAG, "commitChosenWord() : NgramContext = " + ngramContext);
-            startTimeMillis = SystemClock.elapsedRealtime();
-        }
         mConnection.commitText(chosenWord, 1);
-        if (DebugFlags.DEBUG_ENABLED) {
-            long runTimeMillis = SystemClock.elapsedRealtime() - startTimeMillis;
-            ////Log.(TAG, "commitChosenWord() : " + runTimeMillis + " ms to run " + "Connection.commitText");
-            startTimeMillis = SystemClock.elapsedRealtime();
-        }
-        // Add the word to the user history dictionary
-        /*performAdditionToUserHistoryDictionary(settingsValues, chosenWord, ngramContext);
-        if (DebugFlags.DEBUG_ENABLED) {
-            long runTimeMillis = SystemClock.elapsedRealtime() - startTimeMillis;
-            ////Log.(TAG, "commitChosenWord() : " + runTimeMillis + " ms to run " + "performAdditionToUserHistoryDictionary()");
-            startTimeMillis = SystemClock.elapsedRealtime();
-        }*/
-        // TODO: figure out here if this is an auto-correct or if the best word is actually
-        // what user typed. Note: currently this is done much later in
-        // LastComposedWord#didCommitTypedWord by string equality of the remembered
-        // strings.
-        mLastComposedWord = mWordComposer.commitWord(commitType, chosenWord, separatorString, ngramContext);
-        if (DebugFlags.DEBUG_ENABLED) {
-            long runTimeMillis = SystemClock.elapsedRealtime() - startTimeMillis;
-            ////Log.(TAG, "commitChosenWord() : " + runTimeMillis + " ms to run " + "WordComposer.commitWord()");
-        }
+        mLastComposedWord = mWordComposer.commitWord(commitType, chosenWord, separatorString);
     }
 
     /**
