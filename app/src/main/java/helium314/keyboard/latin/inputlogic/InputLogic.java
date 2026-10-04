@@ -32,7 +32,6 @@ import helium314.keyboard.keyboard.KeyboardLayoutSet;
 import helium314.keyboard.keyboard.KeyboardSwitcher;
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
 import helium314.keyboard.latin.CapsMode;
-import helium314.keyboard.latin.LastComposedWord;
 import helium314.keyboard.latin.LatinIME;
 import helium314.keyboard.latin.RichInputConnection;
 import helium314.keyboard.latin.WordComposer;
@@ -69,7 +68,6 @@ public final class InputLogic {
     // Current space state of the input method. This can be any of the above constants.
     private int mSpaceState;
 
-    public LastComposedWord mLastComposedWord = LastComposedWord.NOT_A_COMPOSED_WORD;
     // This has package visibility so it can be accessed from InputLogicHandler.
     /* package */ final WordComposer mWordComposer;
     public final RichInputConnection mConnection;
@@ -140,9 +138,8 @@ public final class InputLogic {
     /**
      * Call this when the orientation changes.
      *
-     * @param settingsValues the current values of the settings.
      */
-    public void onOrientationChange(final SettingsValues settingsValues) {
+    public void onOrientationChange() {
         // If !isComposingWord, #commitTyped() is a no-op, but still, it's better to avoid
         // the useless IPC of {begin,end}BatchEdit.
         if (mWordComposer.isComposingWord()) {
@@ -150,7 +147,7 @@ public final class InputLogic {
             // If we had a composition in progress, we need to commit the word so that the
             // suggestionsSpan will be added. This will allow resuming on the same suggestions
             // after rotation is finished.
-            commitTyped(settingsValues, LastComposedWord.NOT_A_SEPARATOR);
+            commitTyped();
             mConnection.endBatchEdit();
         }
     }
@@ -340,8 +337,6 @@ public final class InputLogic {
             }
             currentEvent = currentEvent.getNextEvent();
         }
-        if (!inputTransaction.didAutoCorrect() && processedEvent.getKeyCode() != KeyCode.SHIFT && processedEvent.getKeyCode() != KeyCode.CAPS_LOCK && processedEvent.getKeyCode() != KeyCode.SYMBOL_ALPHA && processedEvent.getKeyCode() != KeyCode.ALPHA && processedEvent.getKeyCode() != KeyCode.SYMBOL)
-            mLastComposedWord.deactivate();
         if (KeyCode.DELETE != processedEvent.getKeyCode()) {
             mEnteredText = null;
         }
@@ -373,7 +368,7 @@ public final class InputLogic {
                 // word, the user would probably have gestured instead.
                 //commitCurrentAutoCorrection(settingsValues, LastComposedWord.NOT_A_SEPARATOR, handler);
             } else {
-                commitTyped(settingsValues, LastComposedWord.NOT_A_SEPARATOR);
+                commitTyped();
             }
         } else if (mConnection.hasSelection()) {
             final CharSequence selectedText = mConnection.getSelectedText(0);
@@ -741,7 +736,7 @@ public final class InputLogic {
                     // We also need to unlearn the original word that is now being corrected.
                     resetEntireInputState(mConnection.getExpectedSelectionStart(), mConnection.getExpectedSelectionEnd(), true /* clearSuggestionStrip */);
                 } else {
-                    commitTyped(sv, LastComposedWord.NOT_A_SEPARATOR);
+                    commitTyped();
                 }
             }
             handleNonSeparatorEvent(event, sv, inputTransaction);
@@ -825,11 +820,6 @@ public final class InputLogic {
         inputTransaction.setRequiresUpdateSuggestions();
     }
 
-    private boolean isCursorAtStartOrAfterSeparator(SettingsValues settingsValues) {
-        var codePointBeforeCursor = mConnection.getCodePointBeforeCursor();
-        return codePointBeforeCursor == Constants.NOT_A_CODE || settingsValues.mSpacingAndPunctuations.isWordSeparator(codePointBeforeCursor);
-    }
-
     /**
      * Handle input of a separator code point.
      *
@@ -853,11 +843,10 @@ public final class InputLogic {
         // isComposingWord() may have changed since we stored wasComposing
         if (mWordComposer.isComposingWord()) {
             if (settingsValues.mAutoCorrectEnabled && !isInlineEmojiSearchAction()) {
-                final String separator = shouldAvoidSendingCode ? LastComposedWord.NOT_A_SEPARATOR : StringUtils.newSingleCodePointString(codePoint);
                 //commitCurrentAutoCorrection(settingsValues, separator, handler);
                 inputTransaction.setDidAutoCorrect();
             } else {
-                commitTyped(settingsValues, StringUtils.newSingleCodePointString(codePoint));
+                commitTyped();
             }
         }
 
@@ -984,20 +973,6 @@ public final class InputLogic {
             updateInlineEmojiSearch();
             inputTransaction.setRequiresUpdateSuggestions();
         } else {
-            /*if (mLastComposedWord.canRevertCommit() && inputTransaction.getSettingsValues().mBackspaceRevertsAutocorrect) {
-                final String lastComposedWord = mLastComposedWord.mTypedWord;
-                revertCommit(inputTransaction);
-                StatsUtils.onRevertAutoCorrect();
-                StatsUtils.onWordCommitUserTyped(lastComposedWord, mWordComposer.isBatchMode());
-                // Restart suggestions when backspacing into a reverted word. This is required for
-                // the final corrected word to be learned, as learning only occurs when suggestions
-                // are active.
-                //
-                // Note: restartSuggestionsOnWordTouchedByCursor is already called for normal
-                // (non-revert) backspace handling.
-
-                return;
-            }*/
             // todo: this is currently disabled, as it causes inconsistencies with textInput, depending whether the end
             //  is part of a word (where we start composing) or not (where we end in code below)
             //  see https://github.com/HeliBorg/HeliBoard/issues/1019
@@ -1501,9 +1476,6 @@ public final class InputLogic {
      */
     private void resetComposingState(final boolean alsoResetLastComposedWord) {
         mWordComposer.reset();
-        if (alsoResetLastComposedWord) {
-            mLastComposedWord = LastComposedWord.NOT_A_COMPOSED_WORD;
-        }
     }
 
 
@@ -1602,16 +1574,13 @@ public final class InputLogic {
      * cursor is moved while there is a composition, or when the keyboard is closed, or when the
      * user presses the Send button for an SMS, we don't auto-correct as that would be unexpected.
      * In this case, `separatorString' is set to NOT_A_SEPARATOR.
-     *
-     * @param settingsValues  the current values of the settings.
-     * @param separatorString the separator that's causing the commit, or NOT_A_SEPARATOR if none.
      */
-    public void commitTyped(final SettingsValues settingsValues, final String separatorString) {
+    public void commitTyped() {
         if (!mWordComposer.isComposingWord()) return;
         final String typedWord = mWordComposer.getTypedWord();
         if (typedWord.length() > 0) {
             final boolean isBatchMode = mWordComposer.isBatchMode();
-            commitChosenWord(settingsValues, typedWord, LastComposedWord.COMMIT_TYPE_USER_TYPED_WORD, separatorString);
+            commitChosenWord(typedWord);
             StatsUtils.onWordCommitUserTyped(typedWord, isBatchMode);
         }
     }
@@ -1619,15 +1588,10 @@ public final class InputLogic {
     /**
      * Commits the chosen word to the text field and saves it for later retrieval.
      *
-     * @param settingsValues  the current values of the settings.
      * @param chosenWord      the word we want to commit.
-     * @param commitType      the type of the commit, as one of LastComposedWord.COMMIT_TYPE_*
-     * @param separatorString the separator that's causing the commit, or NOT_A_SEPARATOR if none.
      */
-    private void commitChosenWord(final SettingsValues settingsValues, final String chosenWord, final int commitType, final String separatorString) {
-        long startTimeMillis = 0;
+    private void commitChosenWord(final String chosenWord) {
         mConnection.commitText(chosenWord, 1);
-        mLastComposedWord = mWordComposer.commitWord(commitType, chosenWord, separatorString);
     }
 
     /**

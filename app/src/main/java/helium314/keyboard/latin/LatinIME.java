@@ -468,7 +468,7 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
         SubtypeSettings.INSTANCE.reloadSystemLocales(this);
         if (settingsValues.mDisplayOrientation != conf.orientation) {
             mHandler.startOrientationChanging();
-            mInputLogic.onOrientationChange(mSettings.getCurrent());
+            mInputLogic.onOrientationChange();
         }
         if (settingsValues.mHasHardwareKeyboard != Settings.readHasHardwareKeyboard(conf)) {
             // If the state of having a hardware keyboard changed, then we want to reload the

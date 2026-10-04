@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import helium314.keyboard.event.CombinerChain;
 import helium314.keyboard.event.Event;
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
-import helium314.keyboard.latin.common.CoordinateUtils;
 import helium314.keyboard.latin.common.InputPointers;
 import helium314.keyboard.latin.common.StringUtils;
 import helium314.keyboard.latin.define.DebugFlags;
@@ -207,11 +206,6 @@ public final class WordComposer {
         }
     }
 
-    public void setCursorPositionWithinWord(final int posWithinWord) {
-        mCursorPositionWithinWord = posWithinWord;
-        // TODO: compute where that puts us inside the events
-    }
-
     public boolean isCursorFrontOrMiddleOfComposingWord() {
         if (DebugFlags.DEBUG_ENABLED && mCursorPositionWithinWord > mCodePointSize) {
             throw new RuntimeException("Wrong cursor position : " + mCursorPositionWithinWord
@@ -269,74 +263,12 @@ public final class WordComposer {
         mIsBatchMode = true;
     }
 
-    public void setBatchInputWord(final String word) {
-        reset();
-        mIsBatchMode = true;
-        final int length = word.length();
-        for (int i = 0; i < length; i = Character.offsetByCodePoints(word, i, 1)) {
-            final int codePoint = Character.codePointAt(word, i);
-            // We don't want to override the batch input points that are held in mInputPointers
-            // (See {@link #add(int,int,int)}).
-            final Event processedEvent = processEvent(Event.createEventForCodePointFromUnknownSource(codePoint));
-            applyProcessedEvent(processedEvent);
-        }
-    }
-
-    /**
-     * Set the currently composing word to the one passed as an argument.
-     * This will register NOT_A_COORDINATE for X and Ys, and use the passed keyboard for proximity.
-     * @param codePoints the code points to set as the composing word.
-     * @param coordinates the x, y coordinates of the key in the CoordinateUtils format
-     */
-    public void setComposingWord(final int[] codePoints, final int[] coordinates) {
-        reset();
-        final int length = codePoints.length;
-        for (int i = 0; i < length; ++i) {
-            final Event processedEvent =
-                    processEvent(Event.createEventForCodePointFromAlreadyTypedText(codePoints[i],
-                        CoordinateUtils.xFromArray(coordinates, i),
-                        CoordinateUtils.yFromArray(coordinates, i))
-                    );
-            applyProcessedEvent(processedEvent);
-        }
-        mIsResumed = true;
-    }
-
     /**
      * Returns the word as it was typed, without any correction applied.
      * @return the word that was typed so far. Never returns null.
      */
     public String getTypedWord() {
         return mTypedWordCache.toString();
-    }
-
-    /**
-     * Whether this composer is composing or about to compose a word in which only the first letter
-     * is a capital.
-     * <p>
-     * If we do have a composing word, we just return whether the word has indeed only its first
-     * character capitalized. If we don't, then we return a value based on the capitalized mode,
-     * which tell us what is likely to happen for the next composing word.
-     *
-     * @return capitalization preference
-     */
-    public boolean isOrWillBeOnlyFirstCharCapitalized() {
-        return isComposingWord() ? mIsOnlyFirstCharCapitalized : (mCapitalizedMode != CapsMode.OFF);
-    }
-
-    /**
-     * Whether or not all of the user typed chars are upper case
-     * @return true if all user typed chars are upper case, false otherwise
-     */
-    public boolean isAllUpperCase() {
-        if (size() <= 1) {
-            return mCapitalizedMode == CapsMode.AUTO_LOCKED || mCapitalizedMode == CapsMode.MANUAL_LOCKED;
-        }
-        return mCapsCount == size();
-    }
-
-    public boolean wasShiftedNoLock() {
-        return mCapitalizedMode == CapsMode.AUTO || mCapitalizedMode == CapsMode.MANUAL;
     }
 
     public char lastChar() {
@@ -357,36 +289,6 @@ public final class WordComposer {
      */
     public void setCapitalizedModeAtStartComposingTime(CapsMode mode) {
         mCapitalizedMode = mode;
-    }
-
-    // `type' should be one of the LastComposedWord.COMMIT_TYPE_* constants above.
-    // committedWord should contain suggestion spans if applicable.
-    public LastComposedWord commitWord(final int type, final CharSequence committedWord,
-            final String separatorString) {
-        // Note: currently, we come here whenever we commit a word. If it's a MANUAL_PICK
-        // or a DECIDED_WORD we may cancel the commit later; otherwise, we should deactivate
-        // the last composed word to ensure this does not happen.
-        final LastComposedWord lastComposedWord = new LastComposedWord(mEvents,
-                mInputPointers, mTypedWordCache.toString(), committedWord, separatorString,
-                 mCapitalizedMode);
-        mInputPointers.reset();
-        if (type != LastComposedWord.COMMIT_TYPE_DECIDED_WORD
-                && type != LastComposedWord.COMMIT_TYPE_MANUAL_PICK) {
-            lastComposedWord.deactivate();
-        }
-        mCapsCount = 0;
-        mDigitsCount = 0;
-        mIsBatchMode = false;
-        mCombinerChain.reset();
-        mEvents.clear();
-        mCodePointSize = 0;
-        mIsOnlyFirstCharCapitalized = false;
-        mCapitalizedMode = CapsMode.OFF;
-        refreshTypedWordCache();
-        mCursorPositionWithinWord = 0;
-        mIsResumed = false;
-        mRejectedBatchModeSuggestion = null;
-        return lastComposedWord;
     }
 
     public boolean isBatchMode() {
