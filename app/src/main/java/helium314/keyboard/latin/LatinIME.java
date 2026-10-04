@@ -41,7 +41,6 @@ import java.util.concurrent.TimeUnit;
 import helium314.keyboard.compat.EditorInfoCompatUtils;
 import helium314.keyboard.compat.ImeCompat;
 import helium314.keyboard.event.Event;
-import helium314.keyboard.event.HapticEvent;
 import helium314.keyboard.event.InputTransaction;
 import helium314.keyboard.keyboard.Keyboard;
 import helium314.keyboard.keyboard.KeyboardActionListener;
@@ -77,7 +76,6 @@ import helium314.keyboard.latin.utils.SubtypeLocaleUtils;
 import helium314.keyboard.latin.utils.SubtypeSettings;
 import helium314.keyboard.latin.utils.SubtypeState;
 import helium314.keyboard.latin.utils.ToolbarMode;
-import helium314.keyboard.settings.SettingsActivity2;
 import kotlin.Unit;
 
 /**
@@ -1075,10 +1073,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
         return keyboard.getCoordinates(codePoints);
     }
 
-    public void displaySettingsDialog() {
-        launchSettings();
-    }
-
     public boolean showInputPickerDialog() {
         if (isShowingOptionDialog()) return false;
         if (mRichImm.hasMultipleEnabledIMEsOrSubtypes(true)) {
@@ -1250,21 +1244,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
 
     public ClipboardHistoryManager getClipboardHistoryManager() {
         return mClipboardHistoryManager;
-    }
-
-    void launchSettings() {
-        mInputLogic.commitTyped(mSettings.getCurrent(), LastComposedWord.NOT_A_SEPARATOR);
-        requestHideSelf(0);
-        final MainKeyboardView mainKeyboardView = mKeyboardSwitcher.getMainKeyboardView();
-        if (mainKeyboardView != null) {
-            mainKeyboardView.closing();
-        }
-        final Intent intent = new Intent();
-        intent.setClass(LatinIME.this, SettingsActivity2.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
-                | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
     }
 
     @Override

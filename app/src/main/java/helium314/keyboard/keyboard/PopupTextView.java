@@ -8,16 +8,12 @@ package helium314.keyboard.keyboard;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
 
-import helium314.keyboard.keyboard.internal.KeyDrawParams;
 import helium314.keyboard.latin.R;
-import helium314.keyboard.latin.common.ColorType;
 import helium314.keyboard.latin.common.CoordinateUtils;
-import helium314.keyboard.latin.settings.Settings;
 
 
 /**
@@ -28,7 +24,6 @@ public class PopupTextView extends TextView implements PopupKeysPanel {
     private Controller mController = EMPTY_CONTROLLER;
     private int mOriginX;
     private int mOriginY;
-    private Key mKey;
 
     public PopupTextView(final Context context, final AttributeSet attrs) {
         this(context, attrs, R.attr.popupKeysKeyboardViewStyle);
@@ -37,14 +32,6 @@ public class PopupTextView extends TextView implements PopupKeysPanel {
     public PopupTextView(final Context context, final AttributeSet attrs,
                          final int defStyle) {
         super(context, attrs, defStyle);
-    }
-
-    public void setKeyDrawParams(Key key, KeyDrawParams drawParams) {
-        mKey = key;
-        Settings.getValues().mColors.setBackground(this, ColorType.KEY_PREVIEW_BACKGROUND);
-        setTextColor(drawParams.mPreviewTextColor);
-        setTextSize(TypedValue.COMPLEX_UNIT_PX, key.selectHintTextSize(drawParams) << 1);
-        KeyboardTypeface.applyToTextView(this, this.getText(), key.selectTypeface(drawParams));
     }
 
     @Override

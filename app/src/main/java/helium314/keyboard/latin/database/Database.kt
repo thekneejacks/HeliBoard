@@ -19,8 +19,12 @@ class Database private constructor(context: Context, name: String = NAME) : SQLi
             //db.execSQL(GestureDataDao.CREATE_TABLE)
         }
         if (oldVersion <= 2) {
-            db.execSQL(ClipboardDao.ADD_FILE_COLUMN)
-            db.execSQL(ClipboardDao.ADD_MIME_TYPE_COLUMN)
+            //db.execSQL(ClipboardDao.ADD_FILE_COLUMN)
+            //db.execSQL(ClipboardDao.ADD_MIME_TYPE_COLUMN)
+        }
+        if (oldVersion <= 3) {
+            //db.execSQL(ClipboardDao.ADD_FILE_COLUMN)
+            db.execSQL("DROP TABLE CLIPBOARD")
         }
     }
 

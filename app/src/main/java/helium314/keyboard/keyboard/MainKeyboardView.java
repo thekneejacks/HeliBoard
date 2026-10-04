@@ -16,8 +16,6 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Paint.Align;
-import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -28,24 +26,18 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 import java.util.WeakHashMap;
 
-import helium314.keyboard.compat.ConfigurationCompatKt;
 import helium314.keyboard.keyboard.internal.DrawingPreviewPlacerView;
 import helium314.keyboard.keyboard.internal.DrawingProxy;
 import helium314.keyboard.keyboard.internal.KeyDrawParams;
 import helium314.keyboard.keyboard.internal.KeyPreviewChoreographer;
 import helium314.keyboard.keyboard.internal.KeyPreviewDrawParams;
-import helium314.keyboard.keyboard.internal.KeyPreviewView;
 import helium314.keyboard.keyboard.internal.NonDistinctMultitouchHelper;
 import helium314.keyboard.keyboard.internal.PopupKeySpec;
 import helium314.keyboard.keyboard.internal.TimerHandler;
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
 import helium314.keyboard.latin.R;
-import helium314.keyboard.latin.RichInputMethodSubtype;
 import helium314.keyboard.latin.common.ColorType;
 import helium314.keyboard.latin.common.Colors;
 import helium314.keyboard.latin.common.Constants;
@@ -54,8 +46,6 @@ import helium314.keyboard.latin.settings.DebugSettings;
 import helium314.keyboard.latin.settings.Defaults;
 import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.utils.KtxKt;
-import helium314.keyboard.latin.utils.LanguageOnSpacebarUtils;
-import helium314.keyboard.latin.utils.TypefaceUtils;
 
 /** A view that is responsible for detecting key presses and touch movements. */
 public final class MainKeyboardView extends KeyboardView implements DrawingProxy,
@@ -70,7 +60,6 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
     // Stuff to draw language name on spacebar.
     private final int mLanguageOnSpacebarFinalAlpha;
     private final ObjectAnimator mLanguageOnSpacebarFadeoutAnimator;
-    private int mLanguageOnSpacebarFormatType;
     private boolean mHasMultipleEnabledIMEsOrSubtypes;
     private int mLanguageOnSpacebarAnimAlpha = Constants.Color.ALPHA_OPAQUE;
     private final float mLanguageOnSpacebarTextRatio;
@@ -79,8 +68,6 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
     private final float mLanguageOnSpacebarTextShadowRadius;
     private final int mLanguageOnSpacebarTextShadowColor;
     private static final float LANGUAGE_ON_SPACEBAR_TEXT_SHADOW_RADIUS_DISABLED = -1.0f;
-    // The minimum x-scale to fit the language name on spacebar.
-    private static final float MINIMUM_XSCALE_OF_LANGUAGE_NAME = 0.8f;
 
     // Stuff to draw altCodeWhileTyping keys.
     private final ObjectAnimator mAltCodeKeyWhileTypingFadeoutAnimator;
@@ -595,35 +582,6 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
         invalidateKey(lockKey);
     }
 
-    // the whole language on spacebar thing could probably be simplified quite a bit
-    public void startDisplayLanguageOnSpacebar(final boolean subtypeChanged,
-            final int languageOnSpacebarFormatType,
-            final boolean hasMultipleEnabledIMEsOrSubtypes) {
-        if (subtypeChanged) {
-            KeyPreviewView.clearTextCache();
-        }
-        mLanguageOnSpacebarFormatType = languageOnSpacebarFormatType;
-        mHasMultipleEnabledIMEsOrSubtypes = hasMultipleEnabledIMEsOrSubtypes;
-        final ObjectAnimator animator = mLanguageOnSpacebarFadeoutAnimator;
-        if (animator == null) {
-            mLanguageOnSpacebarFormatType = LanguageOnSpacebarUtils.FORMAT_TYPE_NONE;
-        } else {
-            if (subtypeChanged
-                    && languageOnSpacebarFormatType != LanguageOnSpacebarUtils.FORMAT_TYPE_NONE) {
-                setLanguageOnSpacebarAnimAlpha(Constants.Color.ALPHA_OPAQUE);
-                if (animator.isStarted()) {
-                    animator.cancel();
-                }
-                animator.start();
-            } else {
-                if (!animator.isStarted()) {
-                    mLanguageOnSpacebarAnimAlpha = mLanguageOnSpacebarFinalAlpha;
-                }
-            }
-        }
-        invalidateKey(mSpaceKey);
-    }
-
     @Override
     protected void onDrawKeyTopVisuals(@NonNull final Key key, @NonNull final Canvas canvas,
             @NonNull final Paint paint, @NonNull final KeyDrawParams params) {
@@ -633,10 +591,6 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
         super.onDrawKeyTopVisuals(key, canvas, paint, params);
         final int code = key.getCode();
         if (code == Constants.CODE_SPACE) {
-            // If input language are explicitly selected.
-            if (mLanguageOnSpacebarFormatType != LanguageOnSpacebarUtils.FORMAT_TYPE_NONE) {
-                drawLanguageOnSpacebar(key, canvas, paint);
-            }
             // Whether space key needs to show the "..." popup hint for special purposes
             if (key.isLongPressEnabled() && mHasMultipleEnabledIMEsOrSubtypes && Settings.getValues().mSpaceForLangChange) {
                 drawKeyPopupHint(key, canvas, paint, params);
@@ -644,124 +598,6 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
         } else if (code == KeyCode.LANGUAGE_SWITCH) {
             drawKeyPopupHint(key, canvas, paint, params);
         }
-    }
-
-    private boolean fitsTextIntoWidth(final int width, final String text, final Paint paint) {
-        final int maxTextWidth = width - mLanguageOnSpacebarHorizontalMargin * 2;
-        paint.setTextScaleX(1.0f);
-        final float textWidth = TypefaceUtils.getStringWidth(text, paint);
-        if (textWidth < width) {
-            return true;
-        }
-
-        final float scaleX = maxTextWidth / textWidth;
-        if (scaleX < MINIMUM_XSCALE_OF_LANGUAGE_NAME) {
-            return false;
-        }
-
-        paint.setTextScaleX(scaleX);
-        return TypefaceUtils.getStringWidth(text, paint) < maxTextWidth;
-    }
-
-    // Layout language name on spacebar.
-    private String layoutLanguageOnSpacebar(final Paint paint,
-            final RichInputMethodSubtype subtype, final int width) {
-        // Choose appropriate language name to fit into the width.
-
-        final List<Locale> secondaryLocales = Settings.getValues().mSecondaryLocales;
-        // avoid showing same language twice
-        final List<Locale> secondaryLocalesToUse = withoutDuplicateLanguages(secondaryLocales, subtype.getLocale().getLanguage());
-        if (!secondaryLocalesToUse.isEmpty()) {
-            StringBuilder sb = new StringBuilder(subtype.getMiddleDisplayName());
-            final Locale displayLocale = ConfigurationCompatKt.locale(getResources().getConfiguration());
-            for (Locale locale : secondaryLocales) {
-                sb.append(" - ");
-                sb.append(locale.getDisplayLanguage(displayLocale));
-            }
-            final String full = sb.toString();
-            if (fitsTextIntoWidth(width, full, paint)) {
-                return full;
-            }
-            sb.setLength(0);
-            sb.append(subtype.getLocale().getLanguage().toUpperCase(displayLocale));
-            for (Locale locale : secondaryLocales) {
-                sb.append(" - ");
-                sb.append(locale.getLanguage().toUpperCase(displayLocale));
-            }
-            final String middle = sb.toString();
-            if (fitsTextIntoWidth(width, middle, paint)) {
-                return middle;
-            }
-        }
-
-        if (mLanguageOnSpacebarFormatType == LanguageOnSpacebarUtils.FORMAT_TYPE_FULL_LOCALE) {
-            final String fullText = subtype.getFullDisplayName();
-            if (fitsTextIntoWidth(width, fullText, paint)) {
-                return fullText;
-            }
-        }
-
-        final String middleText = subtype.getMiddleDisplayName();
-        if (fitsTextIntoWidth(width, middleText, paint)) {
-            return middleText;
-        }
-
-        return "";
-    }
-
-    private List<Locale> withoutDuplicateLanguages(List<Locale> locales, String mainLanguage) {
-        ArrayList<String> languages = new ArrayList<String>() {{ add(mainLanguage); }};
-        ArrayList<Locale> newLocales = new ArrayList<>();
-        for (Locale locale : locales) {
-            boolean keep = true;
-            for (String language : languages) {
-                if (locale.getLanguage().equals(language))
-                    keep = false;
-            }
-            if (!keep)
-                continue;
-            languages.add(locale.getLanguage());
-            newLocales.add(locale);
-        }
-        return newLocales;
-    }
-
-    private void drawLanguageOnSpacebar(final Key key, final Canvas canvas, final Paint paint) {
-        final Keyboard keyboard = getKeyboard();
-        if (keyboard == null) {
-            return;
-        }
-        final int width = key.getWidth();
-        final int height = key.getHeight();
-        paint.setTextAlign(Align.CENTER);
-        paint.setTextSize(mLanguageOnSpacebarTextSize);
-        final String customText = Settings.getValues().mSpaceBarText;
-        final String spaceText;
-        if (!customText.isEmpty()) {
-            spaceText = customText;
-        }
-        else
-            spaceText = layoutLanguageOnSpacebar(paint, keyboard.mId.getSubtype(), width);
-        paint.setTypeface(KeyboardTypeface.resolve(spaceText, Typeface.DEFAULT));
-        // Draw language text with shadow
-        final float descent = paint.descent();
-        final float textHeight = -paint.ascent() + descent;
-        final float baseline = height / 2f + textHeight / 2;
-        if (mLanguageOnSpacebarTextShadowRadius > 0.0f) {
-            paint.setShadowLayer(mLanguageOnSpacebarTextShadowRadius, 0, 0,
-                    mLanguageOnSpacebarTextShadowColor);
-        } else {
-            paint.clearShadowLayer();
-        }
-        paint.setColor(mLanguageOnSpacebarTextColor);
-        paint.setAlpha(mLanguageOnSpacebarAnimAlpha);
-        if (!fitsTextIntoWidth(width, spaceText, paint)) {
-            final float textWidth = TypefaceUtils.getStringWidth(spaceText, paint);
-            paint.setTextScaleX((width - mLanguageOnSpacebarHorizontalMargin * 2) / textWidth);
-        }
-        canvas.drawText(spaceText, width / 2f, baseline - descent, paint);
-        paint.clearShadowLayer();
-        paint.setTextScaleX(1.0f);
     }
 
     @Override

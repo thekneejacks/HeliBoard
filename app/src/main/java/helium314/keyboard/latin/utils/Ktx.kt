@@ -3,7 +3,6 @@ package helium314.keyboard.latin.utils
 import android.R
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.ContextWrapper
 import android.content.SharedPreferences
 import android.content.res.Resources
 import android.inputmethodservice.InputMethodService
@@ -12,15 +11,6 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import androidx.activity.ComponentActivity
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.LinkAnnotation
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextLinkStyles
-import androidx.compose.ui.text.fromHtml
-import androidx.compose.ui.text.withLink
 import androidx.core.util.TypedValueCompat
 
 // generic extension functions
@@ -77,15 +67,6 @@ fun <T> MutableList<T>.replaceFirst(predicate: (T) -> Boolean, with: (T) -> T) {
     if (i >= 0) this[i] = with(this[i])
 }
 
-fun Context.getActivity(): ComponentActivity? {
-    val componentActivity = when (this) {
-        is ComponentActivity -> this
-        is ContextWrapper -> baseContext.getActivity()
-        else -> null
-    }
-    return componentActivity
-}
-
 /** SharedPreferences from deviceProtectedContext, which are accessible even without unlocking.
  *  They should not be used to store sensitive data! */
 fun Context.prefs(): SharedPreferences = DeviceProtectedUtils.getSharedPreferences(this)
@@ -139,22 +120,6 @@ fun InputMethodService.updateSoftInputWindowLayoutParameters(inputView: View?) {
     ViewLayoutUtils.updateLayoutGravityOf(inputArea, Gravity.BOTTOM)
     ViewLayoutUtils.updateLayoutHeightOf(inputView, layoutHeight)
 }
-
-@Composable
-fun String.htmlToAnnotated() = AnnotatedString.fromHtml(this, TextLinkStyles(style = SpanStyle(color = MaterialTheme.colorScheme.primary)))
-
-@SuppressLint("ComposableNaming") // same goes for built-in "append"
-@Composable
-fun AnnotatedString.Builder.appendLink(text: String, url: String) =
-    withLink(
-        LinkAnnotation.Url(
-            url,
-            styles = TextLinkStyles(style = SpanStyle(color = MaterialTheme.colorScheme.primary))
-        )) {
-        append(text)
-    }
-
-fun String.withHtmlLink(link: String) = "<a href='$link'>$this</a>"
 
 /** Convenience for converting dp to px, int -> int */
 fun Int.dpToPx(resources: Resources) = TypedValueCompat.dpToPx(this.toFloat(), resources.displayMetrics).toInt()

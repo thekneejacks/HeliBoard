@@ -18,6 +18,7 @@ import android.text.style.SuggestionSpan;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -1652,7 +1653,8 @@ public final class InputLogic {
      * Handle a press on the settings key.
      */
     private void onSettingsKeyPressed() {
-        mLatinIME.displaySettingsDialog();
+        Toast.makeText(mLatinIME, "No settings screen for now, sorry", Toast.LENGTH_SHORT).show();
+        //mLatinIME.displaySettingsDialog();
     }
 
     /**

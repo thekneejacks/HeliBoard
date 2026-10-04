@@ -20,7 +20,7 @@ import helium314.keyboard.keyboard.KeyboardLayoutSet;
 import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.utils.KtxKt;
 import helium314.keyboard.latin.utils.UncachedInputMethodManagerUtils;
-import helium314.keyboard.settings.SettingsActivity;
+
 
 /**
  * This class detects the {@link Intent#ACTION_MY_PACKAGE_REPLACED} broadcast intent when this IME
@@ -83,14 +83,8 @@ public final class SystemBroadcastReceiver extends BroadcastReceiver {
     }
 
     public static void toggleAppIcon(final Context context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+        //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
             return; // can't change visibility in Android 10 and above
-        final SharedPreferences prefs = KtxKt.prefs(context);
-        context.getPackageManager().setComponentEnabledSetting(
-                new ComponentName(context, SettingsActivity.class),
-                Settings.readShowSetupWizardIcon(prefs, context)
-                        ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-                        : PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-                PackageManager.DONT_KILL_APP);
+
     }
 }
