@@ -24,9 +24,7 @@ LATIN_IME_CORE_SRC_FILES := \
         proximity_info_state.cpp \
         proximity_info_state_utils.cpp) \
     $(addprefix utils/, \
-        char_utils.cpp \
-        log_utils.cpp \
-        time_keeper.cpp)
+        char_utils.cpp) \
 
 LATIN_IME_CORE_SRC_FILES_BACKWARD_V402 := \
 
@@ -35,8 +33,5 @@ LATIN_IME_CORE_SRC_FILES += $(LATIN_IME_CORE_SRC_FILES_BACKWARD_V402)
 LATIN_IME_CORE_TEST_FILES := \
     defines_test.cpp \
     utils/char_utils_test.cpp \
-    utils/int_array_view_test.cpp \
     suggest/core/layout/geometry_utils_test.cpp \
     suggest/core/layout/normal_distribution_2d_test.cpp \
-    suggest/policyimpl/utils/damerau_levenshtein_edit_distance_policy_test.cpp \
-    utils/time_keeper_test.cpp

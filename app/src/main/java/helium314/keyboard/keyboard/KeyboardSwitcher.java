@@ -56,9 +56,6 @@ public final class KeyboardSwitcher {
     private KeyboardWrapperView mKeyboardViewWrapper;
     private View mMainKeyboardFrame;
     private MainKeyboardView mKeyboardView;
-    private View mEmojiTabStripView;
-    private LinearLayout mClipboardStripView;
-    private HorizontalScrollView mClipboardStripScrollView;
     private SuggestionStripView mSuggestionStripView;
     private FrameLayout mStripContainer;
     private LatinIME mLatinIME;
@@ -237,8 +234,6 @@ public final class KeyboardSwitcher {
         // @see LatinIME#onComputeInset(android.inputmethodservice.InputMethodService.Insets)
         mMainKeyboardFrame.setVisibility(visibility);
         mKeyboardViewWrapper.setVisibility(Settings.getInstance().readShowToolbarOnly() ? View.GONE : View.VISIBLE);
-        mEmojiTabStripView.setVisibility(View.GONE);
-        mClipboardStripScrollView.setVisibility(View.GONE);
         mSuggestionStripView.setVisibility(stripVisibility);
     }
 
@@ -421,13 +416,6 @@ public final class KeyboardSwitcher {
         return mKeyboardViewWrapper;
     }
 
-    public View getEmojiTabStrip() {
-        return mEmojiTabStripView;
-    }
-
-    public LinearLayout getClipboardStrip() {
-        return mClipboardStripView;
-    }
 
     public MainKeyboardView getMainKeyboardView() {
         return mKeyboardView;
@@ -467,9 +455,6 @@ public final class KeyboardSwitcher {
         mKeyboardView = mCurrentInputView.findViewById(R.id.keyboard_view);
         mKeyboardView.setHardwareAcceleratedDrawingEnabled(isHardwareAcceleratedDrawingEnabled);
         mKeyboardView.setKeyboardActionListener(mLatinIME.mKeyboardActionListener);
-        mEmojiTabStripView = mCurrentInputView.findViewById(R.id.emoji_tab_strip);
-        mClipboardStripView = mCurrentInputView.findViewById(R.id.clipboard_strip);
-        mClipboardStripScrollView = mCurrentInputView.findViewById(R.id.clipboard_strip_scroll_view);
         mSuggestionStripView = mCurrentInputView.findViewById(R.id.suggestion_strip_view);
         mStripContainer = mCurrentInputView.findViewById(R.id.strip_container);
 
@@ -554,8 +539,6 @@ public final class KeyboardSwitcher {
             mKeyboardView.setVisibility(View.GONE);
             mSuggestionStripView.setVisibility(View.GONE);
             mStripContainer.setVisibility(getSecondaryStripVisibility());
-            mClipboardStripScrollView.setVisibility(View.GONE);
-            mEmojiTabStripView.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -568,11 +551,8 @@ public final class KeyboardSwitcher {
             // @see #getVisibleKeyboardView() and
             // @see LatinIME#onComputeInset(android.inputmethodservice.InputMethodService.Insets)
             mKeyboardView.setVisibility(View.GONE);
-            mEmojiTabStripView.setVisibility(View.GONE);
             mSuggestionStripView.setVisibility(View.GONE);
             mStripContainer.setVisibility(getSecondaryStripVisibility());
-            mClipboardStripScrollView.post(() -> mClipboardStripScrollView.fullScroll(HorizontalScrollView.FOCUS_RIGHT));
-            mClipboardStripScrollView.setVisibility(View.VISIBLE);
         }
 
         @Override
