@@ -160,7 +160,7 @@ object KeyLabel {
     }
 
     private fun getSpaceLabel(params: KeyboardParams): String =
-        if (params.mId.element.takesFunctionalKeys || params.mId.element.isBottomRow)
+        if (params.mId.element.takesFunctionalKeys)
             "!icon/space_key|!code/key_space"
         else "!icon/space_key_for_number_layout|!code/key_space"
 

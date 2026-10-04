@@ -45,7 +45,6 @@ import helium314.keyboard.latin.utils.onClickToolbarKey
 import helium314.keyboard.latin.utils.onLongClickToolbarKey
 import helium314.keyboard.latin.utils.prefs
 import helium314.keyboard.latin.utils.removePinnedKey
-import helium314.keyboard.latin.utils.setToolbarButtonsActivatedStateOnPrefChange
 import kotlin.math.min
 
 @SuppressLint("InflateParams")
@@ -195,8 +194,8 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
     // overrides: necessarily public, but not used from outside
 
     override fun onSharedPreferenceChanged(prefs: SharedPreferences, key: String?) {
-        setToolbarButtonsActivatedStateOnPrefChange(pinnedKeys, key)
-        setToolbarButtonsActivatedStateOnPrefChange(toolbar, key)
+        //setToolbarButtonsActivatedStateOnPrefChange(pinnedKeys, key)
+        //setToolbarButtonsActivatedStateOnPrefChange(toolbar, key)
         /*if (key == Settings.PREF_ALWAYS_INCOGNITO_MODE)
             GlobalScope.launch { delay(10); withContext(Dispatchers.Main) { updateKeys() } }*/
     }

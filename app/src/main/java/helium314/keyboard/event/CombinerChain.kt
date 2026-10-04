@@ -9,7 +9,6 @@ package helium314.keyboard.event
 import android.text.SpannableStringBuilder
 import android.text.TextUtils
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode
-import java.util.*
 
 /**
  * This class implements the logic chain between receiving events and generating code points.

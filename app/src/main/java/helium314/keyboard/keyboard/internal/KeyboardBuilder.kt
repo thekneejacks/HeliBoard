@@ -19,7 +19,6 @@ import helium314.keyboard.keyboard.internal.keyboard_parser.LocaleKeyboardInfos
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode
 import helium314.keyboard.latin.R
 import helium314.keyboard.latin.common.Constants
-import helium314.keyboard.latin.define.DebugFlags
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.utils.sumOf
 import org.xmlpull.v1.XmlPullParser
@@ -229,9 +228,9 @@ open class KeyboardBuilder<KP : KeyboardParams>(protected val mContext: Context,
 
     private fun endKeyboard() {
         mParams.removeRedundantPopupKeys()
-        if (!mParams.mId.element.isEmojiLayout) return
+        /*if (!mParams.mId.element.isEmojiLayout) return
         val actualHeight = mCurrentY - mParams.mVerticalGap + mParams.mBottomPadding
-        mParams.mOccupiedHeight = mParams.mOccupiedHeight.coerceAtLeast(actualHeight)
+        mParams.mOccupiedHeight = mParams.mOccupiedHeight.coerceAtLeast(actualHeight)*/
     }
 
     private fun addKeysToParams() {

@@ -17,7 +17,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.WeakHashMap;
 
 import helium314.keyboard.event.HapticEvent;

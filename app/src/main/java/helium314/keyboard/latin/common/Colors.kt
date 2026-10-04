@@ -15,8 +15,6 @@ import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.DrawableCompat
-import androidx.core.graphics.drawable.toBitmap
-import androidx.core.graphics.drawable.toDrawable
 import helium314.keyboard.latin.R
 import helium314.keyboard.latin.common.ColorType.ACTION_KEY_BACKGROUND
 import helium314.keyboard.latin.common.ColorType.ACTION_KEY_ICON
@@ -64,9 +62,7 @@ import helium314.keyboard.latin.common.ColorType.TOOL_BAR_KEY
 import helium314.keyboard.latin.common.ColorType.TOOL_BAR_KEY_ENABLED_BACKGROUND
 import helium314.keyboard.latin.utils.brighten
 import helium314.keyboard.latin.utils.brightenOrDarken
-import helium314.keyboard.latin.utils.darken
 import helium314.keyboard.latin.utils.isBrightColor
-import helium314.keyboard.latin.utils.isDarkColor
 
 interface Colors {
     // these theme parameters should no be in here, but are still used
@@ -121,7 +117,6 @@ class DefaultColors (
     private val suggestionText: Int = keyText,
     private val spaceBarText: Int = keyHintText,
     private val gesture: Int = accent,
-    private var keyboardBackground: Drawable? = null,
 ) : Colors {
     private val navBar: Int
     /** brightened or darkened variant of [background], to be used if exact background color would be
@@ -149,28 +144,19 @@ class DefaultColors (
     private val stripBackgroundList: ColorStateList
     private val toolbarKeyStateList = activatedStateList(
         suggestionText,
-        if (isBrightColor(suggestionText)) darken(darken(suggestionText))
-        else brighten(brighten(suggestionText))
+        brighten(brighten(suggestionText))
     )
     private var backgroundSetupDone = false
 
     init {
-        if (isDarkColor(background)) {
-            adjustedBackground = brighten(background)
-            doubleAdjustedBackground = brighten(adjustedBackground)
-        } else {
-            adjustedBackground = darken(background)
-            doubleAdjustedBackground = darken(adjustedBackground)
-        }
+
+        adjustedBackground = brighten(background)
+        doubleAdjustedBackground = brighten(adjustedBackground)
         adjustedBackgroundStateList = pressedStateList(doubleAdjustedBackground, adjustedBackground)
 
         val stripBackground: Int
         val pressedStripElementBackground: Int
-        if (keyboardBackground != null) {
-            stripBackground = Color.TRANSPARENT
-            pressedStripElementBackground = if (isDarkColor(background)) 0x22ffffff // assume background is similar to the background color
-                else 0x11000000
-        } else if (hasKeyBorders) {
+        if (hasKeyBorders) {
             stripBackground = background
             pressedStripElementBackground = adjustedBackground
         } else {
@@ -261,18 +247,11 @@ class DefaultColors (
         when (color) {
             KEY_PREVIEW_BACKGROUND, POPUP_KEYS_BACKGROUND -> view.background.colorFilter = adjustedBackgroundFilter
             FUNCTIONAL_KEY_BACKGROUND, KEY_BACKGROUND, MORE_SUGGESTIONS_WORD_BACKGROUND, SPACE_BAR_BACKGROUND, STRIP_BACKGROUND, CLIPBOARD_SUGGESTION_BACKGROUND -> setColor(view.background, color)
-            ONE_HANDED_MODE_BUTTON -> setColor(view.background, if (keyboardBackground == null) MAIN_BACKGROUND else STRIP_BACKGROUND)
+            ONE_HANDED_MODE_BUTTON -> setColor(view.background, MAIN_BACKGROUND)
             MORE_SUGGESTIONS_BACKGROUND -> view.background.colorFilter = backgroundFilter
             MAIN_BACKGROUND -> {
-                if (keyboardBackground != null) {
-                    if (!backgroundSetupDone) {
-                        keyboardBackground = keyboardBackground!!.toBitmap(view.width, view.height).toDrawable(view.context.resources)
-                        backgroundSetupDone = true
-                    }
-                    view.background = keyboardBackground
-                } else {
-                    view.background.colorFilter = backgroundFilter
-                }
+                view.background.colorFilter = backgroundFilter
+
             }
             else -> view.background.colorFilter = backgroundFilter
         }

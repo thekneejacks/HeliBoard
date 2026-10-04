@@ -23,7 +23,7 @@ class InputTransaction(
         private set
     private var requiresUpdateSuggestions = false
     private var didAffectContents = false
-    private var didAutoCorrect = false
+
     /**
      * Indicate that this transaction requires some type of shift update.
      * @param updateType What type of shift update this requires.
@@ -37,9 +37,6 @@ class InputTransaction(
         requiresUpdateSuggestions = true
     }
 
-    /** Whether this transaction requires updating the suggestions. */
-    fun requiresUpdateSuggestions() = requiresUpdateSuggestions
-
     /** Indicate that this transaction affected the contents of the editor. */
     fun setDidAffectContents() {
         didAffectContents = true
@@ -47,14 +44,6 @@ class InputTransaction(
 
     /** Whether this transaction affected contents of the editor. */
     fun didAffectContents() = didAffectContents
-
-    /** Indicate that this transaction performed an auto-correction. */
-    fun setDidAutoCorrect() {
-        didAutoCorrect = true
-    }
-
-    /** Whether this transaction performed an auto-correction. */
-    fun didAutoCorrect() = didAutoCorrect
 
     companion object {
         // UPDATE_LATER is stronger than UPDATE_NOW. The reason for this is, if we have to update later,

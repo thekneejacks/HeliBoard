@@ -143,11 +143,6 @@ public class KeyboardView extends View {
         setFitsSystemWindows(true);
     }
 
-    @Nullable
-    public KeyVisualAttributes getKeyVisualAttribute() {
-        return mKeyVisualAttributes;
-    }
-
     private static void blendAlpha(@NonNull final Paint paint, final int alpha) {
         final int color = paint.getColor();
         paint.setARGB((paint.getAlpha() * alpha) / Constants.Color.ALPHA_OPAQUE,
@@ -183,10 +178,7 @@ public class KeyboardView extends View {
         mKeyDrawParams.updateParams(scaledKeySize, keyboard.mKeyVisualAttributes);
         invalidateAllKeys();
         requestLayout();
-        mFontSizeMultiplier = mKeyboard.mId.getElement().isEmojiLayout()
-                // In the case of EmojiKeyFit, the size of emojis is taken care of by the size of the keys
-                ? (Settings.getValues().mEmojiKeyFit ? 1 : Settings.getValues().mFontSizeMultiplierEmoji)
-                : Settings.getValues().mFontSizeMultiplier;
+        mFontSizeMultiplier = Settings.getValues().mFontSizeMultiplier;
         mHintFontSizeMultiplier = Settings.getValues().mHintFontSizeMultiplier;
     }
 
@@ -207,10 +199,6 @@ public class KeyboardView extends View {
     @NonNull
     protected KeyDrawParams getKeyDrawParams() {
         return mKeyDrawParams;
-    }
-
-    protected void updateKeyDrawParams(final int keyHeight) {
-        mKeyDrawParams.updateParams(keyHeight, mKeyVisualAttributes);
     }
 
     @Override

@@ -14,7 +14,6 @@ import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyType
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.SimplePopups
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.TextKeyData
 import helium314.keyboard.latin.common.isEmoji
-import helium314.keyboard.latin.define.DebugFlags
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.utils.LayoutType
 import helium314.keyboard.latin.utils.POPUP_KEYS_LAYOUT
@@ -22,7 +21,6 @@ import helium314.keyboard.latin.utils.POPUP_KEYS_NUMBER
 import helium314.keyboard.latin.utils.replaceFirst
 import helium314.keyboard.latin.utils.splitAt
 import helium314.keyboard.latin.utils.sumOf
-import kotlin.math.roundToInt
 
 /**
  * Abstract parser class that handles creation of keyboard from [KeyData] arranged in rows,
@@ -61,19 +59,8 @@ class KeyboardParser(private val params: KeyboardParams, private val context: Co
         }
         val baseKeys = LayoutParser.parseLayout(layoutType, params, context)
         val keysInRows = createRows(baseKeys)
-        val heightRescale: Float
-        if (params.mId.element.isBottomRow) {
-            heightRescale = 4f
-            // to have same height as alpha keyboard we act as if we had the default number of rows
-            val virtualRows = if (Settings.getValues().mShowsNumberRow) 5 else 4 // determine from Settings, because it's not actually in params for bottom rows
-            // params rescale is not perfect, especially mTopPadding may cause 1 pixel offsets because it's already been converted to int once
-            params.mOccupiedHeight /= virtualRows
-            params.mBaseHeight /= virtualRows
-            params.mTopPadding = (params.mTopPadding.toDouble() / virtualRows).roundToInt()
-        } else {
-            // rescale height if we have anything but the usual 4 rows
-            heightRescale = if (keysInRows.size != 4) 4f / keysInRows.size else 1f
-        }
+        val heightRescale = if (keysInRows.size != 4) 4f / keysInRows.size else 1f
+
         if (heightRescale != 1f) {
             keysInRows.forEach { row -> row.forEach { it.mHeight *= heightRescale } }
         }

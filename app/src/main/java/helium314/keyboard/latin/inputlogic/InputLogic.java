@@ -523,9 +523,9 @@ public final class InputLogic {
                 // Note: If clipboard history is enabled, switching to clipboard keyboard
                 // is being handled in {@link KeyboardState#onEvent(Event,int)}.
                 // If disabled, current clipboard content is committed.
-                if (!sv.mClipboardHistoryEnabled) {
+                //if (!sv.mClipboardHistoryEnabled) {
                     paste(mLatinIME.getCurrentInputEditorInfo().packageName);
-                }
+                //}
                 break;
             case KeyCode.CLIPBOARD_PASTE:
                 paste(mLatinIME.getCurrentInputEditorInfo().packageName);
@@ -831,7 +831,6 @@ public final class InputLogic {
         final SettingsValues settingsValues = inputTransaction.getSettingsValues();
         final boolean wasComposingWord = mWordComposer.isComposingWord();
         // We avoid sending spaces in languages without spaces if we were composing.
-        final boolean shouldAvoidSendingCode = Constants.CODE_SPACE == codePoint && !settingsValues.mSpacingAndPunctuations.mCurrentLanguageHasSpaces && wasComposingWord;
 
         if (mWordComposer.isCursorFrontOrMiddleOfComposingWord()) {
             // If we are in the middle of a recorrection, we need to commit the recorrection
@@ -842,12 +841,7 @@ public final class InputLogic {
         }
         // isComposingWord() may have changed since we stored wasComposing
         if (mWordComposer.isComposingWord()) {
-            if (settingsValues.mAutoCorrectEnabled && !isInlineEmojiSearchAction()) {
-                //commitCurrentAutoCorrection(settingsValues, separator, handler);
-                inputTransaction.setDidAutoCorrect();
-            } else {
-                commitTyped();
-            }
+            commitTyped();
         }
 
         final boolean swapWeakSpace = tryStripSpaceAndReturnWhetherShouldSwapInstead(event, inputTransaction);

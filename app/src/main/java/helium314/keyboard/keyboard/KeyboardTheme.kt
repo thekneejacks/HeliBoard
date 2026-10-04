@@ -18,7 +18,6 @@ import helium314.keyboard.latin.common.DefaultColors
 import helium314.keyboard.latin.settings.Defaults
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.utils.brightenOrDarken
-import helium314.keyboard.latin.utils.isBrightColor
 import helium314.keyboard.latin.utils.isGoodContrast
 import helium314.keyboard.latin.utils.prefs
 import kotlinx.serialization.Serializable
@@ -49,7 +48,7 @@ private constructor(val themeId: Int, @JvmField val mStyleId: Int) {
 
 
         private const val THEME_ID_LXX_BASE = 1
-        
+
         @JvmStatic
         fun getKeyboardTheme(): KeyboardTheme {
             return KeyboardTheme(THEME_ID_LXX_BASE, R.style.KeyboardTheme_LXX_Base)
@@ -70,7 +69,6 @@ private constructor(val themeId: Int, @JvmField val mStyleId: Int) {
 
         private fun getThemeColors(context: Context, prefs: SharedPreferences, isNight: Boolean): Colors {
             val hasBorders = prefs.getBoolean(Settings.PREF_THEME_KEY_BORDERS, Defaults.PREF_THEME_KEY_BORDERS)
-            val backgroundImage = Settings.readUserBackgroundImage(context, isNight)
             //use black theme only
             return DefaultColors(
                     hasBorders,
@@ -81,7 +79,6 @@ private constructor(val themeId: Int, @JvmField val mStyleId: Int) {
                     ContextCompat.getColor(context, R.color.background_amoled_dark),
                     ContextCompat.getColor(context, R.color.key_text_color_lxx_dark),
                     ContextCompat.getColor(context, R.color.key_hint_letter_color_lxx_dark),
-                    keyboardBackground = backgroundImage
                 )
         }
 
@@ -109,19 +106,10 @@ private constructor(val themeId: Int, @JvmField val mStyleId: Int) {
                 COLOR_SUGGESTION_TEXT ->
                     return determineUserColor(colors, context, COLOR_TEXT, isNight)
                 COLOR_TEXT -> {
-                    // base it on background color, and not key, because it's also used for suggestions
-                    val background = determineUserColor(colors, context, COLOR_BACKGROUND, isNight)
-                    return if (isBrightColor(background)) {
-                        // but if key borders are enabled, we still want reasonable contrast
-                        if (!context.prefs().getBoolean(Settings.PREF_THEME_KEY_BORDERS, Defaults.PREF_THEME_KEY_BORDERS)
-                            || isGoodContrast(Color.BLACK, determineUserColor(colors, context, COLOR_KEYS, isNight))
-                        ) Color.BLACK
-                        else Color.GRAY
-                    } else Color.WHITE
+                    return Color.WHITE
                 }
                 COLOR_HINT_TEXT -> {
-                    return if (isBrightColor(determineUserColor(colors, context, COLOR_KEYS, isNight))) Color.DKGRAY
-                    else determineUserColor(colors, context, COLOR_TEXT, isNight)
+                    return determineUserColor(colors, context, COLOR_TEXT, isNight)
                 }
                 COLOR_KEYS ->
                     return brightenOrDarken(determineUserColor(colors, context, COLOR_BACKGROUND, isNight), isNight)
@@ -134,8 +122,7 @@ private constructor(val themeId: Int, @JvmField val mStyleId: Int) {
                     if (isGoodContrast(hintText, spacebar)) return hintText and -0x7f000001 // add some transparency
                     val text = determineUserColor(colors, context, COLOR_TEXT, isNight)
                     if (isGoodContrast(text, spacebar)) return text and -0x7f000001
-                    return if (isBrightColor(spacebar)) Color.BLACK and -0x7f000001
-                    else Color.WHITE and -0x7f000001
+                    return Color.WHITE and -0x7f000001
                 }
                 COLOR_BACKGROUND -> return ContextCompat.getColor(
                     Settings.getDayNightContext(context, isNight),

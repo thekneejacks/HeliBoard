@@ -7,7 +7,6 @@
 package helium314.keyboard.compat
 
 import android.os.Build
-import android.text.InputType
 import android.view.inputmethod.EditorInfo
 import java.util.Locale
 

@@ -31,7 +31,6 @@ import helium314.keyboard.latin.R;
 import helium314.keyboard.latin.RichInputMethodManager;
 import helium314.keyboard.latin.common.Colors;
 import helium314.keyboard.latin.utils.FoldableUtils;
-import helium314.keyboard.latin.utils.InputTypeUtils;
 import helium314.keyboard.latin.utils.ScriptUtils;
 import helium314.keyboard.latin.utils.SubtypeSettings;
 import helium314.keyboard.latin.utils.SubtypeUtilsKt;
@@ -75,7 +74,6 @@ public class SettingsValues {
     public final boolean mAutospaceAfterPunctuation;
     public final boolean mAutospaceBeforeGestureTyping;
     public final boolean mShiftRemovesAutospace;
-    public final boolean mClipboardHistoryEnabled;
     public final boolean mOneHandedModeEnabled;
     public final int mOneHandedModeGravity;
     public final float mOneHandedModeScale;
@@ -105,11 +103,9 @@ public class SettingsValues {
     public final float mFontSizeMultiplier;
     public final float mHintFontSizeMultiplier;
     public final float mFontSizeMultiplierEmoji;
-    public final boolean mEmojiKeyFit;
     public final boolean mIsFloatingKeyboard;
     public final int mFloatingWidth;
     public final int mFloatingHeight;
-    public final boolean mAutoCorrectionEnabledPerUserSettings;
     public final boolean mLongPressSymbolsForNumpad;
 
     // From the input box
@@ -118,9 +114,6 @@ public class SettingsValues {
 
     // Deduced settings
     public final boolean mSuggestionStripHiddenPerUserSettings;
-    public final boolean mAutoCorrectEnabled;
-    public final float mAutoCorrectionThreshold;
-    public final int mScoreLimitForAutocorrect;
     public final boolean mIsLocked;
 
     // User-defined colors
@@ -159,16 +152,7 @@ public class SettingsValues {
         mUseDoubleSpacePeriod = prefs.getBoolean(Settings.PREF_KEY_USE_DOUBLE_SPACE_PERIOD, Defaults.PREF_KEY_USE_DOUBLE_SPACE_PERIOD)
                 && inputAttributes.mIsGeneralTextInput;
         mUrlDetectionEnabled = prefs.getBoolean(Settings.PREF_URL_DETECTION, Defaults.PREF_URL_DETECTION);
-        mAutoCorrectionEnabledPerUserSettings = prefs.getBoolean(Settings.PREF_AUTO_CORRECTION, Defaults.PREF_AUTO_CORRECTION);
-        mAutoCorrectEnabled = mAutoCorrectionEnabledPerUserSettings
-                && (mInputAttributes.mInputTypeShouldAutoCorrect || prefs.getBoolean(Settings.PREF_MORE_AUTO_CORRECTION, Defaults.PREF_MORE_AUTO_CORRECTION))
-                && (mUrlDetectionEnabled || !InputTypeUtils.isUriOrEmailType(mInputAttributes.mInputType));
-        float autoCorrectConfidence = prefs.getFloat(Settings.PREF_AUTO_CORRECT_CONFIDENCE, Defaults.PREF_AUTO_CORRECT_CONFIDENCE);
         // confidence -> threshold and score limit are just some formulas that give something similar to the old values, so that confidence can be in a nice 0-1 range
-        mAutoCorrectionThreshold = mAutoCorrectEnabled
-                ? 0.5f - 0.5f * (float)Math.pow(autoCorrectConfidence, 0.33)
-                : Float.MAX_VALUE;
-        mScoreLimitForAutocorrect = (int)((1.14 - 0.2 * Math.pow(autoCorrectConfidence + 0.47, 3.5)) * 900000);
         mDoubleSpacePeriodTimeout = 1100; // ms
         mHasHardwareKeyboard = Settings.readHasHardwareKeyboard(res.getConfiguration());
         boolean isLandscape = mDisplayOrientation == Configuration.ORIENTATION_LANDSCAPE;
@@ -199,7 +183,6 @@ public class SettingsValues {
         mAutospaceAfterPunctuation = prefs.getBoolean(Settings.PREF_AUTOSPACE_AFTER_PUNCTUATION, Defaults.PREF_AUTOSPACE_AFTER_PUNCTUATION);
         mAutospaceBeforeGestureTyping = prefs.getBoolean(Settings.PREF_AUTOSPACE_BEFORE_GESTURE_TYPING, Defaults.PREF_AUTOSPACE_BEFORE_GESTURE_TYPING);
         mShiftRemovesAutospace = prefs.getBoolean(Settings.PREF_SHIFT_REMOVES_AUTOSPACE, Defaults.PREF_SHIFT_REMOVES_AUTOSPACE);
-        mClipboardHistoryEnabled = prefs.getBoolean(Settings.PREF_ENABLE_CLIPBOARD_HISTORY, Defaults.PREF_ENABLE_CLIPBOARD_HISTORY);
 
         mIsFloatingKeyboard = !mIsLocked && SettingsKt.isFloatingKeyboardEnabled(context);
         mFloatingWidth = SettingsKt.readFloatingWidth(context);
@@ -240,7 +223,6 @@ public class SettingsValues {
         mFontSizeMultiplier = prefs.getFloat(Settings.PREF_FONT_SCALE, Defaults.PREF_FONT_SCALE);
         mHintFontSizeMultiplier = mShowsHints ? prefs.getFloat(Settings.PREF_HINT_FONT_SCALE, Defaults.PREF_HINT_FONT_SCALE) : 1;
         mFontSizeMultiplierEmoji = prefs.getFloat(Settings.PREF_EMOJI_FONT_SCALE, Defaults.PREF_EMOJI_FONT_SCALE);
-        mEmojiKeyFit = prefs.getBoolean(Settings.PREF_EMOJI_KEY_FIT, Defaults.PREF_EMOJI_KEY_FIT);
     }
 
     public boolean isWordSeparator(final int code) {
@@ -315,12 +297,6 @@ public class SettingsValues {
         sb.append("" + mLocale);
         sb.append("\n   mInputAttributes = ");
         sb.append("" + mInputAttributes);
-        sb.append("\n   mAutoCorrectEnabled = ");
-        sb.append("" + mAutoCorrectEnabled);
-        sb.append("\n   mAutoCorrectionThreshold = ");
-        sb.append("" + mAutoCorrectionThreshold);
-        sb.append("\n   mAutoCorrectionEnabledPerUserSettings = ");
-        sb.append("" + mAutoCorrectionEnabledPerUserSettings);
         sb.append("\n   mDisplayOrientation = ");
         sb.append("" + mDisplayOrientation);
         sb.append("\n   mAppWorkarounds = ");

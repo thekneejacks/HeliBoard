@@ -12,9 +12,6 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
 import android.view.inputmethod.EditorInfo;
 
@@ -22,8 +19,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
-import java.io.File;
-import java.util.Arrays;
 import java.util.Locale;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -34,7 +29,6 @@ import helium314.keyboard.latin.R;
 import helium314.keyboard.latin.RichInputMethodManager;
 import helium314.keyboard.latin.RichInputMethodSubtype;
 import helium314.keyboard.latin.common.StringUtils;
-import helium314.keyboard.latin.utils.DeviceProtectedUtils;
 import helium314.keyboard.latin.utils.FoldableUtils;
 import helium314.keyboard.latin.utils.KtxKt;
 import helium314.keyboard.latin.utils.LayoutType;
@@ -50,44 +44,14 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     private static final String TAG = Settings.class.getSimpleName();
 
     // theme-related stuff
-    public static final String PREF_THEME_STYLE = "theme_style";
-    public static final String PREF_ICON_STYLE = "icon_style";
-    public static final String PREF_THEME_COLORS = "theme_colors";
-    public static final String PREF_THEME_COLORS_NIGHT = "theme_colors_night";
     public static final String PREF_THEME_KEY_BORDERS = "theme_key_borders";
-    public static final String PREF_THEME_DAY_NIGHT = "theme_auto_day_night";
-    public static final String PREF_USER_COLORS_PREFIX = "user_colors_";
-    public static final String PREF_USER_ALL_COLORS_PREFIX = "user_all_colors_";
-    public static final String PREF_USER_MORE_COLORS_PREFIX = "user_more_colors_";
-
-    public static final String PREF_CUSTOM_ICON_NAMES = "custom_icon_names";
     public static final String PREF_TOOLBAR_CUSTOM_KEY_CODES = "toolbar_custom_key_codes";
     public static final String PREF_LAYOUT_PREFIX = "layout_";
 
     public static final String PREF_AUTO_CAP = "auto_cap";
-    public static final String PREF_VIBRATE_ON = "vibrate_on";
-    public static final String PREF_VIBRATE_IN_DND_MODE = "vibrate_in_dnd_mode";
-    public static final String PREF_SOUND_ON = "sound_on";
-    public static final String PREF_SUGGEST_EMOJIS = "suggest_emojis";
-    public static final String PREF_INLINE_EMOJI_SEARCH = "inline_emoji_search";
-    public static final String PREF_SHOW_EMOJI_DESCRIPTIONS = "show_emoji_descriptions";
     public static final String PREF_POPUP_ON = "popup_on";
-    public static final String PREF_AUTO_CORRECTION = "auto_correction";
-    public static final String PREF_MORE_AUTO_CORRECTION = "more_auto_correction";
-    public static final String PREF_AUTO_CORRECT_CONFIDENCE = "auto_correct_confidence";
-    public static final String PREF_AUTOCORRECT_SHORTCUTS = "autocorrect_shortcuts";
-    public static final String PREF_BACKSPACE_REVERTS_AUTOCORRECT = "backspace_reverts_autocorrect";
-    public static final String PREF_AUTOCORRECT_CAPITALIZED_SUGGESTION = "autocorrect_capitalized_suggestion";
-    public static final String PREF_CENTER_SUGGESTION_TEXT_TO_ENTER = "center_suggestion_text_to_enter";
-    public static final String PREF_SHOW_SUGGESTIONS = "show_suggestions";
-    public static final String PREF_ALWAYS_SHOW_SUGGESTIONS = "always_show_suggestions";
-    public static final String PREF_ALWAYS_SHOW_SUGGESTIONS_EXCEPT_WEB_TEXT = "always_show_suggestions_except_web_text";
-    public static final String PREF_KEY_USE_PERSONALIZED_DICTS = "use_personalized_dicts";
     public static final String PREF_KEY_USE_DOUBLE_SPACE_PERIOD = "use_double_space_period";
-    public static final String PREF_BLOCK_POTENTIALLY_OFFENSIVE = "block_potentially_offensive";
-    public static final String PREF_SHOW_LANGUAGE_SWITCH_KEY = "show_language_switch_key";
     public static final String PREF_LANGUAGE_SWITCH_KEY = "language_switch_key";
-    public static final String PREF_SHOW_EMOJI_KEY = "show_emoji_key";
     public static final String PREF_VARIABLE_TOOLBAR_DIRECTION = "var_toolbar_direction";
     public static final String PREF_ADDITIONAL_SUBTYPES = "additional_subtypes";
     public static final String PREF_ENABLE_SPLIT_KEYBOARD = "split_keyboard";
@@ -108,36 +72,18 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     public static final String PREF_FONT_SCALE = "font_scale";
     public static final String PREF_HINT_FONT_SCALE = "hint_font_scale";
     public static final String PREF_EMOJI_FONT_SCALE = "emoji_font_scale";
-    public static final String PREF_EMOJI_KEY_FIT = "emoji_key_fit";
-    public static final String PREF_EMOJI_SKIN_TONE = "emoji_skin_tone";
     public static final String PREF_SPACE_HORIZONTAL_SWIPE = "horizontal_space_swipe";
     public static final String PREF_SPACE_VERTICAL_SWIPE = "vertical_space_swipe";
     public static final String PREF_DELETE_SWIPE = "delete_swipe";
     public static final String PREF_AUTOSPACE_AFTER_PUNCTUATION = "autospace_after_punctuation";
-    public static final String PREF_AUTOSPACE_AFTER_SUGGESTION = "autospace_after_suggestion";
-    public static final String PREF_AUTOSPACE_AFTER_GESTURE_TYPING = "autospace_after_gesture_typing";
     public static final String PREF_AUTOSPACE_BEFORE_GESTURE_TYPING = "autospace_before_gesture_typing";
     public static final String PREF_SHIFT_REMOVES_AUTOSPACE = "shift_removes_autospace";
     public static final String PREF_ALWAYS_INCOGNITO_MODE = "always_incognito_mode";
-    public static final String PREF_BIGRAM_PREDICTIONS = "next_word_prediction";
-    public static final String PREF_SUGGEST_PUNCTUATION = "suggest_punctuation";
-    public static final String PREF_PUNCTUATION_SUGGESTIONS = "punctuation_suggestions";
-    public static final String PREF_SUGGEST_CLIPBOARD_CONTENT = "suggest_clipboard_content";
-    public static final String PREF_GESTURE_INPUT = "gesture_input";
-    public static final String PREF_VIBRATION_DURATION_SETTINGS = "vibration_duration_settings";
-    public static final String PREF_KEYPRESS_SOUND_VOLUME = "keypress_sound_volume";
     public static final String PREF_KEY_LONGPRESS_TIMEOUT = "key_longpress_timeout";
-    public static final String PREF_ENABLE_EMOJI_ALT_PHYSICAL_KEY = "enable_emoji_alt_physical_key";
-    public static final String PREF_GESTURE_PREVIEW_TRAIL = "gesture_preview_trail";
     public static final String PREF_GESTURE_FLOATING_PREVIEW_TEXT = "gesture_floating_preview_text";
-    public static final String PREF_GESTURE_FLOATING_PREVIEW_DYNAMIC = "gesture_floating_preview_dynamic";
-    public static final String PREF_GESTURE_DYNAMIC_PREVIEW_FOLLOW_SYSTEM = "gesture_dynamic_preview_follow_system";
-    public static final String PREF_GESTURE_SPACE_AWARE = "gesture_space_aware";
     public static final String PREF_GESTURE_FAST_TYPING_COOLDOWN = "gesture_fast_typing_cooldown";
     public static final String PREF_GESTURE_TRAIL_FADEOUT_DURATION = "gesture_trail_fadeout_duration";
     public static final String PREF_SHOW_SETUP_WIZARD_ICON = "show_setup_wizard_icon";
-    public static final String PREF_USE_CONTACTS = "use_contacts";
-    public static final String PREF_USE_APPS = "use_apps";
     public static final String PREFS_LONG_PRESS_SYMBOLS_FOR_NUMPAD = "long_press_symbols_for_numpad";
 
     public static final String PREF_ONE_HANDED_MODE_PREFIX = "one_handed_mode_enabled";
@@ -163,12 +109,6 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     public static final String PREF_TOUCHPAD_EDGE_SCROLL = "touchpad_edge_scroll";
 
     public static final String PREF_ENABLE_CLIPBOARD_HISTORY = "enable_clipboard_history";
-    public static final String PREF_CLIPBOARD_HISTORY_RETENTION_TIME = "clipboard_history_retention_time";
-    public static final String PREF_CLIPBOARD_HISTORY_PINNED_FIRST = "clipboard_history_pinned_first";
-    public static final String PREF_CLIPBOARD_USE_FILES = "clipboard_histor_usey_files";
-    public static final String PREF_CLIPBOARD_FILES_SIZE_LIMIT = "clipboard_history_files_size_limit";
-
-    public static final String PREF_ADD_TO_PERSONAL_DICTIONARY = "add_to_personal_dictionary";
     public static final String PREF_NAVBAR_COLOR = "navbar_color";
     public static final String PREF_ENABLED_SUBTYPES = "enabled_subtypes";
     public static final String PREF_SELECTED_SUBTYPE = "selected_subtype";
@@ -178,28 +118,19 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     public static final String PREF_PINNED_TOOLBAR_KEYS = "pinned_toolbar_keys";
     public static final String PREF_TOOLBAR_KEYS = "toolbar_keys";
     public static final String PREF_AUTO_SHOW_TOOLBAR = "auto_show_toolbar";
-    public static final String PREF_AUTO_HIDE_TOOLBAR = "auto_hide_toolbar";
     public static final String PREF_CLIPBOARD_TOOLBAR_KEYS = "clipboard_toolbar_keys";
-    public static final String PREF_ABC_AFTER_EMOJI = "abc_after_emoji";
-    public static final String PREF_ABC_AFTER_CLIP = "abc_after_clip";
     public static final String PREF_ABC_AFTER_SYMBOL_SPACE = "abc_after_symbol_space";
     public static final String PREF_ABC_AFTER_NUMPAD_SPACE = "abc_after_numpad_space";
     public static final String PREF_REMOVE_REDUNDANT_POPUPS = "remove_redundant_popups";
-    public static final String PREF_SPACE_BAR_TEXT = "space_bar_text";
     public static final String PREF_TIMESTAMP_FORMAT = "timestamp_format";
     public static final String PREF_TOOLBAR_MODE = "toolbar_mode";
     public static final String PREF_TOOLBAR_HIDING_GLOBAL = "toolbar_hiding_global";
-    public static final String PREF_TOOLBAR_SWIPE_DOWN_TO_HIDE = "toolbar_swipe_down_to_hide";
-    public static final String PREF_SPELLCHECK_SUGGEST = "spellcheck_suggest";
     public static final String PREF_SHOW_ONLY_TOOLBAR_WITH_HARDWARE_KEYBOARD = "only_toolbar_with_hw_keyboard";
 
-    // Emoji
-    public static final String PREF_EMOJI_MAX_SDK = "emoji_max_sdk";
     public static final String PREF_RECENT_EMOJIS = "recent_emojis";
     public static final String PREF_LAST_SHOWN_EMOJI_CATEGORY_ID = "last_shown_emoji_category_id";
     public static final String PREF_LAST_SHOWN_EMOJI_CATEGORY_PAGE_ID = "last_shown_emoji_category_page_id";
 
-    public static final String PREF_VERSION_CODE = "version_code";
     public static final String PREF_LIBRARY_CHECKSUM = "lib_checksum";
     public static final String PREF_SAVE_SUBTYPE_PER_APP = "save_subtype_per_app";
     public static final String PREF_SAVED_APP_SUBTYPE_PREFIX = "saved_app_subtype_";
@@ -208,9 +139,6 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     private SharedPreferences mPrefs;
     private SettingsValues mSettingsValues;
     private final ReentrantLock mSettingsValuesLock = new ReentrantLock();
-
-    // static cache for background images to avoid potentially slow reload on every settings reload
-    private final static Drawable[] sCachedBackgroundImages = new Drawable[4];
 
     private static final Settings sInstance = new Settings();
 
@@ -229,10 +157,6 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
 
     public static SettingsValues getValues() {
         return sInstance.mSettingsValues;
-    }
-
-    public static Context getCurrentContext() {
-        return sInstance.mContext;
     }
 
     public static void init(final Context context) {
@@ -298,10 +222,6 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
         }
     }
 
-    public void stopListener() {
-        mPrefs.unregisterOnSharedPreferenceChangeListener(this);
-    }
-
     public void startListener() {
         mPrefs.registerOnSharedPreferenceChangeListener(this);
     }
@@ -309,32 +229,6 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     // TODO: Remove this method and add proxy method to SettingsValues.
     public SettingsValues getCurrent() {
         return mSettingsValues;
-    }
-
-    public void toggleAutoCorrect() {
-        final boolean oldValue = mPrefs.getBoolean(PREF_AUTO_CORRECTION, Defaults.PREF_AUTO_CORRECTION);
-        mPrefs.edit().putBoolean(Settings.PREF_AUTO_CORRECTION, !oldValue).apply();
-    }
-
-    public static boolean readGestureDynamicPreviewEnabled(final SharedPreferences prefs) {
-        final boolean followSystem = prefs.getBoolean(PREF_GESTURE_DYNAMIC_PREVIEW_FOLLOW_SYSTEM, Defaults.PREF_GESTURE_DYNAMIC_PREVIEW_FOLLOW_SYSTEM);
-        final boolean defValue = Defaults.PREF_GESTURE_DYNAMIC_PREVIEW_FOLLOW_SYSTEM;
-        final boolean curValue = prefs.getBoolean(Settings.PREF_GESTURE_FLOATING_PREVIEW_DYNAMIC, defValue);
-        return followSystem ? defValue : curValue;
-    }
-
-    public static boolean readGestureDynamicPreviewDefault(final Context context) {
-        // if transitions are disabled for the system (reduced motion), moving preview should be disabled
-        return SettingsKt.getTransitionAnimationScale(context) != 0.0f;
-    }
-
-    public static int readDefaultGestureFastTypingCooldown(final Resources res) {
-        return res.getInteger(R.integer.config_gesture_static_time_threshold_after_fast_typing);
-    }
-
-    public void toggleAlwaysIncognitoMode() {
-        final boolean oldValue = mPrefs.getBoolean(Settings.PREF_ALWAYS_INCOGNITO_MODE, Defaults.PREF_ALWAYS_INCOGNITO_MODE);
-        mPrefs.edit().putBoolean(Settings.PREF_ALWAYS_INCOGNITO_MODE, !oldValue).apply();
     }
 
     public static ToolbarMode readToolbarMode(final SharedPreferences prefs) {
@@ -483,31 +377,6 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
             && mPrefs.getBoolean(PREF_SHOW_ONLY_TOOLBAR_WITH_HARDWARE_KEYBOARD, Defaults.PREF_SHOW_ONLY_TOOLBAR_WITH_HARDWARE_KEYBOARD);
     }
 
-    @Nullable public static Drawable readUserBackgroundImage(final Context context, final boolean night) {
-        final boolean landscape = context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
-        final int index = (night ? 1 : 0) + (landscape ? 2 : 0);
-        if (sCachedBackgroundImages[index] != null) return sCachedBackgroundImages[index];
-
-        File image = getCustomBackgroundFile(context, night, landscape);
-        if (!image.isFile() && landscape)
-            image = getCustomBackgroundFile(context, night, false); // fall back to portrait image for historic reasons
-        if (!image.isFile()) return null;
-        try {
-            sCachedBackgroundImages[index] = new BitmapDrawable(context.getResources(), BitmapFactory.decodeFile(image.getAbsolutePath()));
-            return sCachedBackgroundImages[index];
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    public static File getCustomBackgroundFile(final Context context, final boolean night, final boolean landscape) {
-        return new File(DeviceProtectedUtils.getFilesDir(context), "custom_background_image" + (landscape ? "_landscape" : "") + (night ? "_night" : ""));
-    }
-
-    public static void clearCachedBackgroundImages() {
-        Arrays.fill(sCachedBackgroundImages, null);
-    }
-
     public static Context getDayNightContext(final Context context, final boolean wantNight) {
         final boolean isNight = ResourceUtils.isNight(context.getResources());
         if (isNight == wantNight)
@@ -544,14 +413,6 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
 
     public Integer getCustomToolbarLongpressCode(ToolbarKey key) {
         return ToolbarUtilsKt.getCustomLongpressKeyCode(key, mPrefs);
-    }
-
-    public static File getCustomFontFile(final Context context) {
-        return new File(DeviceProtectedUtils.getFilesDir(context), "custom_font");
-    }
-
-    public static File getCustomEmojiFontFile(final Context context) {
-        return new File(DeviceProtectedUtils.getFilesDir(context), "custom_emoji_font");
     }
 
     // "default" layout as in this is used if nothing else is specified in the subtype

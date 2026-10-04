@@ -3,14 +3,10 @@ package helium314.keyboard.latin.utils
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.os.Handler
-import android.os.Looper
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import androidx.core.content.edit
-import androidx.core.view.forEach
 import helium314.keyboard.keyboard.internal.KeyboardIconsSet
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode
 import helium314.keyboard.latin.R
@@ -63,24 +59,21 @@ fun createToolbarKey(context: Context, key: ToolbarKey): ImageButton {
     return button
 }
 
-fun setToolbarButtonsActivatedStateOnPrefChange(buttonsGroup: ViewGroup, key: String?) {
+/*fun setToolbarButtonsActivatedStateOnPrefChange(buttonsGroup: ViewGroup, key: String?) {
     // settings need to be updated when buttons change
-    if (key != Settings.PREF_AUTO_CORRECTION
-        && key != Settings.PREF_ALWAYS_INCOGNITO_MODE
-        && key?.startsWith(Settings.PREF_ONE_HANDED_MODE_PREFIX) == false)
+    if (key?.startsWith(Settings.PREF_ONE_HANDED_MODE_PREFIX) == false)
         return
 
     Handler(Looper.getMainLooper()).postDelayed({
         buttonsGroup.forEach { if (it is ImageButton) setToolbarButtonActivatedState(it) }
     }, 10)
-}
+}*/
 
 private fun setToolbarButtonActivatedState(button: ImageButton) {
     button.isActivated = when (button.tag) {
         INCOGNITO -> button.context.prefs().getBoolean(Settings.PREF_ALWAYS_INCOGNITO_MODE, Defaults.PREF_ALWAYS_INCOGNITO_MODE)
         ONE_HANDED -> Settings.getValues().mOneHandedModeEnabled
         SPLIT -> Settings.getValues().mIsSplitKeyboardEnabled
-        AUTOCORRECT -> Settings.getValues().mAutoCorrectionEnabledPerUserSettings
         else -> true
     }
 }

@@ -96,31 +96,6 @@ class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inp
     }
 
     override fun onCodeInput(primaryCode: Int, x: Int, y: Int, isKeyRepeat: Boolean) {
-        when (primaryCode) {
-            KeyCode.TOGGLE_AUTOCORRECT -> return settings.toggleAutoCorrect()
-            KeyCode.TOGGLE_INCOGNITO_MODE -> {
-                settings.toggleAlwaysIncognitoMode()
-                //BackgroundGatheringCache.clear()
-                return
-            }
-            /*KeyCode.BACKGROUND_GATHERING -> {
-                if (BackgroundGatheringCache.isEmpty) {
-                    // only enable, no toggle
-                    GestureDataGatheringSettings.setBackgroundGatheringEnabled(latinIME.prefs(), true)
-                } else {
-                    if (GestureDataGatheringSettings.isDiscardByDefault(latinIME))
-                        BackgroundGatheringCache.save(latinIME)
-                    else
-                        BackgroundGatheringCache.clear()
-                }
-                return
-            }
-            KeyCode.BACKGROUND_GATHERING_TEMP_OFF -> {
-                GestureDataGatheringSettings.tempDisableBackgroundGathering(latinIME.prefs())
-                BackgroundGatheringCache.clear()
-                return
-            }*/
-        }
         if (Settings.getValues().mIsLocked && KeyCode.isIsBlockedWhenLocked(primaryCode))
             return
         val mkv = keyboardSwitcher.mainKeyboardView
