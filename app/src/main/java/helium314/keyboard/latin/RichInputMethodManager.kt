@@ -6,12 +6,9 @@
 package helium314.keyboard.latin
 
 import android.content.Context
-import android.inputmethodservice.InputMethodService
-import android.os.Build
 import android.view.inputmethod.InputMethodInfo
 import android.view.inputmethod.InputMethodManager
 import android.view.inputmethod.InputMethodSubtype
-import helium314.keyboard.compat.locale
 import helium314.keyboard.latin.common.Constants
 import helium314.keyboard.latin.common.LocaleUtils.getBestMatch
 import helium314.keyboard.latin.settings.Settings
@@ -21,9 +18,6 @@ import helium314.keyboard.latin.utils.SubtypeSettings
 import helium314.keyboard.latin.utils.getSecondaryLocales
 import helium314.keyboard.latin.utils.locale
 import helium314.keyboard.latin.utils.prefs
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.util.Locale
 
 /** Enrichment class for InputMethodManager to simplify interaction and add functionality. */
@@ -32,7 +26,6 @@ class RichInputMethodManager private constructor() {
     private lateinit var imm: InputMethodManager
     private lateinit var inputMethodInfoCache: InputMethodInfoCache
     private lateinit var currentRichInputMethodSubtype: RichInputMethodSubtype
-    private val scope = CoroutineScope(Dispatchers.Default)
 
     private val isInitializedInternal get() = this::imm.isInitialized
 
@@ -110,48 +103,13 @@ class RichInputMethodManager private constructor() {
     fun onSubtypeChanged(newSubtype: InputMethodSubtype) {
         SubtypeSettings.setSelectedSubtype(context.prefs(), newSubtype)
         currentRichInputMethodSubtype = RichInputMethodSubtype.get(newSubtype)
-        scope.launch { updateShortcutIme() }
-        if (DEBUG) {
-            //Log.w(TAG, "onSubtypeChanged: $currentRichInputMethodSubtype")
-        }
+        //scope.launch { updateShortcutIme() }
     }
 
     fun refreshSubtypeCaches() {
         inputMethodInfoCache.clear()
         currentRichInputMethodSubtype = RichInputMethodSubtype.get(SubtypeSettings.getSelectedSubtype(context.prefs()))
-        scope.launch { updateShortcutIme() }
-    }
-
-    fun switchToShortcutIme(inputMethodService: InputMethodService) = scope.launch {
-        val imiId = shortcuts.firstOrNull()?.imi?.id ?: return@launch
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            inputMethodService.switchInputMethod(imiId, shortcuts.first().subtype)
-        } else {
-            val token = inputMethodService.window.window?.attributes?.token ?: return@launch
-            @Suppress("Deprecation") imm.setInputMethodAndSubtype(token, imiId, shortcuts.first().subtype)
-        }
-    }
-
-    // todo: is shortcutIme only voice input, or can it be something else?
-    //  if always voice input, rename it and other things like mHasShortcutKey
-    private fun updateShortcutIme() {
-        if (DEBUG) {
-            val old = shortcuts.joinToString("; ") { "${it.imi.id}: ${it.subtype.locale()}, ${it.subtype.mode}" }
-            ////Log.(TAG, ("Update shortcut IMEs from: $old"))
-        }
-        val richSubtype = currentRichInputMethodSubtype
-        val implicitlyEnabledSubtype = SubtypeSettings.isEnabled(richSubtype.rawSubtype)
-                && !SubtypeSettings.getEnabledSubtypes(false).contains(richSubtype.rawSubtype)
-        val systemLocale = context.resources.configuration.locale()
-
-        // TODO: Update an icon for shortcut IME
-        shortcuts = inputMethodManager.shortcutInputMethodsAndSubtypes.entries.flatMap { (imi, subtypes) ->
-            subtypes.map { Shortcut(imi, it) }
-        }
-        if (DEBUG) {
-            val new = shortcuts.joinToString("; ") { "${it.imi.id}: ${it.subtype.locale()}, ${it.subtype.mode}" }
-            ////Log.(TAG, ("Update shortcut IMEs to: $new"))
-        }
+        //scope.launch { updateShortcutIme() }
     }
 
     private fun hasMultipleEnabledSubtypes(shouldIncludeAuxiliarySubtypes: Boolean, imiList: List<InputMethodInfo>): Boolean {

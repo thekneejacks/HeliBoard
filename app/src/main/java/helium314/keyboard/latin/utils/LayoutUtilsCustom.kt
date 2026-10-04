@@ -149,7 +149,7 @@ object LayoutUtilsCustom {
 
     // remove layouts without a layout file from custom subtypes and settings
     // should not be necessary, but better fall back to default instead of crashing when encountering a bug
-    fun removeMissingLayouts(context: Context) {
+    /*fun removeMissingLayouts(context: Context) {
         val prefs = context.prefs()
         fun remove(type: LayoutType, name: String) {
             //Log.w(TAG, "removing custom layout ${getDisplayName(name)} / $name without file")
@@ -173,7 +173,7 @@ object LayoutUtilsCustom {
                     return
                 }
             }
-    }
+    }*/
 
     // this goes into prefs and file names, so do not change!
     const val CUSTOM_LAYOUT_PREFIX = "custom."

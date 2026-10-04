@@ -46,11 +46,6 @@ import helium314.keyboard.latin.utils.onLongClickToolbarKey
 import helium314.keyboard.latin.utils.prefs
 import helium314.keyboard.latin.utils.removePinnedKey
 import helium314.keyboard.latin.utils.setToolbarButtonsActivatedStateOnPrefChange
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlin.math.min
 
 @SuppressLint("InflateParams")
@@ -202,8 +197,8 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
     override fun onSharedPreferenceChanged(prefs: SharedPreferences, key: String?) {
         setToolbarButtonsActivatedStateOnPrefChange(pinnedKeys, key)
         setToolbarButtonsActivatedStateOnPrefChange(toolbar, key)
-        if (key == Settings.PREF_ALWAYS_INCOGNITO_MODE)
-            GlobalScope.launch { delay(10); withContext(Dispatchers.Main) { updateKeys() } }
+        /*if (key == Settings.PREF_ALWAYS_INCOGNITO_MODE)
+            GlobalScope.launch { delay(10); withContext(Dispatchers.Main) { updateKeys() } }*/
     }
 
     override fun onVisibilityChanged(view: View, visibility: Int) {

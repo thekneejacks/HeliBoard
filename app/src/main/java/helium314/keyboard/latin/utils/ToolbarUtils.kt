@@ -3,6 +3,8 @@ package helium314.keyboard.latin.utils
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
@@ -48,9 +50,6 @@ import helium314.keyboard.latin.utils.ToolbarKey.VOICE
 import helium314.keyboard.latin.utils.ToolbarKey.WORD_LEFT
 import helium314.keyboard.latin.utils.ToolbarKey.WORD_RIGHT
 import helium314.keyboard.latin.utils.ToolbarKey.entries
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.util.EnumMap
 import java.util.Locale
 
@@ -71,10 +70,9 @@ fun setToolbarButtonsActivatedStateOnPrefChange(buttonsGroup: ViewGroup, key: St
         && key?.startsWith(Settings.PREF_ONE_HANDED_MODE_PREFIX) == false)
         return
 
-    GlobalScope.launch {
-        delay(10) // need to wait until SettingsValues are reloaded
+    Handler(Looper.getMainLooper()).postDelayed({
         buttonsGroup.forEach { if (it is ImageButton) setToolbarButtonActivatedState(it) }
-    }
+    }, 10)
 }
 
 private fun setToolbarButtonActivatedState(button: ImageButton) {

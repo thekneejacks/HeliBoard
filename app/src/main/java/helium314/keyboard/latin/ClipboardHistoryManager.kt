@@ -5,15 +5,13 @@ package helium314.keyboard.latin
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import androidx.core.view.inputmethod.InputContentInfoCompat
 import helium314.keyboard.compat.ClipboardManagerCompat
 import helium314.keyboard.event.Event
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode
 import helium314.keyboard.latin.common.Constants
-import helium314.keyboard.latin.database.ClipboardDao
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 class ClipboardHistoryManager(
         private val latinIME: LatinIME
@@ -63,14 +61,10 @@ class ClipboardHistoryManager(
         // a. it can happen that we switch back before the pasting has started, in that case we only past the primary clip
         // b. if we switch while the clip is pasted, it might crash the app (tested with joplin and logseq)
         // todo: replacing the current primary clip is far from ideal, try finding a different way
-        GlobalScope.launch {
-            delay(500)
-            try {
-                clipboardManager.setPrimaryClip(primaryClip)
-            } catch (_: Exception) {
+        Handler(Looper.getMainLooper()).postDelayed({
+            clipboardManager.setPrimaryClip(primaryClip)
+        }, 500)
 
-            }
-        }
     }
 
     fun clearHistory() {
