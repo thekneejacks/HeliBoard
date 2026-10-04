@@ -291,6 +291,32 @@ public final class WordComposer {
         mCapitalizedMode = mode;
     }
 
+    // `type' should be one of the LastComposedWord.COMMIT_TYPE_* constants above.
+    // committedWord should contain suggestion spans if applicable.
+    public LastComposedWord commitWord(final int type, final CharSequence committedWord,
+                                       final String separatorString) {
+        // Note: currently, we come here whenever we commit a word. If it's a MANUAL_PICK
+        // or a DECIDED_WORD we may cancel the commit later; otherwise, we should deactivate
+        // the last composed word to ensure this does not happen.
+        final LastComposedWord lastComposedWord = new LastComposedWord(mEvents,
+            mInputPointers, mTypedWordCache.toString(), committedWord, separatorString,
+            mCapitalizedMode);
+        mInputPointers.reset();
+        mCapsCount = 0;
+        mDigitsCount = 0;
+        mIsBatchMode = false;
+        mCombinerChain.reset();
+        mEvents.clear();
+        mCodePointSize = 0;
+        mIsOnlyFirstCharCapitalized = false;
+        mCapitalizedMode = CapsMode.OFF;
+        refreshTypedWordCache();
+        mCursorPositionWithinWord = 0;
+        mIsResumed = false;
+        mRejectedBatchModeSuggestion = null;
+        return lastComposedWord;
+    }
+
     public boolean isBatchMode() {
         return mIsBatchMode;
     }
