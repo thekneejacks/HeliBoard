@@ -63,7 +63,6 @@
         <item name="popupKeysKeyboardLayout">@layout/popup_keys_keyboard</item>
         <item name="showPopupKeysKeyboardAtTouchedPoint">@bool/config_show_popup_keys_keyboard_at_touched_point</item>
         <item name="languageOnSpacebarTextRatio">@fraction/config_language_on_spacebar_text_ratio</item>
-        <item name="languageOnSpacebarFadeoutAnimator">@animator/language_on_spacebar_fadeout</item>
         <!-- Remove animations for now because it could drain a non-negligible amount of battery while typing.
         <item name="altCodeKeyWhileTypingFadeoutAnimator">@anim/alt_code_key_while_typing_fadeout</item>
         <item name="altCodeKeyWhileTypingFadeinAnimator">@anim/alt_code_key_while_typing_fadein</item>

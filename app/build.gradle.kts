@@ -55,14 +55,6 @@ android {
         }
 
         androidComponents.onVariants { variant: ApplicationVariant ->
-            if (variant.buildType == "debug") {
-                // got a little too big for GitHub after some dependency upgrades, so we remove the largest dictionary
-                variant.androidResources.ignoreAssetsPatterns = listOf("main_ro.dict")
-                variant.proguardFiles = emptyList()
-                //noinspection ProguardAndroidTxtUsage we intentionally use the "normal" file here
-                variant.proguardFiles.add(project.layout.buildDirectory.file(project.buildFile.parent + "/dontoptimize.pro"))
-                variant.proguardFiles.add(project.layout.buildDirectory.file(project.buildFile.parent + "/proguard-rules.pro"))
-            }
             variant.outputs.forEach { output ->
                 if (output is com.android.build.api.variant.impl.VariantOutputImpl) {
                     output.outputFileName = "HeliBoard_${defaultConfig.versionName}-${variant.buildType}.apk"
@@ -136,11 +128,11 @@ dependencies {
     //implementation("com.github.skydoves:colorpicker-compose:1.1.3") // for user-defined colors, newer requires minSdk 23
 
     // test
-    testImplementation(kotlin("test"))
-    testImplementation("junit:junit:4.13.2")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
-    testImplementation("org.mockito:mockito-core:5.23.0")
-    testImplementation("org.robolectric:robolectric:4.16.1")
-    testImplementation("androidx.test:runner:1.7.0")
-    testImplementation("androidx.test:core:1.7.0")
+    //testImplementation(kotlin("test"))
+    //testImplementation("junit:junit:4.13.2")
+    //testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
+   // testImplementation("org.mockito:mockito-core:5.23.0")
+    //testImplementation("org.robolectric:robolectric:4.16.1")
+    //testImplementation("androidx.test:runner:1.7.0")
+    //testImplementation("androidx.test:core:1.7.0")
 }

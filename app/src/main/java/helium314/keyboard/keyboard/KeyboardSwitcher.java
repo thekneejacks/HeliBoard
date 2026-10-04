@@ -11,13 +11,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodSubtype;
 import android.widget.FrameLayout;
@@ -364,44 +361,15 @@ public final class KeyboardSwitcher {
      * @param briefToast If true, the toast duration will be short; otherwise, it will last longer.
      */
     public void showToast(final String text, final boolean briefToast){
-        // In API 32 and below, toasts can be shown without a notification permission.
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
-            final int toastLength = briefToast ? Toast.LENGTH_SHORT : Toast.LENGTH_LONG;
-            final Toast toast = Toast.makeText(mLatinIME, text, toastLength);
-            toast.setGravity(Gravity.CENTER, 0, 0);
-            toast.show();
-        } else {
-            final int toastLength = briefToast ? 2000 : 3500;
-            showFakeToast(text, toastLength);
-        }
+        final int toastLength = briefToast ? Toast.LENGTH_SHORT : Toast.LENGTH_LONG;
+        final Toast toast = Toast.makeText(mLatinIME, text, toastLength);
+        toast.setGravity(Gravity.CENTER, 0, 0);
+        toast.show();
     }
 
     private static int getSecondaryStripVisibility() {
         return Settings.getValues().isSecondaryStripVisible()? View.VISIBLE : View.GONE;
     }
-
-    // Displays a toast-like message with the provided text for a specified duration.
-    private void showFakeToast(final String text, final int timeMillis) {
-        if (mFakeToastView.getVisibility() == View.VISIBLE) return;
-
-        final Drawable appIcon = mFakeToastView.getCompoundDrawables()[0];
-        if (appIcon != null) {
-            final int bound = mFakeToastView.getLineHeight();
-            appIcon.setBounds(0, 0, bound, bound);
-            mFakeToastView.setCompoundDrawables(appIcon, null, null, null);
-        }
-        mFakeToastView.setText(text);
-        mFakeToastView.setVisibility(View.VISIBLE);
-        mFakeToastView.bringToFront();
-        mFakeToastView.startAnimation(AnimationUtils.loadAnimation(mLatinIME, R.anim.fade_in));
-
-        mFakeToastView.postDelayed(() -> {
-            mFakeToastView.startAnimation(AnimationUtils.loadAnimation(mLatinIME, R.anim.fade_out));
-            mFakeToastView.setVisibility(View.GONE);
-        }, timeMillis);
-    }
-
-
 
     /**
      * Updates state machine to figure out when to automatically switch back to the previous mode.
