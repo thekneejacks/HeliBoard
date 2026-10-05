@@ -9,12 +9,10 @@
         <item name="keyboardStyle">@style/Keyboard.LXX_Base</item>
         <item name="keyboardViewStyle">@style/KeyboardView.LXX_Base</item>
         <item name="mainKeyboardViewStyle">@style/MainKeyboardView.LXX_Base</item>
-        <item name="clipboardHistoryViewStyle">@style/ClipboardHistoryView.LXX_Base</item>
         <item name="popupKeysKeyboardStyle">@style/PopupKeysKeyboard.LXX_Base</item>
         <item name="popupKeysKeyboardViewStyle">@style/PopupKeysKeyboardView.LXX_Base</item>
         <item name="popupKeysKeyboardViewForActionStyle">@style/PopupKeysKeyboardView.LXX_Base.Action</item>
         <item name="suggestionStripViewStyle">@style/SuggestionStripView.LXX_Base</item>
-        <item name="suggestionWordStyle">@style/SuggestionWord.LXX_Base</item>
     </style>
     <style
         name="Keyboard.LXX_Base"
@@ -48,12 +46,6 @@
          {@link helium314.keyboard.keyboard.KeyboardView}, some views inside it, for instance
          delete button, need themed {@link helium314.keyboard.keyboard.KeyboardView}
          attributes. -->
-    <style
-        name="ClipboardHistoryView.LXX_Base"
-        parent="MainKeyboardView.LXX_Base"
-        >
-        <item name="iconPinnedClip">@drawable/ic_clipboard_pin_lxx</item>
-    </style>
     <style
         name="PopupKeysKeyboard.LXX_Base"
         parent="Keyboard.LXX_Base"
@@ -96,12 +88,5 @@
         <item name="android:src">@drawable/suggestions_strip_divider</item>
         <item name="suggestionStripOptions">autoCorrectBold|validTypedWordBold</item>
         <item name="alphaObsoleted">70%</item>
-    </style>
-    <style
-        name="SuggestionWord.LXX_Base"
-        parent="SuggestionWord"
-        >
-        <item name="android:background">@drawable/btn_suggestion_lxx_base</item>
-        <item name="android:textColor">@color/highlight_color_lxx_light</item>
     </style>
 </resources>

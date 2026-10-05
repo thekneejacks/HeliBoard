@@ -33,7 +33,7 @@ object SubtypeUtilsAdditional {
         val subtypeId = getSubtypeId(locale, fullExtraValue, isAsciiCapable)
         val builder = InputMethodSubtypeBuilder()
             .setSubtypeNameResId(nameId)
-            .setSubtypeIconResId(R.drawable.ic_ime_switcher)
+            .setSubtypeIconResId(R.drawable.sym_keyboard_language_switch_lxx)
             .setSubtypeLocale(locale.toString())
             .setSubtypeMode(Constants.Subtype.KEYBOARD_MODE)
             .setSubtypeExtraValue(fullExtraValue)

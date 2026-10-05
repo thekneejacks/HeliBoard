@@ -87,8 +87,6 @@ class KeyboardIconsSet private constructor() {
             NAME_SPACE_KEY_FOR_NUMBER_LAYOUT to R.drawable.sym_keyboard_space_lxx,
             //NAME_SHORTCUT_KEY_DISABLED to       R.drawable.sym_keyboard_voice_off_lxx,
             NAME_LANGUAGE_SWITCH_KEY to         R.drawable.sym_keyboard_language_switch_lxx,
-            NAME_ZWNJ_KEY to                    R.drawable.sym_keyboard_zwnj_lxx,
-            NAME_ZWJ_KEY to                     R.drawable.sym_keyboard_zwj_lxx,
             NAME_TOOLBAR_KEY to                 R.drawable.ic_arrow_right,
             //NAME_BIN to                         R.drawable.ic_bin,
         ).apply {
@@ -118,8 +116,6 @@ class KeyboardIconsSet private constructor() {
                     ToolbarKey.WORD_RIGHT -> R.drawable.ic_word_right
                     ToolbarKey.PAGE_UP -> R.drawable.ic_page_up
                     ToolbarKey.PAGE_DOWN -> R.drawable.ic_page_down
-                    ToolbarKey.FULL_LEFT -> R.drawable.ic_to_start
-                    ToolbarKey.FULL_RIGHT -> R.drawable.ic_to_end
                     ToolbarKey.PAGE_START -> R.drawable.ic_page_start
                     ToolbarKey.PAGE_END -> R.drawable.ic_page_end
                     //ToolbarKey.SPLIT -> R.drawable.ic_ime_switcher
