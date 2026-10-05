@@ -13,17 +13,12 @@ import helium314.keyboard.latin.R
 import helium314.keyboard.latin.common.Constants.Separators
 import helium314.keyboard.latin.settings.Defaults
 import helium314.keyboard.latin.settings.Settings
-import helium314.keyboard.latin.utils.ToolbarKey.AUTOCORRECT
 import helium314.keyboard.latin.utils.ToolbarKey.CLEAR_CLIPBOARD
-import helium314.keyboard.latin.utils.ToolbarKey.CLIPBOARD
-import helium314.keyboard.latin.utils.ToolbarKey.CLOSE_HISTORY
 import helium314.keyboard.latin.utils.ToolbarKey.COPY
 import helium314.keyboard.latin.utils.ToolbarKey.CUT
 import helium314.keyboard.latin.utils.ToolbarKey.DOWN
-import helium314.keyboard.latin.utils.ToolbarKey.EMOJI
 import helium314.keyboard.latin.utils.ToolbarKey.FULL_LEFT
 import helium314.keyboard.latin.utils.ToolbarKey.FULL_RIGHT
-import helium314.keyboard.latin.utils.ToolbarKey.INCOGNITO
 import helium314.keyboard.latin.utils.ToolbarKey.LEFT
 import helium314.keyboard.latin.utils.ToolbarKey.NUMPAD
 import helium314.keyboard.latin.utils.ToolbarKey.PAGE_DOWN
@@ -35,11 +30,8 @@ import helium314.keyboard.latin.utils.ToolbarKey.REDO
 import helium314.keyboard.latin.utils.ToolbarKey.RIGHT
 import helium314.keyboard.latin.utils.ToolbarKey.SELECT_ALL
 import helium314.keyboard.latin.utils.ToolbarKey.SELECT_WORD
-import helium314.keyboard.latin.utils.ToolbarKey.SETTINGS
-import helium314.keyboard.latin.utils.ToolbarKey.SPLIT
 import helium314.keyboard.latin.utils.ToolbarKey.UNDO
 import helium314.keyboard.latin.utils.ToolbarKey.UP
-import helium314.keyboard.latin.utils.ToolbarKey.VOICE
 import helium314.keyboard.latin.utils.ToolbarKey.WORD_LEFT
 import helium314.keyboard.latin.utils.ToolbarKey.WORD_RIGHT
 import helium314.keyboard.latin.utils.ToolbarKey.entries
@@ -51,7 +43,7 @@ fun createToolbarKey(context: Context, key: ToolbarKey): ImageButton {
     button.scaleType = ImageView.ScaleType.CENTER
     button.tag = key
     button.contentDescription = key.name.lowercase().getStringResourceOrName("", context)
-    setToolbarButtonActivatedState(button)
+    button.isActivated = true
     button.setImageDrawable(KeyboardIconsSet.instance.getNewDrawable(key.name, context))
     return button
 }
@@ -66,30 +58,16 @@ fun createToolbarKey(context: Context, key: ToolbarKey): ImageButton {
     }, 10)
 }*/
 
-private fun setToolbarButtonActivatedState(button: ImageButton) {
-    button.isActivated = when (button.tag) {
-        INCOGNITO -> button.context.prefs().getBoolean(Settings.PREF_ALWAYS_INCOGNITO_MODE, Defaults.PREF_ALWAYS_INCOGNITO_MODE)
-        else -> true
-    }
-}
-
 fun getCodeForToolbarKey(key: ToolbarKey) = Settings.getInstance().getCustomToolbarKeyCode(key) ?: when (key) {
-    VOICE -> KeyCode.VOICE_INPUT
-    CLIPBOARD -> KeyCode.CLIPBOARD
     NUMPAD -> KeyCode.NUMPAD
     UNDO -> KeyCode.UNDO
     REDO -> KeyCode.REDO
-    SETTINGS -> KeyCode.SETTINGS
     SELECT_ALL -> KeyCode.CLIPBOARD_SELECT_ALL
     SELECT_WORD -> KeyCode.CLIPBOARD_SELECT_WORD
     COPY -> KeyCode.CLIPBOARD_COPY
     CUT -> KeyCode.CLIPBOARD_CUT
     PASTE -> KeyCode.CLIPBOARD_PASTE
-    INCOGNITO -> KeyCode.TOGGLE_INCOGNITO_MODE
-    AUTOCORRECT -> KeyCode.TOGGLE_AUTOCORRECT
     CLEAR_CLIPBOARD -> KeyCode.CLIPBOARD_CLEAR_HISTORY
-    CLOSE_HISTORY -> KeyCode.CLIPBOARD
-    EMOJI -> KeyCode.EMOJI
     LEFT -> KeyCode.ARROW_LEFT
     RIGHT -> KeyCode.ARROW_RIGHT
     UP -> KeyCode.ARROW_UP
@@ -102,12 +80,9 @@ fun getCodeForToolbarKey(key: ToolbarKey) = Settings.getInstance().getCustomTool
     FULL_RIGHT -> KeyCode.MOVE_END_OF_LINE
     PAGE_START -> KeyCode.MOVE_START_OF_PAGE
     PAGE_END -> KeyCode.MOVE_END_OF_PAGE
-    SPLIT -> KeyCode.SPLIT_LAYOUT
-    //BACKGROUND_GATHERING -> KeyCode.BACKGROUND_GATHERING
 }
 
 fun getCodeForToolbarKeyLongClick(key: ToolbarKey) = Settings.getInstance().getCustomToolbarLongpressCode(key) ?: when (key) {
-    CLIPBOARD -> KeyCode.CLIPBOARD_PASTE
     UNDO -> KeyCode.REDO
     REDO -> KeyCode.UNDO
     SELECT_ALL -> KeyCode.CLIPBOARD_SELECT_WORD
@@ -128,8 +103,8 @@ fun getCodeForToolbarKeyLongClick(key: ToolbarKey) = Settings.getInstance().getC
 
 // names need to be aligned with resources strings (using lowercase of key.name)
 enum class ToolbarKey {
-    VOICE, CLIPBOARD, NUMPAD, UNDO, REDO, SETTINGS, SELECT_ALL, SELECT_WORD, COPY, CUT, PASTE, SPLIT,
-    INCOGNITO, AUTOCORRECT, CLEAR_CLIPBOARD, CLOSE_HISTORY, EMOJI, LEFT, RIGHT, UP, DOWN, WORD_LEFT, WORD_RIGHT,
+    NUMPAD, UNDO, REDO, SELECT_ALL, SELECT_WORD, COPY, CUT, PASTE,
+    CLEAR_CLIPBOARD,LEFT, RIGHT, UP, DOWN, WORD_LEFT, WORD_RIGHT,
     PAGE_UP, PAGE_DOWN, FULL_LEFT, FULL_RIGHT, PAGE_START, PAGE_END
 }
 
@@ -140,18 +115,18 @@ enum class ToolbarMode {
 val toolbarKeyStrings = entries.associateWithTo(EnumMap(ToolbarKey::class.java)) { it.toString().lowercase(Locale.US) }
 
 val defaultToolbarPref by lazy {
-    val default = listOf(SETTINGS, VOICE, CLIPBOARD, UNDO, REDO, SELECT_WORD, COPY, PASTE, LEFT, RIGHT)
-    val others = entries.filterNot { it in default || it == CLOSE_HISTORY }
+    val default = listOf(UNDO, REDO, SELECT_WORD, COPY, PASTE, LEFT, RIGHT)
+    val others = entries.filterNot { it in default }
     default.joinToString(Separators.ENTRY) { it.name + Separators.KV + true } + Separators.ENTRY +
             others.joinToString(Separators.ENTRY) { it.name + Separators.KV + false }
 }
 
-val defaultPinnedToolbarPref = entries.filterNot { it == CLOSE_HISTORY }.joinToString(Separators.ENTRY) {
+val defaultPinnedToolbarPref = entries.filterNot { false }.joinToString(Separators.ENTRY) {
     it.name + Separators.KV + false
 }
 
 val defaultClipboardToolbarPref by lazy {
-    val default = listOf(CLEAR_CLIPBOARD, UP, DOWN, LEFT, RIGHT, UNDO, CUT, COPY, PASTE, SELECT_WORD, CLOSE_HISTORY)
+    val default = listOf(CLEAR_CLIPBOARD, UP, DOWN, LEFT, RIGHT, UNDO, CUT, COPY, PASTE, SELECT_WORD)
     val others = entries.filterNot { it in default }
     default.joinToString(Separators.ENTRY) { it.name + Separators.KV + true } + Separators.ENTRY +
             others.joinToString(Separators.ENTRY) { it.name + Separators.KV + false }
@@ -188,8 +163,6 @@ private fun upgradeToolbarPref(prefs: SharedPreferences, pref: String, default: 
 fun getEnabledToolbarKeys(prefs: SharedPreferences) = getEnabledToolbarKeys(prefs, Settings.PREF_TOOLBAR_KEYS, defaultToolbarPref)
 
 fun getPinnedToolbarKeys(prefs: SharedPreferences) = getEnabledToolbarKeys(prefs, Settings.PREF_PINNED_TOOLBAR_KEYS, defaultPinnedToolbarPref)
-
-fun getEnabledClipboardToolbarKeys(prefs: SharedPreferences) = getEnabledToolbarKeys(prefs, Settings.PREF_CLIPBOARD_TOOLBAR_KEYS, defaultClipboardToolbarPref)
 
 fun addPinnedKey(prefs: SharedPreferences, key: ToolbarKey) {
     // remove the existing version of this key and add the enabled one after the last currently enabled key

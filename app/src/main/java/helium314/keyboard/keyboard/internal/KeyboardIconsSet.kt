@@ -48,7 +48,6 @@ class KeyboardIconsSet private constructor() {
         const val NAME_SHIFT_KEY_SHIFTED = "shift_key_shifted"
         const val NAME_SHIFT_KEY_LOCKED = "shift_key_locked"
         const val NAME_DELETE_KEY = "delete_key"
-        const val NAME_SPACE_KEY = "space_key"
         const val NAME_SPACE_KEY_FOR_NUMBER_LAYOUT = "space_key_for_number_layout"
         const val NAME_ENTER_KEY = "enter_key"
         const val NAME_GO_KEY = "go_key"
@@ -63,20 +62,12 @@ class KeyboardIconsSet private constructor() {
         const val NAME_ZWNJ_KEY = "zwnj_key"
         const val NAME_ZWJ_KEY = "zwj_key"
         const val NAME_TOOLBAR_KEY = "toolbar_key"
-        const val NAME_BIN = "bin"
 
         // names used in the past, and we can't just delete them because they might still be in use in some layouts
         // (also some of them are in use for internal layouts, but there we could just remove them...)
         private val alternativeNames = hashMapOf(
             "clear_clipboard_key" to ToolbarKey.CLEAR_CLIPBOARD.name.lowercase(Locale.US),
-            "shortcut_key" to ToolbarKey.VOICE.name.lowercase(Locale.US),
-            "emoji_action_key" to ToolbarKey.EMOJI.name.lowercase(Locale.US),
-            "emoji_normal_key" to ToolbarKey.EMOJI.name.lowercase(Locale.US),
-            "clipboard_action_key" to ToolbarKey.CLIPBOARD.name.lowercase(Locale.US),
-            "clipboard_normal_key" to ToolbarKey.CLIPBOARD.name.lowercase(Locale.US),
             "cut_key" to ToolbarKey.CUT.name.lowercase(Locale.US),
-            "incognito_key" to ToolbarKey.INCOGNITO.name.lowercase(Locale.US),
-            "settings_key" to ToolbarKey.SETTINGS.name.lowercase(Locale.US),
         )
 
         private val keyboardIconsMaterial by lazy { hashMapOf(
@@ -94,31 +85,31 @@ class KeyboardIconsSet private constructor() {
             NAME_PREVIOUS_KEY to                R.drawable.ic_arrow_left,
             NAME_TAB_KEY to                     R.drawable.sym_keyboard_tab_lxx,
             NAME_SPACE_KEY_FOR_NUMBER_LAYOUT to R.drawable.sym_keyboard_space_lxx,
-            NAME_SHORTCUT_KEY_DISABLED to       R.drawable.sym_keyboard_voice_off_lxx,
+            //NAME_SHORTCUT_KEY_DISABLED to       R.drawable.sym_keyboard_voice_off_lxx,
             NAME_LANGUAGE_SWITCH_KEY to         R.drawable.sym_keyboard_language_switch_lxx,
             NAME_ZWNJ_KEY to                    R.drawable.sym_keyboard_zwnj_lxx,
             NAME_ZWJ_KEY to                     R.drawable.sym_keyboard_zwj_lxx,
             NAME_TOOLBAR_KEY to                 R.drawable.ic_arrow_right,
-            NAME_BIN to                         R.drawable.ic_bin,
+            //NAME_BIN to                         R.drawable.ic_bin,
         ).apply {
             ToolbarKey.entries.forEach {
                 put(it.name.lowercase(Locale.US), when (it) {
-                    ToolbarKey.VOICE -> R.drawable.sym_keyboard_voice_lxx
-                    ToolbarKey.CLIPBOARD -> R.drawable.sym_keyboard_clipboard_lxx
+                    //ToolbarKey.VOICE -> R.drawable.sym_keyboard_voice_lxx
+                    //ToolbarKey.CLIPBOARD -> R.drawable.sym_keyboard_clipboard_lxx
                     ToolbarKey.NUMPAD -> R.drawable.sym_keyboard_numpad_key_lxx
                     ToolbarKey.UNDO -> R.drawable.ic_undo
                     ToolbarKey.REDO -> R.drawable.ic_redo
-                    ToolbarKey.SETTINGS -> R.drawable.sym_keyboard_settings_lxx
+                    //ToolbarKey.SETTINGS -> R.drawable.sym_keyboard_settings_lxx
                     ToolbarKey.SELECT_ALL -> R.drawable.ic_select_all
                     ToolbarKey.SELECT_WORD -> R.drawable.ic_select
                     ToolbarKey.COPY -> R.drawable.sym_keyboard_copy
                     ToolbarKey.CUT -> R.drawable.sym_keyboard_cut
                     ToolbarKey.PASTE -> R.drawable.sym_keyboard_paste
-                    ToolbarKey.INCOGNITO -> R.drawable.sym_keyboard_incognito_lxx
-                    ToolbarKey.AUTOCORRECT -> R.drawable.ic_autocorrect
+                    //ToolbarKey.INCOGNITO -> R.drawable.sym_keyboard_incognito_lxx
+                    //ToolbarKey.AUTOCORRECT -> R.drawable.ic_autocorrect
                     ToolbarKey.CLEAR_CLIPBOARD -> R.drawable.sym_keyboard_clear_clipboard_lxx
-                    ToolbarKey.CLOSE_HISTORY -> R.drawable.ic_close
-                    ToolbarKey.EMOJI -> R.drawable.sym_keyboard_smiley_lxx
+                    //ToolbarKey.CLOSE_HISTORY -> R.drawable.ic_close
+                    //ToolbarKey.EMOJI -> R.drawable.sym_keyboard_smiley_lxx
                     ToolbarKey.LEFT -> R.drawable.ic_dpad_left
                     ToolbarKey.RIGHT -> R.drawable.ic_dpad_right
                     ToolbarKey.UP -> R.drawable.ic_dpad_up
@@ -131,7 +122,7 @@ class KeyboardIconsSet private constructor() {
                     ToolbarKey.FULL_RIGHT -> R.drawable.ic_to_end
                     ToolbarKey.PAGE_START -> R.drawable.ic_page_start
                     ToolbarKey.PAGE_END -> R.drawable.ic_page_end
-                    ToolbarKey.SPLIT -> R.drawable.ic_ime_switcher
+                    //ToolbarKey.SPLIT -> R.drawable.ic_ime_switcher
                 })
             }
         } }

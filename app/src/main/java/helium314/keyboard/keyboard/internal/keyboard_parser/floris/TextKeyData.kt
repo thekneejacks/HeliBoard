@@ -404,7 +404,7 @@ sealed interface KeyData : AbstractKeyData {
         when (label) { // or use code?
             KeyLabel.SYMBOL_ALPHA, KeyLabel.SYMBOL, KeyLabel.ALPHA, KeyLabel.COMMA, KeyLabel.PERIOD, KeyLabel.DELETE,
             KeyLabel.COM, KeyLabel.LANGUAGE_SWITCH, KeyLabel.NUMPAD, KeyLabel.CTRL, KeyLabel.ALT,
-            KeyLabel.FN, KeyLabel.META, KeyLabel.EMOJI_SEARCH, toolbarKeyStrings[ToolbarKey.EMOJI] -> return Key.BACKGROUND_TYPE_FUNCTIONAL
+            KeyLabel.FN, KeyLabel.META, KeyLabel.EMOJI_SEARCH -> return Key.BACKGROUND_TYPE_FUNCTIONAL
             KeyLabel.SPACE, KeyLabel.ZWNJ -> return Key.BACKGROUND_TYPE_SPACEBAR
             KeyLabel.ACTION -> return Key.BACKGROUND_TYPE_ACTION
             KeyLabel.SHIFT -> return Key.BACKGROUND_TYPE_FUNCTIONAL
@@ -435,7 +435,6 @@ sealed interface KeyData : AbstractKeyData {
             }
             KeyLabel.SPACE -> if (params.mId.element.isNumberLayout) Key.LABEL_FLAGS_ALIGN_ICON_TO_BOTTOM else 0
             KeyLabel.SHIFT -> Key.LABEL_FLAGS_PRESERVE_CASE
-            toolbarKeyStrings[ToolbarKey.EMOJI] -> KeyboardTheme.getThemeActionAndEmojiKeyLabelFlags(params.mThemeId)
             KeyLabel.COM -> Key.LABEL_FLAGS_AUTO_X_SCALE or Key.LABEL_FLAGS_FONT_NORMAL or Key.LABEL_FLAGS_PRESERVE_CASE
             KeyLabel.CURRENCY -> Key.LABEL_FLAGS_FOLLOW_KEY_LETTER_RATIO
             KeyLabel.CTRL, KeyLabel.ALT, KeyLabel.FN, KeyLabel.META -> Key.LABEL_FLAGS_PRESERVE_CASE
