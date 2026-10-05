@@ -114,7 +114,6 @@ class KeyboardIconsSet private constructor() {
                     ToolbarKey.COPY -> R.drawable.sym_keyboard_copy
                     ToolbarKey.CUT -> R.drawable.sym_keyboard_cut
                     ToolbarKey.PASTE -> R.drawable.sym_keyboard_paste
-                    ToolbarKey.FLOATING -> R.drawable.ic_drag_indicator
                     ToolbarKey.INCOGNITO -> R.drawable.sym_keyboard_incognito_lxx
                     ToolbarKey.AUTOCORRECT -> R.drawable.ic_autocorrect
                     ToolbarKey.CLEAR_CLIPBOARD -> R.drawable.sym_keyboard_clear_clipboard_lxx

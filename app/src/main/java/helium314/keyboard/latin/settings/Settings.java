@@ -58,11 +58,6 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     public static final String PREF_BOTTOM_PADDING_SCALE_PREFIX = "bottom_padding_scale";
     public static final String PREF_SIDE_PADDING_SCALE_PREFIX = "side_padding_scale";
     public static final String PREF_KEY_GAP_SCALE_PREFIX = "key_gap_scale";
-    public static final String PREF_FLOATING_HEIGHT_PREFIX = "floating_height";
-    public static final String PREF_FLOATING_WIDTH_PREFIX = "floating_width";
-    public static final String PREF_FLOATING_ENABLED_PREFIX = "floating_enabled";
-    public static final String PREF_FLOATING_POS_X_PREFIX = "floating_pos_x";
-    public static final String PREF_FLOATING_POS_Y_PREFIX = "floating_pos_y";
     public static final String PREF_FONT_SCALE = "font_scale";
     public static final String PREF_HINT_FONT_SCALE = "hint_font_scale";
     public static final String PREF_EMOJI_FONT_SCALE = "emoji_font_scale";

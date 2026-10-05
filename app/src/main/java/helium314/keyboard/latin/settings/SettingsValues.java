@@ -93,9 +93,6 @@ public class SettingsValues {
     public final float mFontSizeMultiplier;
     public final float mHintFontSizeMultiplier;
     public final float mFontSizeMultiplierEmoji;
-    public final boolean mIsFloatingKeyboard;
-    public final int mFloatingWidth;
-    public final int mFloatingHeight;
     public final boolean mLongPressSymbolsForNumpad;
 
     // From the input box
@@ -167,11 +164,7 @@ public class SettingsValues {
         mAutospaceBeforeGestureTyping = prefs.getBoolean(Settings.PREF_AUTOSPACE_BEFORE_GESTURE_TYPING, Defaults.PREF_AUTOSPACE_BEFORE_GESTURE_TYPING);
         mShiftRemovesAutospace = prefs.getBoolean(Settings.PREF_SHIFT_REMOVES_AUTOSPACE, Defaults.PREF_SHIFT_REMOVES_AUTOSPACE);
 
-        mIsFloatingKeyboard = !mIsLocked && SettingsKt.isFloatingKeyboardEnabled(context);
-        mFloatingWidth = SettingsKt.readFloatingWidth(context);
-        mFloatingHeight = mIsFloatingKeyboard && mHasHardwareKeyboard && prefs.getBoolean(Settings.PREF_SHOW_ONLY_TOOLBAR_WITH_HARDWARE_KEYBOARD, Defaults.PREF_SHOW_ONLY_TOOLBAR_WITH_HARDWARE_KEYBOARD)
-                          ? 0 : SettingsKt.readFloatingHeight(context);
-        mKeyboardHeightScale = mIsFloatingKeyboard ? 1f : Settings.readHeightScale(prefs, isLandscape, isFolded);
+        mKeyboardHeightScale = Settings.readHeightScale(prefs, isLandscape, isFolded);
         mSecondaryLocales = SubtypeUtilsKt.getSecondaryLocales(selectedSubtype.getExtraValue());
         mShowMorePopupKeys = SubtypeUtilsKt.getMoreKeys(selectedSubtype, prefs,
             selectedSubtype.isAsciiCapable() ? Defaults.PREF_MORE_POPUP_KEYS : LocaleKeyboardInfos.POPUP_KEYS_NORMAL);
@@ -183,7 +176,7 @@ public class SettingsValues {
         mKeyGapScale = Settings.readKeyGapScale(prefs, isLandscape, isFolded);
 
         mSpacingAndPunctuations = new SpacingAndPunctuations(res, false);
-        mBottomPaddingScale = mIsFloatingKeyboard ? 0f : Settings.readBottomPaddingScale(prefs, isLandscape, isFolded);
+        mBottomPaddingScale = Settings.readBottomPaddingScale(prefs, isLandscape, isFolded);
         mSidePaddingScale = Settings.readSidePaddingScale(prefs, isLandscape, false, isFolded);
         mLongPressSymbolsForNumpad = prefs.getBoolean(Settings.PREFS_LONG_PRESS_SYMBOLS_FOR_NUMPAD, Defaults.PREFS_LONG_PRESS_SYMBOLS_FOR_NUMPAD);
         mAutoShowToolbar = mToolbarMode == ToolbarMode.EXPANDABLE && prefs.getBoolean(Settings.PREF_AUTO_SHOW_TOOLBAR, Defaults.PREF_AUTO_SHOW_TOOLBAR);

@@ -102,8 +102,6 @@ sealed interface KeyData : AbstractKeyData {
             if (!params.mId.languageSwitchKeyEnabled && !params.mId.element.isNumberLayout && RichInputMethodManager.canSwitchLanguage())
                 keys.add("!icon/language_switch_key|!code/key_language_switch")
             if (!params.mId.deviceLocked)
-                keys.add(ToolbarKey.FLOATING.name.lowercase())
-            if (!params.mId.deviceLocked)
                 keys.add("!icon/settings_key|!code/key_settings")
             if (shouldShowTldPopups(params)) {
                 keys.add(",")

@@ -33,9 +33,6 @@ public final class ResourceUtils {
 
     public static int getKeyboardWidth(final Context ctx, final SettingsValues settingsValues) {
         // Floating keyboard width takes priority
-        if (settingsValues.mIsFloatingKeyboard) {
-            return settingsValues.mFloatingWidth;
-        }
         int defaultKeyboardWidth = getDefaultKeyboardWidth(ctx);
         return defaultKeyboardWidth;
     }
@@ -56,19 +53,7 @@ public final class ResourceUtils {
         return windowBounds.width() - insets.left - insets.right;
     }
 
-    public static int getSecondaryKeyboardHeight(final Resources res, final SettingsValues settingsValues) {
-        final int keyboardHeight = getKeyboardHeight(res, settingsValues);
-        if (settingsValues.mToolbarMode == ToolbarMode.HIDDEN && ! settingsValues.mToolbarHidingGlobal) {
-            // Small adjustment to match the height of the main keyboard which has a hidden strip container.
-            return keyboardHeight - (int) res.getDimension(R.dimen.config_suggestions_strip_height);
-        }
-        return keyboardHeight;
-    }
-
     public static int getKeyboardHeight(Resources res, SettingsValues settingsValues) {
-        if (settingsValues.mIsFloatingKeyboard) {
-            return settingsValues.mFloatingHeight;
-        }
         int defaultKeyboardHeight = getDefaultKeyboardHeight(res, settingsValues.mShowsNumberRow);
         return (int)(defaultKeyboardHeight * settingsValues.mKeyboardHeightScale);
     }

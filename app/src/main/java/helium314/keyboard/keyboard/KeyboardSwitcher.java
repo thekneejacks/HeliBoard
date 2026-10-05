@@ -35,10 +35,8 @@ import helium314.keyboard.latin.R;
 import helium314.keyboard.latin.RichInputMethodManager;
 import helium314.keyboard.latin.RichInputMethodSubtype;
 import helium314.keyboard.latin.settings.Settings;
-import helium314.keyboard.latin.settings.SettingsKt;
 import helium314.keyboard.latin.settings.SettingsValues;
 import helium314.keyboard.latin.suggestions.SuggestionStripView;
-import helium314.keyboard.latin.utils.FloatingKeyboardUtils;
 import helium314.keyboard.latin.utils.KtxKt;
 import helium314.keyboard.latin.utils.RecapitalizeMode;
 import helium314.keyboard.latin.utils.ResourceUtils;
@@ -468,15 +466,6 @@ public final class KeyboardSwitcher {
             }
         }
 
-
-        @Override
-        public void setFloatingKeyboardEnabled(boolean enabled) {
-            if (enabled != Settings.getValues().mIsFloatingKeyboard)
-                // mIsFloatingKeyboard is always disabled when device is locked, and we shouldn't mess up the setting
-                SettingsKt.setFloatingKeyboardEnabled(mThemeContext, enabled);
-            if (enabled) FloatingKeyboardUtils.setFloating(mCurrentInputView);
-            else FloatingKeyboardUtils.disableFloating(mCurrentInputView);
-        }
 
         @Override
         public boolean popDoubleTapShiftKeyTimer() {

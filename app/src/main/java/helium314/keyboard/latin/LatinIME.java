@@ -63,7 +63,6 @@ import helium314.keyboard.latin.inputlogic.InputLogic;
 import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.settings.SettingsValues;
 import helium314.keyboard.latin.suggestions.SuggestionStripView;
-import helium314.keyboard.latin.utils.FloatingKeyboardUtils;
 import helium314.keyboard.latin.utils.InputMethodPickerKt;
 import helium314.keyboard.latin.utils.JniUtils;
 import helium314.keyboard.latin.utils.KtxKt;
@@ -695,8 +694,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
     public void onWindowShown() {
         super.onWindowShown();
         if (isInputViewShown()) {
-            if (mInputView != null && Settings.getValues().mIsFloatingKeyboard)
-                FloatingKeyboardUtils.setFloating(mInputView);
             setNavigationBarColor();
             workaroundForHuaweiStatusBarIssue();
         }
@@ -873,8 +870,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
         }
         final int stripHeight = mKeyboardSwitcher.isShowingStripContainer() ? mKeyboardSwitcher.getStripContainer().getHeight() : 0;
         int visibleTopY = inputHeight - visibleKeyboardView.getHeight() - stripHeight;
-        if (Settings.getValues().mIsFloatingKeyboard)
-            visibleTopY = getResources().getDisplayMetrics().heightPixels;
 
 
         // Need to set expanded touchable region only if a keyboard view is being shown.
@@ -883,13 +878,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
             int touchTop = mKeyboardSwitcher.isShowingPopupKeysPanel() ? 0 : visibleTopY;
             int touchRight = visibleKeyboardView.getWidth();
             int touchBottom = inputHeight + EXTENDED_TOUCHABLE_REGION_HEIGHT; // Extend touchable region below the keyboard.
-            if (mSettings.getCurrent().mIsFloatingKeyboard) {
-                var xy = FloatingKeyboardUtils.readPosition(this, Integer.MAX_VALUE, Integer.MAX_VALUE);
-                touchLeft = xy.component1();
-                touchTop = xy.component2();
-                touchRight = touchLeft + mSettings.getCurrent().mFloatingWidth;
-                touchBottom = touchTop + mSettings.getCurrent().mFloatingHeight + stripHeight + (int)FloatingKeyboardUtils.getFloatingHandleHeight(getResources());
-            }
             outInsets.touchableInsets = InputMethodService.Insets.TOUCHABLE_INSETS_REGION;
             outInsets.touchableRegion.set(touchLeft, touchTop, touchRight, touchBottom);
         }
@@ -935,7 +923,7 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
 
     @Override
     public boolean onEvaluateFullscreenMode() {
-        if (isImeSuppressedByHardwareKeyboard() || mSettings.getCurrent().mIsFloatingKeyboard) {
+        if (isImeSuppressedByHardwareKeyboard()) {
             // If there is a hardware keyboard or we're floating, disable full screen mode.
             return false;
         }
