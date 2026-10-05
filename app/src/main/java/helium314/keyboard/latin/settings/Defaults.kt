@@ -73,7 +73,7 @@ object Defaults {
     const val PREF_SHIFT_REMOVES_AUTOSPACE = false
     const val PREF_ALWAYS_INCOGNITO_MODE = false
     const val PREF_KEY_LONGPRESS_TIMEOUT = 300
-    const val PREF_GESTURE_FLOATING_PREVIEW_TEXT = true
+
     @JvmField
     var PREF_GESTURE_DYNAMIC_PREVIEW_FOLLOW_SYSTEM = true
     const val PREF_GESTURE_FAST_TYPING_COOLDOWN = 500

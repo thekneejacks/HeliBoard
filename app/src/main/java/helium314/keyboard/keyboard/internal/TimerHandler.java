@@ -27,7 +27,6 @@ public final class TimerHandler extends LeakGuardHandlerWrapper<DrawingProxy>
     private static final int MSG_DOUBLE_TAP_SHIFT_KEY = 5;
     private static final int MSG_UPDATE_BATCH_INPUT = 6;
     private static final int MSG_DISMISS_KEY_PREVIEW = 7;
-    private static final int MSG_DISMISS_GESTURE_FLOATING_PREVIEW_TEXT = 8;
 
     private final int mIgnoreAltCodeKeyTimeout;
     private final int mGestureRecognitionUpdateTime;
@@ -214,6 +213,5 @@ public final class TimerHandler extends LeakGuardHandlerWrapper<DrawingProxy>
         cancelAllKeyTimers();
         cancelAllUpdateBatchInputTimers();
         removeMessages(MSG_DISMISS_KEY_PREVIEW);
-        removeMessages(MSG_DISMISS_GESTURE_FLOATING_PREVIEW_TEXT);
     }
 }

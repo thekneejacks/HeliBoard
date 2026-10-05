@@ -61,13 +61,6 @@
     <dimen name="config_suggestion_text_size">18dp</dimen>
     <dimen name="config_more_suggestions_hint_text_size">27dp</dimen>
 
-    <!-- Gesture floating preview text parameters -->
-    <dimen name="config_gesture_floating_preview_text_size">24dp</dimen>
-    <dimen name="config_gesture_floating_preview_text_offset">73dp</dimen>
-    <dimen name="config_gesture_floating_preview_horizontal_padding">24dp</dimen>
-    <dimen name="config_gesture_floating_preview_vertical_padding">16dp</dimen>
-    <dimen name="config_gesture_floating_preview_round_radius">2dp</dimen>
-
     <!-- Emoji keyboard -->
     <fraction name="config_emoji_keyboard_key_width">12.5%p</fraction>
     <fraction name="config_emoji_keyboard_row_height">30%p</fraction>
@@ -77,9 +70,6 @@
 
     <!-- Clipboard keyboard -->
     <integer name="config_clipboard_keyboard_col_count">2</integer>
-
-    <!-- Floating keyboard -->
-    <dimen name="config_floating_handle_height">30dp</dimen>
 
     <!-- Key codes of hardware keys that can be used to toggle the Emoji layout.
          Each array defines a comma-separated tuple containing:

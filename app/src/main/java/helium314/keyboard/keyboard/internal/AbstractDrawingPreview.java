@@ -6,12 +6,9 @@
 
 package helium314.keyboard.keyboard.internal;
 
-import android.view.View;
-
 import androidx.annotation.NonNull;
 
 import helium314.keyboard.keyboard.MainKeyboardView;
-import helium314.keyboard.keyboard.PointerTracker;
 
 /**
  * Abstract base class for previews that are drawn on DrawingPreviewPlacerView, e.g.,
@@ -19,28 +16,7 @@ import helium314.keyboard.keyboard.PointerTracker;
  * SlidingKeyInputDrawingPreview.
  */
 public abstract class AbstractDrawingPreview {
-    private View mDrawingView;
-    private boolean mPreviewEnabled;
     private boolean mHasValidGeometry;
-
-    public void setDrawingView(@NonNull final DrawingPreviewPlacerView drawingView) {
-        mDrawingView = drawingView;
-        drawingView.addPreview(this);
-    }
-
-    protected void invalidateDrawingView() {
-        if (mDrawingView != null) {
-            mDrawingView.invalidate();
-        }
-    }
-
-    protected final boolean isPreviewEnabled() {
-        return mPreviewEnabled && mHasValidGeometry;
-    }
-
-    public final void setPreviewEnabled(final boolean enabled) {
-        mPreviewEnabled = enabled;
-    }
 
     /**
      * Set {@link MainKeyboardView} geometry and position in the window of input method.
@@ -59,9 +35,4 @@ public abstract class AbstractDrawingPreview {
 
     public abstract void onDeallocateMemory();
 
-    /**
-     * Set the position of the preview.
-     * @param tracker The new location of the preview is based on the points in PointerTracker.
-     */
-    public abstract void setPreviewPosition(@NonNull final PointerTracker tracker);
 }

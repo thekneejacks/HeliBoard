@@ -121,12 +121,6 @@
         <attr name="gestureTrailEndWidth" format="dimension" />
         <attr name="gestureTrailBodyRatio" format="integer" />
         <attr name="gestureTrailShadowRatio" format="integer" />
-        <!-- Attributes for GestureFloatingPreviewText -->
-        <attr name="gestureFloatingPreviewTextSize" format="dimension" />
-        <attr name="gestureFloatingPreviewTextOffset" format="dimension" />
-        <attr name="gestureFloatingPreviewHorizontalPadding" format="dimension" />
-        <attr name="gestureFloatingPreviewVerticalPadding" format="dimension" />
-        <attr name="gestureFloatingPreviewRoundRadius" format="dimension" />
         <!-- Static threshold for gesture after fast typing (msec) -->
         <attr name="gestureStaticTimeThresholdAfterFastTyping" format="integer" />
         <!-- Static threshold for starting gesture detection (keyWidth%/sec) -->

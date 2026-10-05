@@ -90,9 +90,6 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
     // TODO: Consider extending to support multiple popup keys panels
     private PopupKeysPanel mPopupKeysPanel;
 
-    // Gesture floating preview text
-    private final int mGestureFloatingPreviewTextLingerTimeout;
-
     private final KeyDetector mKeyDetector;
     private final NonDistinctMultitouchHelper mNonDistinctMultitouchHelper;
 
@@ -166,8 +163,6 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
         mConfigShowPopupKeysKeyboardAtTouchedPoint = mainKeyboardViewAttr.getBoolean(
                 R.styleable.MainKeyboardView_showPopupKeysKeyboardAtTouchedPoint, false);
 
-        final int gestureTrailFadeoutDuration = Settings.getValues().mGestureTrailFadeoutDuration;
-        mGestureFloatingPreviewTextLingerTimeout = gestureTrailFadeoutDuration / 4;
 
         mainKeyboardViewAttr.recycle();
 

@@ -31,11 +31,6 @@
         <item name="keyPreviewTextRatio">@fraction/config_key_preview_text_ratio</item>
         <item name="verticalCorrection">@dimen/config_keyboard_vertical_correction</item>
         <item name="backgroundDimAlpha">128</item>
-        <item name="gestureFloatingPreviewTextSize">@dimen/config_gesture_floating_preview_text_size</item>
-        <item name="gestureFloatingPreviewTextOffset">@dimen/config_gesture_floating_preview_text_offset</item>
-        <item name="gestureFloatingPreviewHorizontalPadding">@dimen/config_gesture_floating_preview_horizontal_padding</item>
-        <item name="gestureFloatingPreviewVerticalPadding">@dimen/config_gesture_floating_preview_vertical_padding</item>
-        <item name="gestureFloatingPreviewRoundRadius">@dimen/config_gesture_floating_preview_round_radius</item>
         <item name="gestureTrailMinSamplingDistance">@dimen/config_gesture_trail_min_sampling_distance</item>
         <item name="gestureTrailMaxInterpolationAngularThreshold">@integer/config_gesture_trail_max_interpolation_angular_threshold</item>
         <item name="gestureTrailMaxInterpolationDistanceThreshold">@dimen/config_gesture_trail_max_interpolation_distance_threshold</item>

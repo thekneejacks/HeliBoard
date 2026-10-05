@@ -75,7 +75,6 @@ public class SettingsValues {
     public final List<String> mPopupKeyOrder;
     public final List<String> mPopupKeyHintOrder;
     public final List<Locale> mSecondaryLocales;
-    public final boolean mGestureFloatingPreviewTextEnabled;
     public final int mGestureFastTypingCooldown;
     public final int mGestureTrailFadeoutDuration;
     public final int mKeyLongpressTimeout;
@@ -147,8 +146,6 @@ public class SettingsValues {
 
         // Compute other readable settings
         mKeyLongpressTimeout = prefs.getInt(Settings.PREF_KEY_LONGPRESS_TIMEOUT, Defaults.PREF_KEY_LONGPRESS_TIMEOUT);
-        mGestureFloatingPreviewTextEnabled = !mInputAttributes.mDisableGestureFloatingPreviewText
-                && prefs.getBoolean(Settings.PREF_GESTURE_FLOATING_PREVIEW_TEXT, Defaults.PREF_GESTURE_FLOATING_PREVIEW_TEXT);
         mGestureFastTypingCooldown = prefs.getInt(Settings.PREF_GESTURE_FAST_TYPING_COOLDOWN, Defaults.PREF_GESTURE_FAST_TYPING_COOLDOWN);
         mGestureTrailFadeoutDuration = prefs.getInt(Settings.PREF_GESTURE_TRAIL_FADEOUT_DURATION, Defaults.PREF_GESTURE_TRAIL_FADEOUT_DURATION);
         mSuggestionStripHiddenPerUserSettings = mToolbarMode == ToolbarMode.HIDDEN || mToolbarMode == ToolbarMode.TOOLBAR_KEYS;
@@ -255,8 +252,6 @@ public class SettingsValues {
         sb.append("" + mLanguageSwitchKeyToOtherSubtypes);
         sb.append("\n   mUseDoubleSpacePeriod = ");
         sb.append("" + mUseDoubleSpacePeriod);
-        sb.append("\n   mGestureFloatingPreviewTextEnabled = ");
-        sb.append("" + mGestureFloatingPreviewTextEnabled);
         sb.append("\n   mKeyLongpressTimeout = ");
         sb.append("" + mKeyLongpressTimeout);
         sb.append("\n   mLocale = ");

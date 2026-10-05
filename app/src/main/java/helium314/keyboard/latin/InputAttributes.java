@@ -6,7 +6,6 @@
 
 package helium314.keyboard.latin;
 
-import static helium314.keyboard.latin.common.Constants.ImeOption.NO_FLOATING_GESTURE_PREVIEW;
 import static helium314.keyboard.latin.common.Constants.ImeOption.NO_MICROPHONE;
 
 import android.os.Build;
@@ -38,12 +37,6 @@ public final class InputAttributes {
     final public boolean mShouldInsertSpacesAutomatically;
     final public boolean mShouldShowVoiceInputKey;
     final public boolean mNoLearning;
-    /**
-     * Whether the floating gesture preview should be disabled. If true, this should override the
-     * corresponding keyboard settings preference, always suppressing the floating preview text.
-     * {@link helium314.keyboard.latin.settings.SettingsValues#mGestureFloatingPreviewTextEnabled}
-     */
-    final public boolean mDisableGestureFloatingPreviewText;
     final public boolean mIsGeneralTextInput;
     final public int mInputType;
     final private EditorInfo mEditorInfo;
@@ -75,7 +68,6 @@ public final class InputAttributes {
             mApplicationSpecifiedCompletionOn = false;
             mShouldInsertSpacesAutomatically = false;
             mShouldShowVoiceInputKey = false;
-            mDisableGestureFloatingPreviewText = false;
             mIsGeneralTextInput = false;
             mNoLearning = false;
             return;
@@ -101,8 +93,6 @@ public final class InputAttributes {
                 || !RichInputMethodManager.getInstance().isShortcutImeReady();
         mShouldShowVoiceInputKey = !noMicrophone;
 
-        mDisableGestureFloatingPreviewText = InputAttributes.inPrivateImeOptions(
-                mPackageNameForPrivateImeOptions, NO_FLOATING_GESTURE_PREVIEW, editorInfo);
 
         // autocorrect if explicitly wanted, but also for most multi-line input types (like AOSP keyboard)
         // originally, URI and email were always excluded from autocorrect (in Suggest.java), but this is

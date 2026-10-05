@@ -9,7 +9,6 @@ package helium314.keyboard.latin.settings;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.view.ContextThemeWrapper;
@@ -69,15 +68,9 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     public static final String PREF_SHIFT_REMOVES_AUTOSPACE = "shift_removes_autospace";
     public static final String PREF_ALWAYS_INCOGNITO_MODE = "always_incognito_mode";
     public static final String PREF_KEY_LONGPRESS_TIMEOUT = "key_longpress_timeout";
-    public static final String PREF_GESTURE_FLOATING_PREVIEW_TEXT = "gesture_floating_preview_text";
     public static final String PREF_GESTURE_FAST_TYPING_COOLDOWN = "gesture_fast_typing_cooldown";
     public static final String PREF_GESTURE_TRAIL_FADEOUT_DURATION = "gesture_trail_fadeout_duration";
-    public static final String PREF_SHOW_SETUP_WIZARD_ICON = "show_setup_wizard_icon";
     public static final String PREFS_LONG_PRESS_SYMBOLS_FOR_NUMPAD = "long_press_symbols_for_numpad";
-
-    public static final String PREF_ONE_HANDED_MODE_PREFIX = "one_handed_mode_enabled";
-    public static final String PREF_ONE_HANDED_GRAVITY_PREFIX = "one_handed_mode_gravity";
-    public static final String PREF_ONE_HANDED_SCALE_PREFIX = "one_handed_mode_scale";
 
     public static final String PREF_SHOW_NUMBER_ROW = "show_number_row";
     public static final String PREF_SHOW_NUMBER_ROW_IN_SYMBOLS = "show_number_row_in_symbols";
