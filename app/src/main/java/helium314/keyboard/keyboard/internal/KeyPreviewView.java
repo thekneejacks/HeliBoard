@@ -66,10 +66,6 @@ public class KeyPreviewView extends TextView {
         if (sNoScaleXTextSet.contains(text)) {
             return;
         }
-        if (StringUtilsKt.isEmoji(text)) {
-            sNoScaleXTextSet.add(text);
-            return;
-        }
         // TODO: Override {@link #setBackground(Drawable)} that is supported from API 16 and
         // calculate maximum text width.
         final Drawable background = getBackground();

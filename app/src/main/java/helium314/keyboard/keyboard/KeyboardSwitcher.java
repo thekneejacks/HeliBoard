@@ -117,7 +117,6 @@ public final class KeyboardSwitcher {
         final int keyboardHeight = ResourceUtils.getKeyboardHeight(mThemeContext.getResources(), settingsValues);
         mKeyboardLayoutSet = builder.setKeyboardGeometry(keyboardWidth, keyboardHeight)
                 .setSubtype(mRichImm.getCurrentSubtype())
-                .setVoiceInputKeyEnabled(settingsValues.mShowsVoiceInputKey)
                 .setNumberRowEnabled(settingsValues.mShowsNumberRow)
                 .setNumberRowInSymbolsEnabled(settingsValues.mShowsNumberRowInSymbols)
                 .setLanguageSwitchKeyEnabled(settingsValues.isLanguageSwitchKeyEnabled())

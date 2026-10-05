@@ -1168,10 +1168,6 @@ public final class InputLogic {
         return false;
     }
 
-    public void startDoubleSpacePeriodCountdown(final InputTransaction inputTransaction) {
-        mDoubleSpacePeriodCountdownStart = inputTransaction.getTimestamp();
-    }
-
     public void cancelDoubleSpacePeriodCountdown() {
         mDoubleSpacePeriodCountdownStart = 0;
     }
@@ -1552,12 +1548,9 @@ public final class InputLogic {
             (forAutoSpace ? mConnection.nonWordCodePointAndNoSpaceBeforeCursor(settingsValues.mSpacingAndPunctuations) // avoid detecting URL if it could be a word
                           : !mConnection.spaceBeforeCursor())) return true;
         // already contains a SometimesWordConnector -> may be URL (not so sure, only do with detection enabled
-        if (settingsValues.mUrlDetectionEnabled && settingsValues.mSpacingAndPunctuations.containsSometimesWordConnector(mWordComposer.getTypedWord()))
-            return true;
         // "://" before typed word -> very much looks like URL
         final CharSequence textBeforeCursor = mConnection.getTextBeforeCursor(mWordComposer.getTypedWord().length() + 3, 0);
-        if (textBeforeCursor != null && textBeforeCursor.toString().startsWith("://")) return true;
-        return false;
+        return textBeforeCursor != null && textBeforeCursor.toString().startsWith("://");
     }
 
     /**

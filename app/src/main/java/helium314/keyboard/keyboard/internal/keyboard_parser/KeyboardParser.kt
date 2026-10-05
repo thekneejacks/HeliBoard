@@ -13,7 +13,6 @@ import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyLabel
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyType
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.SimplePopups
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.TextKeyData
-import helium314.keyboard.latin.common.isEmoji
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.utils.LayoutType
 import helium314.keyboard.latin.utils.POPUP_KEYS_LAYOUT
@@ -123,7 +122,7 @@ class KeyboardParser(private val params: KeyboardParams, private val context: Co
             functionalKeys.add(getFunctionalKeysBySide(functionalKeysFromTop, functionalKeysFromBottom))
 
             row.map { key ->
-                val extraFlags = if (key.label.length > 2 && key.label.codePointCount(0, key.label.length) > 2 && !isEmoji(key.label))
+                val extraFlags = if (key.label.length > 2 && key.label.codePointCount(0, key.label.length) > 2)
                         Key.LABEL_FLAGS_AUTO_X_SCALE
                     else 0
                 key.toKeyParams(params, defaultLabelFlags or extraFlags)

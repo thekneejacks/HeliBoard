@@ -17,18 +17,6 @@ import helium314.keyboard.latin.utils.ScriptUtils;
 
 public final class StringUtils {
 
-    public static final int CAPITALIZE_NONE = 0;  // No caps, or mixed case
-    public static final int CAPITALIZE_FIRST = 1; // First only
-    public static final int CAPITALIZE_ALL = 2;   // All caps
-
-    private static final char CHAR_LINE_FEED = 0X000A;
-    private static final char CHAR_VERTICAL_TAB = 0X000B;
-    private static final char CHAR_FORM_FEED = 0X000C;
-    private static final char CHAR_CARRIAGE_RETURN = 0X000D;
-    private static final char CHAR_NEXT_LINE = 0X0085;
-    private static final char CHAR_LINE_SEPARATOR = 0X2028;
-    private static final char CHAR_PARAGRAPH_SEPARATOR = 0X2029;
-
     private StringUtils() {
         // This utility class is not publicly instantiable.
     }
@@ -75,24 +63,6 @@ public final class StringUtils {
         final int cutoff = s.offsetByCodePoints(0, 1);
         return s.substring(0, cutoff).toUpperCase(getLocaleUsedForToTitleCase(locale))
                 + s.substring(cutoff);
-    }
-
-    @NonNull
-    public static String capitalizeFirstAndDowncaseRest(@NonNull final String s,
-                                                        @NonNull final Locale locale) {
-        if (s.length() <= 1) {
-            return s.toUpperCase(getLocaleUsedForToTitleCase(locale));
-        }
-        // TODO: fix the bugs below
-        // - It does not work for Serbian, because it fails to account for the "lj" character,
-        // which should be "Lj" in title case and "LJ" in upper case.
-        // - It does not work for Dutch, because it fails to account for the "ij" digraph when it's
-        // written as two separate code points. They are two different characters but both should
-        // be capitalized as "IJ" as if they were a single letter in most words (not all). If the
-        // unicode char for the ligature is used however, it works.
-        final int cutoff = s.offsetByCodePoints(0, 1);
-        return s.substring(0, cutoff).toUpperCase(getLocaleUsedForToTitleCase(locale))
-                + s.substring(cutoff).toLowerCase(locale);
     }
 
     @NonNull
@@ -163,63 +133,6 @@ public final class StringUtils {
         final int[] codePoints = toCodePointArray(string);
         Arrays.sort(codePoints);
         return codePoints;
-    }
-
-    /**
-     * Construct a String from a code point array
-     *
-     * @param codePoints a code point array that is null terminated when its logical length is
-     *                   shorter than the array length.
-     * @return a string constructed from the code point array.
-     */
-    @NonNull
-    public static String getStringFromNullTerminatedCodePointArray(
-            @NonNull final int[] codePoints) {
-        int stringLength = codePoints.length;
-        for (int i = 0; i < codePoints.length; i++) {
-            if (codePoints[i] == 0) {
-                stringLength = i;
-                break;
-            }
-        }
-        return new String(codePoints, 0 /* offset */, stringLength);
-    }
-
-    // This method assumes the text is not null. For the empty string, it returns CAPITALIZE_NONE.
-    public static int getCapitalizationType(@NonNull final String text) {
-        // If the first char is not uppercase, then the word is either all lower case or
-        // camel case, and in either case we return CAPITALIZE_NONE.
-        final int len = text.length();
-        int index = 0;
-        for (; index < len; index = text.offsetByCodePoints(index, 1)) {
-            if (Character.isLetter(text.codePointAt(index))) {
-                break;
-            }
-        }
-        if (index == len) return CAPITALIZE_NONE;
-        if (!Character.isUpperCase(text.codePointAt(index))) {
-            return CAPITALIZE_NONE;
-        }
-        int capsCount = 1;
-        int letterCount = 1;
-        for (index = text.offsetByCodePoints(index, 1); index < len;
-             index = text.offsetByCodePoints(index, 1)) {
-            if (1 != capsCount && letterCount != capsCount) break;
-            final int codePoint = text.codePointAt(index);
-            if (Character.isUpperCase(codePoint)) {
-                ++capsCount;
-                ++letterCount;
-            } else if (Character.isLetter(codePoint)) {
-                // We need to discount non-letters since they may not be upper-case, but may
-                // still be part of a word (e.g. single quote or dash, as in "IT'S" or "FULL-TIME")
-                ++letterCount;
-            }
-        }
-        // We know the first char is upper case. So we want to test if either every letter other
-        // than the first is lower case, or if they are all upper case. If the string is exactly
-        // one char long, then we will arrive here with letterCount 1, and this is correct, too.
-        if (1 == capsCount) return CAPITALIZE_FIRST;
-        return (letterCount == capsCount ? CAPITALIZE_ALL : CAPITALIZE_NONE);
     }
 
     public static boolean isIdenticalAfterUpcase(@NonNull final String text) {
@@ -415,16 +328,6 @@ public final class StringUtils {
             return Constants.CODE_DOUBLE_QUOTE != codePoint;
     }
 
-    public static boolean isEmptyStringOrWhiteSpaces(@NonNull final String s) {
-        final int N = codePointCount(s);
-        for (int i = 0; i < N; ++i) {
-            if (!Character.isWhitespace(s.codePointAt(i))) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     private static final String LANGUAGE_GREEK = "el";
 
     @NonNull
@@ -459,41 +362,6 @@ public final class StringUtils {
                 ? titleCaseLabel.codePointAt(0) : KeyCode.NOT_SPECIFIED;
     }
 
-    public static int getTrailingSingleQuotesCount(@NonNull final CharSequence charSequence) {
-        final int lastIndex = charSequence.length() - 1;
-        int i = lastIndex;
-        while (i >= 0 && charSequence.charAt(i) == Constants.CODE_SINGLE_QUOTE) {
-            --i;
-        }
-        return lastIndex - i;
-    }
-
-    /**
-     * Returns whether the last composed word contains line-breaking character (e.g. CR or LF).
-     *
-     * @param text the text to be examined.
-     * @return {@code true} if the last composed word contains line-breaking separator.
-     */
-    public static boolean hasLineBreakCharacter(@Nullable final String text) {
-        if (isEmpty(text)) {
-            return false;
-        }
-        for (int i = text.length() - 1; i >= 0; --i) {
-            final char c = text.charAt(i);
-            switch (c) {
-                case CHAR_LINE_FEED:
-                case CHAR_VERTICAL_TAB:
-                case CHAR_FORM_FEED:
-                case CHAR_CARRIAGE_RETURN:
-                case CHAR_NEXT_LINE:
-                case CHAR_LINE_SEPARATOR:
-                case CHAR_PARAGRAPH_SEPARATOR:
-                    return true;
-            }
-        }
-        return false;
-    }
-
     // unicode blocks that contain emojis
     // very fast check, but there are very few blocks that exclusively contain emojis,
     public static boolean mightBeEmoji(final int c) {
@@ -501,15 +369,6 @@ public final class StringUtils {
                 || (0x1F000 <= c && c <= 0x1FAFF) // unicode blocks from Mahjong Tiles to Symbols and Pictographs Extended-A
                 || (0xE0000 <= c && c <= 0xE007F) // unicode block Tags
                 || c == 0xFE0F; // variation selector emoji with color
-    }
-
-    public static boolean isLowerCaseAscii(final String s) {
-        final int length = s.length();
-        for (int i = 0; i < length; i++) {
-            final int c = s.charAt(i);
-            if (c < 97 || c > 122) return false;
-        }
-        return true;
     }
 
     public static int charIndexOfFirstWhitespace(final CharSequence s) {

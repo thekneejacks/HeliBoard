@@ -32,7 +32,6 @@ public final class SpacingAndPunctuations {
     public final String mSentenceSeparatorAndSpace;
     public final boolean mCurrentLanguageHasSpaces;
     public final boolean mUsesAmericanTypography;
-    public final boolean mUsesGermanRules;
 
     public SpacingAndPunctuations(final Resources res, final Boolean urlDetection) {
         // To be able to binary search the code point. See {@link #isUsuallyPrecededBySpace(int)}.
@@ -56,7 +55,6 @@ public final class SpacingAndPunctuations {
         // Heuristic: we use American Typography rules because it's the most common rules for all
         // English variants. German rules (not "German typography") also have small gotchas.
         mUsesAmericanTypography = Locale.ENGLISH.getLanguage().equals(locale.getLanguage());
-        mUsesGermanRules = Locale.GERMAN.getLanguage().equals(locale.getLanguage());
     }
 
     public boolean isWordSeparator(final int code) {
@@ -73,18 +71,6 @@ public final class SpacingAndPunctuations {
 
     public boolean isSometimesWordConnector(final int code) {
         return Arrays.binarySearch(mSortedSometimesWordConnectors, code) >= 0;
-    }
-
-    public boolean containsSometimesWordConnector(final CharSequence word) {
-        final String s = (word instanceof String) ? (String) word : word.toString();
-        final int length = s.length();
-        int offset = 0;
-        while (offset < length) {
-            int cp = s.codePointAt(offset);
-            if (isSometimesWordConnector(cp)) return true;
-            offset += Character.charCount(cp);
-        }
-        return false;
     }
 
     public boolean isWordCodePoint(final int code) {
@@ -131,8 +117,6 @@ public final class SpacingAndPunctuations {
                 "\n   mCurrentLanguageHasSpaces = " +
                 "" + mCurrentLanguageHasSpaces +
                 "\n   mUsesAmericanTypography = " +
-                "" + mUsesAmericanTypography +
-                "\n   mUsesGermanRules = " +
-                "" + mUsesGermanRules;
+                "" + mUsesAmericanTypography;
     }
 }

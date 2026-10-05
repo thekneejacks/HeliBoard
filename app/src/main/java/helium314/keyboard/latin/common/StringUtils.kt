@@ -53,15 +53,6 @@ fun nonWordCodePointAndNoSpaceBeforeCursor(text: CharSequence, spacingAndPunctua
     return nonWordCodePoint && !space // return true if a non-word codepoint and no space was found
 }
 
-fun hasLetterBeforeLastSpaceBeforeCursor(text: CharSequence): Boolean {
-    loopOverCodePointsBackwards(text) { cp, _ ->
-        if (Character.isWhitespace(cp)) return false
-        else if (Character.isLetter(cp)) return true
-        false // continue
-    }
-    return false
-}
-
 /**
  *  Returns whether the [text] ends with word codepoint, ignoring all word connectors.
  *  If the [text] is empty (after ignoring word connectors), the method returns false.
@@ -191,15 +182,6 @@ fun String.splitOnFirstSpacesOnly(): List<String> {
     return out
 }
 
-fun CharSequence.isValidNumber(): Boolean {
-    return this.toString().toDoubleOrNull() != null
-}
-
-fun String.decapitalize(locale: Locale): String {
-    if (isEmpty() || !this[0].isUpperCase()) return this
-    return replaceFirstChar { it.lowercase(locale) }
-}
-
 fun encodeBase36(string: String): String = BigInteger(string.toByteArray()).toString(36)
 
 fun decodeBase36(string: String) = BigInteger(string, 36).toByteArray().decodeToString()
@@ -301,13 +283,3 @@ fun moveStepsToCharCount(text: CharSequence, steps: Int): Int {
 
 fun String.splitOnWhitespace() = SpacedTokens(this).toList()
 
-fun stripTrailingSeparatorsAndConnectors(word: String, spacingAndPunctuations: SpacingAndPunctuations): String {
-    var end = word.length
-    loopOverCodePointsBackwards(word) { cp, l ->
-        if (!spacingAndPunctuations.isWordSeparator(cp) && !spacingAndPunctuations.isWordConnector(cp))
-            return@loopOverCodePointsBackwards true
-        end -= l
-        false
-    }
-    return if (end == word.length) word else word.substring(0, end)
-}

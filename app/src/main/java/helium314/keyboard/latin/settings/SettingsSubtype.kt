@@ -53,8 +53,6 @@ data class SettingsSubtype(val locale: Locale, val extraValues: String) {
 
     fun getExtraValueOf(extraValueKey: String): String? = extraValues.getExtraValueOf(extraValueKey)
 
-    fun hasExtraValueOf(extraValueKey: String): Boolean = extraValues.hasExtraValueOf(extraValueKey)
-
     fun withLayout(type: LayoutType, name: String): SettingsSubtype {
         val map = LayoutType.getLayoutMap(getExtraValueOf(KEYBOARD_LAYOUT_SET) ?: "")
         map[type] = name
@@ -87,9 +85,6 @@ data class SettingsSubtype(val locale: Locale, val extraValues: String) {
 
         fun String.getExtraValueOf(extraValueKey: String) = split(",")
             .firstOrNull { it.startsWith("$extraValueKey=") }?.substringAfter("$extraValueKey=")
-
-        fun String.hasExtraValueOf(extraValueKey: String) = split(",")
-            .any { it.startsWith("$extraValueKey=") || it == extraValueKey }
 
         /** Creates a SettingsSubtype from the given InputMethodSubtype.
          *  Will strip some extra values that are set when creating the InputMethodSubtype from SettingsSubtype */

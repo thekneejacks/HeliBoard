@@ -1,10 +1,8 @@
 package helium314.keyboard.latin.settings
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.util.TypedValue
-import android.view.Gravity
 import helium314.keyboard.keyboard.KeyboardActionListener
 import helium314.keyboard.latin.BuildConfig
 import helium314.keyboard.latin.common.Constants.Separators
@@ -49,9 +47,7 @@ object Defaults {
     const val PREF_ADDITIONAL_SUBTYPES = "de${Separators.SET}${ExtraValue.KEYBOARD_LAYOUT_SET}=MAIN:qwerty${Separators.SETS}" +
             "fr${Separators.SET}${ExtraValue.KEYBOARD_LAYOUT_SET}=MAIN:qwertz${Separators.SETS}" +
             "hu${Separators.SET}${ExtraValue.KEYBOARD_LAYOUT_SET}=MAIN:qwerty"
-    const val PREF_ENABLE_SPLIT_KEYBOARD = false
-    @JvmField
-    val PREF_SPLIT_SPACER_SCALE = Array(4) { DEFAULT_SIZE_SCALE }
+
     @JvmField
     val PREF_KEYBOARD_HEIGHT_SCALE = Array(4) { DEFAULT_SIZE_SCALE }
     @JvmField
@@ -66,7 +62,7 @@ object Defaults {
     const val PREF_FONT_SCALE = DEFAULT_SIZE_SCALE
     const val PREF_HINT_FONT_SCALE = DEFAULT_SIZE_SCALE
     const val PREF_EMOJI_FONT_SCALE = DEFAULT_SIZE_SCALE
-    const val PREF_EMOJI_KEY_FIT = true
+
     @JvmField
     val PREF_SPACE_HORIZONTAL_SWIPE = KeyboardActionListener.SwipeAction.MOVE_CURSOR.name
     @JvmField
@@ -82,12 +78,8 @@ object Defaults {
     var PREF_GESTURE_DYNAMIC_PREVIEW_FOLLOW_SYSTEM = true
     const val PREF_GESTURE_FAST_TYPING_COOLDOWN = 500
     const val PREF_GESTURE_TRAIL_FADEOUT_DURATION = 800
-    const val PREF_SHOW_SETUP_WIZARD_ICON = true
     const val PREFS_LONG_PRESS_SYMBOLS_FOR_NUMPAD = false
-    const val PREF_ONE_HANDED_MODE = false
-    @SuppressLint("RtlHardcoded")
-    const val PREF_ONE_HANDED_GRAVITY = Gravity.LEFT
-    const val PREF_ONE_HANDED_SCALE = 1f
+
     const val PREF_SHOW_NUMBER_ROW = false
     const val PREF_SHOW_NUMBER_ROW_IN_SYMBOLS = true
     const val PREF_LOCALIZED_NUMBER_ROW = true
@@ -103,7 +95,7 @@ object Defaults {
     const val PREF_LANGUAGE_SWIPE_DISTANCE = 5
     const val PREF_TOUCHPAD_SENSITIVITY = 50
     const val PREF_TOUCHPAD_EDGE_SCROLL = true
-    const val PREF_ENABLE_CLIPBOARD_HISTORY = true
+
     @JvmField
     val PREF_NAVBAR_COLOR = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
     const val PREF_ENABLED_SUBTYPES = ""

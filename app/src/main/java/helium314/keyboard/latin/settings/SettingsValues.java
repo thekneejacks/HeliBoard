@@ -26,7 +26,6 @@ import helium314.keyboard.keyboard.KeyboardTheme;
 import helium314.keyboard.keyboard.internal.KeyboardState;
 import helium314.keyboard.keyboard.internal.keyboard_parser.LocaleKeyboardInfos;
 import helium314.keyboard.latin.InputAttributes;
-import helium314.keyboard.latin.R;
 import helium314.keyboard.latin.RichInputMethodManager;
 import helium314.keyboard.latin.common.Colors;
 import helium314.keyboard.latin.utils.ScriptUtils;
@@ -50,7 +49,6 @@ public class SettingsValues {
     // From preferences
     public final boolean mAutoCap;
     public final boolean mKeyPreviewPopupOn;
-    public final boolean mShowsVoiceInputKey;
     public final boolean mLanguageSwitchKeyToOtherImes;
     public final boolean mLanguageSwitchKeyToOtherSubtypes;
     public final boolean mShowsNumberRow;
@@ -85,7 +83,6 @@ public class SettingsValues {
     public final boolean mCustomNavBarColor;
     public final float mKeyboardHeightScale;
     public final float mBottomRowScale;
-    public final boolean mUrlDetectionEnabled;
     public final float mBottomPaddingScale;
     public final float mSidePaddingScale;
     public final ToolbarMode mToolbarMode;
@@ -129,7 +126,6 @@ public class SettingsValues {
         mToolbarHidingGlobal = mIsLocked || prefs.getBoolean(Settings.PREF_TOOLBAR_HIDING_GLOBAL, Defaults.PREF_TOOLBAR_HIDING_GLOBAL);
         mAutoCap = prefs.getBoolean(Settings.PREF_AUTO_CAP, Defaults.PREF_AUTO_CAP) && ScriptUtils.scriptSupportsUppercase(mLocale);
         mKeyPreviewPopupOn = prefs.getBoolean(Settings.PREF_POPUP_ON, Defaults.PREF_POPUP_ON);
-        mShowsVoiceInputKey = mInputAttributes.mShouldShowVoiceInputKey;
         String languagePref = prefs.getString(Settings.PREF_LANGUAGE_SWITCH_KEY, Defaults.PREF_LANGUAGE_SWITCH_KEY);
         mLanguageSwitchKeyToOtherImes = languagePref.equals("input_method") || languagePref.equals("both");
         mLanguageSwitchKeyToOtherSubtypes = mIsLocked || languagePref.equals("internal") || languagePref.equals("both");
@@ -144,7 +140,6 @@ public class SettingsValues {
         mVarToolbarDirection = mToolbarMode != ToolbarMode.HIDDEN && prefs.getBoolean(Settings.PREF_VARIABLE_TOOLBAR_DIRECTION, Defaults.PREF_VARIABLE_TOOLBAR_DIRECTION);
         mUseDoubleSpacePeriod = prefs.getBoolean(Settings.PREF_KEY_USE_DOUBLE_SPACE_PERIOD, Defaults.PREF_KEY_USE_DOUBLE_SPACE_PERIOD)
                 && inputAttributes.mIsGeneralTextInput;
-        mUrlDetectionEnabled = prefs.getBoolean(Settings.PREF_URL_DETECTION, Defaults.PREF_URL_DETECTION);
         // confidence -> threshold and score limit are just some formulas that give something similar to the old values, so that confidence can be in a nice 0-1 range
         mDoubleSpacePeriodTimeout = 1100; // ms
         mHasHardwareKeyboard = Settings.readHasHardwareKeyboard(res.getConfiguration());
@@ -187,7 +182,7 @@ public class SettingsValues {
         mCustomNavBarColor = prefs.getBoolean(Settings.PREF_NAVBAR_COLOR, Defaults.PREF_NAVBAR_COLOR);
         mKeyGapScale = Settings.readKeyGapScale(prefs, isLandscape, isFolded);
 
-        mSpacingAndPunctuations = new SpacingAndPunctuations(res, mUrlDetectionEnabled);
+        mSpacingAndPunctuations = new SpacingAndPunctuations(res, false);
         mBottomPaddingScale = mIsFloatingKeyboard ? 0f : Settings.readBottomPaddingScale(prefs, isLandscape, isFolded);
         mSidePaddingScale = Settings.readSidePaddingScale(prefs, isLandscape, false, isFolded);
         mLongPressSymbolsForNumpad = prefs.getBoolean(Settings.PREFS_LONG_PRESS_SYMBOLS_FOR_NUMPAD, Defaults.PREFS_LONG_PRESS_SYMBOLS_FOR_NUMPAD);
@@ -261,8 +256,6 @@ public class SettingsValues {
         sb.append("" + mAutoCap);
         sb.append("\n   mKeyPreviewPopupOn = ");
         sb.append("" + mKeyPreviewPopupOn);
-        sb.append("\n   mShowsVoiceInputKey = ");
-        sb.append("" + mShowsVoiceInputKey);
         sb.append("\n   mLanguageSwitchKeyToOtherImes = ");
         sb.append("" + mLanguageSwitchKeyToOtherImes);
         sb.append("\n   mLanguageSwitchKeyToOtherSubtypes = ");

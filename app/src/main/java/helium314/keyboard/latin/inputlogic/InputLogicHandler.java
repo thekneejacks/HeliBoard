@@ -57,10 +57,6 @@ class InputLogicHandler implements Handler.Callback {
         }
     }
 
-    public boolean isInBatchInput() {
-        return mInBatchInput;
-    }
-
     /**
      * Fetch suggestions corresponding to an update of a batch input.
      * @param batchPointers the updated pointers, including the part that was passed last time.
@@ -129,7 +125,4 @@ class InputLogicHandler implements Handler.Callback {
         updateBatchInput(batchPointers, sequenceNumber, true);
     }
 
-    public void getSuggestedWords(final Runnable callback) {
-        mNonUIThreadHandler.obtainMessage(MSG_GET_SUGGESTED_WORDS, callback).sendToTarget();
-    }
 }
