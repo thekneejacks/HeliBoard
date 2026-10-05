@@ -113,7 +113,6 @@ class KeyboardLayoutSet internal constructor(private val mContext: Context, priv
         var numberRowEnabled = false
         var numberRowInSymbols = false
         var languageSwitchKeyEnabled = false
-        var oneHandedModeEnabled = false
         var isSpellChecker = false
         var keyboardWidth = 0
         var keyboardHeight = 0
@@ -169,11 +168,6 @@ class KeyboardLayoutSet internal constructor(private val mContext: Context, priv
 
         fun setLanguageSwitchKeyEnabled(enabled: Boolean): Builder {
             params.languageSwitchKeyEnabled = enabled
-            return this
-        }
-
-        fun setOneHandedModeEnabled(enabled: Boolean): Builder {
-            params.oneHandedModeEnabled = enabled
             return this
         }
 

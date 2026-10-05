@@ -37,9 +37,6 @@ public final class ResourceUtils {
             return settingsValues.mFloatingWidth;
         }
         int defaultKeyboardWidth = getDefaultKeyboardWidth(ctx);
-        if (settingsValues.mOneHandedModeEnabled) {
-            return (int) (settingsValues.mOneHandedModeScale * defaultKeyboardWidth);
-        }
         return defaultKeyboardWidth;
     }
 

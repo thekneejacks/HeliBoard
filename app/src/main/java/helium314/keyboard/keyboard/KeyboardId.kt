@@ -32,7 +32,6 @@ data class KeyboardId(
     val languageSwitchKeyEnabled: Boolean,
     val customActionLabel: String?,
     val hasShortcutKey: Boolean,
-    val oneHandedModeEnabled: Boolean,
     val internalAction: KeyboardLayoutSet.InternalAction?,
     val emojiSearchAvailable: Boolean
 ) {
@@ -53,7 +52,6 @@ data class KeyboardId(
         params.languageSwitchKeyEnabled,
         params.editorInfo.actionLabel?.toString(),
         params.voiceInputKeyEnabled,
-        params.oneHandedModeEnabled,
         params.internalAction,
         params.emojiSearchAvailable,
     ) {

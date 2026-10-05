@@ -27,7 +27,6 @@ import helium314.keyboard.latin.utils.ToolbarKey.FULL_RIGHT
 import helium314.keyboard.latin.utils.ToolbarKey.INCOGNITO
 import helium314.keyboard.latin.utils.ToolbarKey.LEFT
 import helium314.keyboard.latin.utils.ToolbarKey.NUMPAD
-import helium314.keyboard.latin.utils.ToolbarKey.ONE_HANDED
 import helium314.keyboard.latin.utils.ToolbarKey.PAGE_DOWN
 import helium314.keyboard.latin.utils.ToolbarKey.PAGE_END
 import helium314.keyboard.latin.utils.ToolbarKey.PAGE_START
@@ -71,7 +70,6 @@ fun createToolbarKey(context: Context, key: ToolbarKey): ImageButton {
 private fun setToolbarButtonActivatedState(button: ImageButton) {
     button.isActivated = when (button.tag) {
         INCOGNITO -> button.context.prefs().getBoolean(Settings.PREF_ALWAYS_INCOGNITO_MODE, Defaults.PREF_ALWAYS_INCOGNITO_MODE)
-        ONE_HANDED -> Settings.getValues().mOneHandedModeEnabled
         else -> true
     }
 }
@@ -88,7 +86,6 @@ fun getCodeForToolbarKey(key: ToolbarKey) = Settings.getInstance().getCustomTool
     COPY -> KeyCode.CLIPBOARD_COPY
     CUT -> KeyCode.CLIPBOARD_CUT
     PASTE -> KeyCode.CLIPBOARD_PASTE
-    ONE_HANDED -> KeyCode.TOGGLE_ONE_HANDED_MODE
     INCOGNITO -> KeyCode.TOGGLE_INCOGNITO_MODE
     AUTOCORRECT -> KeyCode.TOGGLE_AUTOCORRECT
     CLEAR_CLIPBOARD -> KeyCode.CLIPBOARD_CLEAR_HISTORY
@@ -133,13 +130,13 @@ fun getCodeForToolbarKeyLongClick(key: ToolbarKey) = Settings.getInstance().getC
 
 // names need to be aligned with resources strings (using lowercase of key.name)
 enum class ToolbarKey {
-    VOICE, CLIPBOARD, NUMPAD, UNDO, REDO, SETTINGS, SELECT_ALL, SELECT_WORD, COPY, CUT, PASTE, ONE_HANDED, FLOATING, SPLIT,
+    VOICE, CLIPBOARD, NUMPAD, UNDO, REDO, SETTINGS, SELECT_ALL, SELECT_WORD, COPY, CUT, PASTE, FLOATING, SPLIT,
     INCOGNITO, AUTOCORRECT, CLEAR_CLIPBOARD, CLOSE_HISTORY, EMOJI, LEFT, RIGHT, UP, DOWN, WORD_LEFT, WORD_RIGHT,
     PAGE_UP, PAGE_DOWN, FULL_LEFT, FULL_RIGHT, PAGE_START, PAGE_END
 }
 
 enum class ToolbarMode {
-    EXPANDABLE, TOOLBAR_KEYS, SUGGESTION_STRIP, HIDDEN,
+    EXPANDABLE, TOOLBAR_KEYS, HIDDEN,
 }
 
 val toolbarKeyStrings = entries.associateWithTo(EnumMap(ToolbarKey::class.java)) { it.toString().lowercase(Locale.US) }

@@ -9,7 +9,6 @@ package helium314.keyboard.latin.common;
 import androidx.annotation.NonNull;
 
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
-import helium314.keyboard.latin.BuildConfig;
 
 public final class Constants {
 
@@ -218,8 +217,6 @@ public final class Constants {
             case CODE_TAB -> "tab";
             case CODE_ENTER -> "enter";
             case CODE_SPACE -> "space";
-            case KeyCode.TOGGLE_ONE_HANDED_MODE -> "toggleOneHandedMode";
-            case KeyCode.SWITCH_ONE_HANDED_MODE -> "switchOneHandedMode";
             case KeyCode.SPLIT_LAYOUT -> "splitLayout";
             case KeyCode.NUMPAD -> "numpad";
             default -> {

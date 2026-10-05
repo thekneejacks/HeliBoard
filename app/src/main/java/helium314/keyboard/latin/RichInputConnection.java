@@ -954,34 +954,8 @@ public final class RichInputConnection implements PrivateCommandPerformer {
         return 1;
     }
 
-    public boolean hasLetterBeforeLastSpaceBeforeCursor() {
-        return StringUtilsKt.hasLetterBeforeLastSpaceBeforeCursor(mCommittedTextBeforeComposingText);
-    }
-
     public boolean wordBeforeCursorMayBeEmail() {
         return mCommittedTextBeforeComposingText.lastIndexOf(" ") < mCommittedTextBeforeComposingText.lastIndexOf("@");
-    }
-
-    public CharSequence textBeforeCursorUntilLastWhitespaceOrDoubleSlash() {
-        int startIndex = 0;
-        boolean previousWasSlash = false;
-        for (int i = mCommittedTextBeforeComposingText.length() - 1; i >= 0; i--) {
-            final char c = mCommittedTextBeforeComposingText.charAt(i);
-            if (Character.isWhitespace(c)) {
-                startIndex = i + 1;
-                break;
-            }
-            if (c == '/') {
-                if (previousWasSlash) {
-                    startIndex = i + 2;
-                    break;
-                }
-                previousWasSlash = true;
-            } else {
-                previousWasSlash = false;
-            }
-        }
-        return mCommittedTextBeforeComposingText.subSequence(startIndex, mCommittedTextBeforeComposingText.length());
     }
 
     /**

@@ -251,56 +251,6 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
         return res.getBoolean(R.bool.config_fullscreen_mode_allowed);
     }
 
-    public static boolean readShowSetupWizardIcon(final SharedPreferences prefs,
-                                                  final Context context) {
-        if (!prefs.contains(PREF_SHOW_SETUP_WIZARD_ICON)) {
-            final ApplicationInfo appInfo = context.getApplicationInfo();
-            final boolean isApplicationInSystemImage =
-                    (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
-            // Default value
-            return !isApplicationInSystemImage;
-        }
-        return prefs.getBoolean(PREF_SHOW_SETUP_WIZARD_ICON, Defaults.PREF_SHOW_SETUP_WIZARD_ICON);
-    }
-
-    public static boolean readOneHandedModeEnabled(SharedPreferences prefs, boolean landscape, boolean split, boolean folded) {
-        int index = SettingsKt.findIndexOfDefaultSetting(landscape, split, folded);
-        String key = SettingsKt.createPrefKeyForBooleanSettings(PREF_ONE_HANDED_MODE_PREFIX, index, 3);
-        return prefs.getBoolean(key, Defaults.PREF_ONE_HANDED_MODE);
-    }
-
-    public void writeOneHandedModeEnabled(final boolean enabled) {
-        final boolean landscape = mSettingsValues.mDisplayOrientation == Configuration.ORIENTATION_LANDSCAPE;
-        int index = SettingsKt.findIndexOfDefaultSetting(landscape, false, false);
-        String key = SettingsKt.createPrefKeyForBooleanSettings(PREF_ONE_HANDED_MODE_PREFIX, index, 3);
-        mPrefs.edit().putBoolean(key, enabled).apply();
-    }
-
-    public static float readOneHandedModeScale(SharedPreferences prefs, boolean landscape, boolean split, boolean folded) {
-        int index = SettingsKt.findIndexOfDefaultSetting(landscape, split, folded);
-        String key = SettingsKt.createPrefKeyForBooleanSettings(PREF_ONE_HANDED_SCALE_PREFIX, index, 3);
-        return prefs.getFloat(key, Defaults.PREF_ONE_HANDED_SCALE);
-    }
-
-    public void writeOneHandedModeScale(final Float scale) {
-        final boolean landscape = mSettingsValues.mDisplayOrientation == Configuration.ORIENTATION_LANDSCAPE;
-        int index = SettingsKt.findIndexOfDefaultSetting(landscape, false, false);
-        String key = SettingsKt.createPrefKeyForBooleanSettings(PREF_ONE_HANDED_SCALE_PREFIX, index, 3);
-        mPrefs.edit().putFloat(key, scale).apply();
-    }
-
-    public static int readOneHandedModeGravity(SharedPreferences prefs, boolean landscape, boolean split, boolean folded) {
-        int index = SettingsKt.findIndexOfDefaultSetting(landscape, split, folded);
-        String key = SettingsKt.createPrefKeyForBooleanSettings(PREF_ONE_HANDED_GRAVITY_PREFIX, index, 3);
-        return prefs.getInt(key, Defaults.PREF_ONE_HANDED_GRAVITY);
-    }
-
-    public void writeOneHandedModeGravity(final int gravity) {
-        final boolean landscape = mSettingsValues.mDisplayOrientation == Configuration.ORIENTATION_LANDSCAPE;
-        int index = SettingsKt.findIndexOfDefaultSetting(landscape, false, false);
-        String key = SettingsKt.createPrefKeyForBooleanSettings(PREF_ONE_HANDED_GRAVITY_PREFIX, index, 3);
-        mPrefs.edit().putInt(key, gravity).apply();
-    }
 
     public static float readBottomPaddingScale(SharedPreferences prefs, boolean landscape, boolean folded) {
         int index = SettingsKt.findIndexOfDefaultSetting(landscape, folded);

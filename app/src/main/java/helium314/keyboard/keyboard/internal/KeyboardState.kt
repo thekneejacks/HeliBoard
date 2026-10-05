@@ -40,8 +40,6 @@ class KeyboardState(private val switchActions: SwitchActions) {
         fun popDoubleTapShiftKeyTimer(): Boolean
         fun cancelDoubleTapShiftKeyTimer()
 
-        fun setOneHandedModeEnabled(enabled: Boolean)
-        fun switchOneHandedMode()
         fun setFloatingKeyboardEnabled(enabled: Boolean)
 
         companion object {
@@ -81,7 +79,7 @@ class KeyboardState(private val switchActions: SwitchActions) {
         }
     }
 
-    fun onLoadKeyboard(autoCapsFlags: Int, recapitalizeMode: RecapitalizeMode?, onHandedModeEnabled: Boolean) {
+    fun onLoadKeyboard(autoCapsFlags: Int, recapitalizeMode: RecapitalizeMode?) {
         if (DEBUG_EVENT) {
             ////Log.(TAG, "onLoadKeyboard: " + stateToString(autoCapsFlags, recapitalizeMode))
         }
@@ -102,7 +100,6 @@ class KeyboardState(private val switchActions: SwitchActions) {
             loadLayout(Alphabet(ShiftMode.UNSHIFT, autoCapsFlags, recapitalizeMode))
             onUpdateShiftState(autoCapsFlags, recapitalizeMode)
         }
-        switchActions.setOneHandedModeEnabled(onHandedModeEnabled)
         switchActions.setFloatingKeyboardEnabled(Settings.getValues().mIsFloatingKeyboard)
     }
 
@@ -464,8 +461,6 @@ class KeyboardState(private val switchActions: SwitchActions) {
             // Note: Printing clipboard content is handled in InputLogic.handleFunctionalEvent
             KeyCode.NUMPAD -> toggleLayout(Utility.NUMPAD, autoCapsFlags, recapitalizeMode)
             KeyCode.SYMBOL -> toggleLayout(Utility.SYMBOLS, autoCapsFlags, recapitalizeMode)
-            KeyCode.TOGGLE_ONE_HANDED_MODE -> switchActions.setOneHandedModeEnabled(!Settings.getValues().mOneHandedModeEnabled)
-            KeyCode.SWITCH_ONE_HANDED_MODE -> switchActions.switchOneHandedMode()
             KeyCode.TOGGLE_FLOATING_WINDOW -> {
                 switchActions.setFloatingKeyboardEnabled(!Settings.getValues().mIsFloatingKeyboard)
                 KeyboardSwitcher.getInstance().reloadKeyboard()

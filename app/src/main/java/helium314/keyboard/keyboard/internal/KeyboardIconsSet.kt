@@ -62,9 +62,6 @@ class KeyboardIconsSet private constructor() {
         const val NAME_LANGUAGE_SWITCH_KEY = "language_switch_key"
         const val NAME_ZWNJ_KEY = "zwnj_key"
         const val NAME_ZWJ_KEY = "zwj_key"
-        const val NAME_STOP_ONEHANDED_KEY = "stop_onehanded_mode_key"
-        const val NAME_SWITCH_ONEHANDED_KEY = "switch_onehanded_key"
-        const val NAME_RESIZE_ONEHANDED_KEY = "resize_onehanded_key"
         const val NAME_TOOLBAR_KEY = "toolbar_key"
         const val NAME_BIN = "bin"
 
@@ -80,7 +77,6 @@ class KeyboardIconsSet private constructor() {
             "cut_key" to ToolbarKey.CUT.name.lowercase(Locale.US),
             "incognito_key" to ToolbarKey.INCOGNITO.name.lowercase(Locale.US),
             "settings_key" to ToolbarKey.SETTINGS.name.lowercase(Locale.US),
-            "start_onehanded_mode_key" to ToolbarKey.ONE_HANDED.name.lowercase(Locale.US),
         )
 
         private val keyboardIconsMaterial by lazy { hashMapOf(
@@ -102,9 +98,6 @@ class KeyboardIconsSet private constructor() {
             NAME_LANGUAGE_SWITCH_KEY to         R.drawable.sym_keyboard_language_switch_lxx,
             NAME_ZWNJ_KEY to                    R.drawable.sym_keyboard_zwnj_lxx,
             NAME_ZWJ_KEY to                     R.drawable.sym_keyboard_zwj_lxx,
-            NAME_STOP_ONEHANDED_KEY to          R.drawable.sym_keyboard_stop_onehanded_lxx,
-            NAME_SWITCH_ONEHANDED_KEY to        R.drawable.ic_arrow_left,
-            NAME_RESIZE_ONEHANDED_KEY to        R.drawable.ic_arrow_horizontal,
             NAME_TOOLBAR_KEY to                 R.drawable.ic_arrow_right,
             NAME_BIN to                         R.drawable.ic_bin,
         ).apply {
@@ -121,7 +114,6 @@ class KeyboardIconsSet private constructor() {
                     ToolbarKey.COPY -> R.drawable.sym_keyboard_copy
                     ToolbarKey.CUT -> R.drawable.sym_keyboard_cut
                     ToolbarKey.PASTE -> R.drawable.sym_keyboard_paste
-                    ToolbarKey.ONE_HANDED -> R.drawable.sym_keyboard_start_onehanded_lxx
                     ToolbarKey.FLOATING -> R.drawable.ic_drag_indicator
                     ToolbarKey.INCOGNITO -> R.drawable.sym_keyboard_incognito_lxx
                     ToolbarKey.AUTOCORRECT -> R.drawable.ic_autocorrect

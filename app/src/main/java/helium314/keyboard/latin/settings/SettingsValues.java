@@ -72,9 +72,6 @@ public class SettingsValues {
     public final boolean mAutospaceAfterPunctuation;
     public final boolean mAutospaceBeforeGestureTyping;
     public final boolean mShiftRemovesAutospace;
-    public final boolean mOneHandedModeEnabled;
-    public final int mOneHandedModeGravity;
-    public final float mOneHandedModeScale;
     public final float mKeyGapScale;
     public final String mShowMorePopupKeys;
     public final List<String> mPopupKeyOrder;
@@ -180,14 +177,6 @@ public class SettingsValues {
         mFloatingHeight = mIsFloatingKeyboard && mHasHardwareKeyboard && prefs.getBoolean(Settings.PREF_SHOW_ONLY_TOOLBAR_WITH_HARDWARE_KEYBOARD, Defaults.PREF_SHOW_ONLY_TOOLBAR_WITH_HARDWARE_KEYBOARD)
                           ? 0 : SettingsKt.readFloatingHeight(context);
         mKeyboardHeightScale = mIsFloatingKeyboard ? 1f : Settings.readHeightScale(prefs, isLandscape, isFolded);
-        mOneHandedModeEnabled = !mIsFloatingKeyboard && Settings.readOneHandedModeEnabled(prefs, isLandscape, false, isFolded);
-        mOneHandedModeGravity = Settings.readOneHandedModeGravity(prefs, isLandscape, false, isFolded);
-        if (mOneHandedModeEnabled) {
-            final float baseScale = res.getFraction(R.fraction.config_one_handed_mode_width, 1, 1);
-            float extraScale = Settings.readOneHandedModeScale(prefs, isLandscape, false, isFolded);
-            mOneHandedModeScale = 1 - (1 - baseScale) * extraScale;
-        } else
-            mOneHandedModeScale = 1f;
         mSecondaryLocales = SubtypeUtilsKt.getSecondaryLocales(selectedSubtype.getExtraValue());
         mShowMorePopupKeys = SubtypeUtilsKt.getMoreKeys(selectedSubtype, prefs,
             selectedSubtype.isAsciiCapable() ? Defaults.PREF_MORE_POPUP_KEYS : LocaleKeyboardInfos.POPUP_KEYS_NORMAL);

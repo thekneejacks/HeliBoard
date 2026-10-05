@@ -56,7 +56,6 @@ public final class KeyboardSwitcher {
     private FrameLayout mStripContainer;
     private LatinIME mLatinIME;
     private RichInputMethodManager mRichImm;
-    private boolean mIsHardwareAcceleratedDrawingEnabled;
 
     private KeyboardState mState;
 
@@ -88,10 +87,9 @@ public final class KeyboardSwitcher {
         mLatinIME = latinIme;
         mRichImm = RichInputMethodManager.getInstance();
         mState = new KeyboardState(new SwitchActions());
-        mIsHardwareAcceleratedDrawingEnabled = mLatinIME.enableHardwareAcceleration();
     }
 
-    private boolean updateKeyboardThemeAndContextThemeWrapper(final Context context, final KeyboardTheme keyboardTheme) {
+    private void updateKeyboardThemeAndContextThemeWrapper(final Context context, final KeyboardTheme keyboardTheme) {
         final Resources res = context.getResources();
         if (mThemeNeedsReload
                 || mThemeContext == null
@@ -107,9 +105,7 @@ public final class KeyboardSwitcher {
             mCurrentOrientation = res.getConfiguration().orientation;
             mCurrentDpi = res.getDisplayMetrics().densityDpi;
             KeyboardLayoutSet.Companion.onKeyboardThemeChanged();
-            return true;
         }
-        return false;
     }
 
     public void loadKeyboard(final EditorInfo editorInfo, final SettingsValues settingsValues,
@@ -125,11 +121,10 @@ public final class KeyboardSwitcher {
                 .setNumberRowEnabled(settingsValues.mShowsNumberRow)
                 .setNumberRowInSymbolsEnabled(settingsValues.mShowsNumberRowInSymbols)
                 .setLanguageSwitchKeyEnabled(settingsValues.isLanguageSwitchKeyEnabled())
-                .setOneHandedModeEnabled(settingsValues.mOneHandedModeEnabled)
                 .setInternalAction(internalAction)
                 .build();
         try {
-            mState.onLoadKeyboard(currentAutoCapsState, currentRecapitalizeState, settingsValues.mOneHandedModeEnabled);
+            mState.onLoadKeyboard(currentAutoCapsState, currentRecapitalizeState);
         } catch (KeyboardLayoutSet.Companion.KeyboardLayoutSetException e) {
             //Log.e(TAG, "loading keyboard failed: " + e.getKeyboardId(), e.getCause());
             try {
@@ -140,7 +135,7 @@ public final class KeyboardSwitcher {
                         .setNumberRowInSymbolsEnabled(settingsValues.mShowsNumberRowInSymbols)
                         .setLanguageSwitchKeyEnabled(settingsValues.isLanguageSwitchKeyEnabled())
                         .build();
-                mState.onLoadKeyboard(currentAutoCapsState, currentRecapitalizeState, false);
+                mState.onLoadKeyboard(currentAutoCapsState, currentRecapitalizeState);
                 showToast("error loading the keyboard, falling back to defaults", false);
             } catch (KeyboardLayoutSet.Companion.KeyboardLayoutSetException e2) {
                 //Log.e(TAG, "even fallback to defaults failed: " + e2.getKeyboardId(), e2.getCause());
@@ -251,20 +246,6 @@ public final class KeyboardSwitcher {
             ////Log.(TAG, "updateShiftState: " + " autoCapsFlags=" + CapsModeUtils.flagsToString(autoCapsFlags) + " recapitalizeMode=" + recapitalizeMode);
         }
         mState.onUpdateShiftState(autoCapsFlags, recapitalizeMode);
-    }
-
-    public void setOneHandedModeEnabled(boolean enabled, boolean force) {
-        if (!force && mKeyboardViewWrapper.getOneHandedModeEnabled() == enabled) {
-            return;
-        }
-        final Settings settings = Settings.getInstance();
-        mKeyboardViewWrapper.setOneHandedModeEnabled(enabled);
-        mKeyboardViewWrapper.setOneHandedGravity(settings.getCurrent().mOneHandedModeGravity);
-
-        // oneHandeMode is always disabled when floating, and we shouldn't mess up the setting
-        if (enabled != settings.getCurrent().mOneHandedModeEnabled)
-            settings.writeOneHandedModeEnabled(enabled);
-        reloadKeyboard();
     }
 
     public void reloadKeyboard() {
@@ -488,16 +469,6 @@ public final class KeyboardSwitcher {
             }
         }
 
-        @Override
-        public void setOneHandedModeEnabled(boolean enabled) {
-            KeyboardSwitcher.this.setOneHandedModeEnabled(enabled, false);
-        }
-
-        @Override
-        public void switchOneHandedMode() {
-            mKeyboardViewWrapper.switchOneHandedModeSide();
-            Settings.getInstance().writeOneHandedModeGravity(mKeyboardViewWrapper.getOneHandedGravity());
-        }
 
         @Override
         public void setFloatingKeyboardEnabled(boolean enabled) {
