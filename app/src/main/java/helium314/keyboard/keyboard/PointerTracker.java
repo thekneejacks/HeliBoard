@@ -24,8 +24,6 @@ import helium314.keyboard.keyboard.internal.BatchInputArbiter;
 import helium314.keyboard.keyboard.internal.BatchInputArbiter.BatchInputArbiterListener;
 import helium314.keyboard.keyboard.internal.BogusMoveEventDetector;
 import helium314.keyboard.keyboard.internal.DrawingProxy;
-import helium314.keyboard.keyboard.internal.GestureStrokeDrawingParams;
-import helium314.keyboard.keyboard.internal.GestureStrokeDrawingPoints;
 import helium314.keyboard.keyboard.internal.GestureStrokeRecognitionParams;
 import helium314.keyboard.keyboard.internal.PointerTrackerQueue;
 import helium314.keyboard.keyboard.internal.TimerProxy;
@@ -88,18 +86,16 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
         final Object[] thatArray = sProxyMap.get(drawingProxy); // if it's null, the view we're switching to should not exist
         sParams = (PointerTrackerParams) thatArray[0];
         sGestureStrokeRecognitionParams = (GestureStrokeRecognitionParams) thatArray[1];
-        sGestureStrokeDrawingParams = (GestureStrokeDrawingParams) thatArray[2];
-        sTypingTimeRecorder = (TypingTimeRecorder) thatArray[3];
-        sTimerProxy = (TimerProxy) thatArray[4];
+        sTypingTimeRecorder = (TypingTimeRecorder) thatArray[2];
+        sTimerProxy = (TimerProxy) thatArray[3];
         //noinspection unchecked
-        sTrackers = (ArrayList<PointerTracker>) thatArray[5];
+        sTrackers = (ArrayList<PointerTracker>) thatArray[4];
     }
 
     // Parameters for pointer handling.
     private static PointerTrackerParams sParams;
     private static final int sPointerStep = KtxKt.dpToPx(10, Resources.getSystem());
     private static GestureStrokeRecognitionParams sGestureStrokeRecognitionParams;
-    private static GestureStrokeDrawingParams sGestureStrokeDrawingParams;
 
     private static ArrayList<PointerTracker> sTrackers = new ArrayList<>();
     private static final PointerTrackerQueue sPointerTrackerQueue = new PointerTrackerQueue();
@@ -164,14 +160,12 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
     private static boolean sInKeySwipe = false;
 
     private final BatchInputArbiter mBatchInputArbiter;
-    private final GestureStrokeDrawingPoints mGestureStrokeDrawingPoints;
 
     // TODO: Add PointerTrackerFactory singleton and move some class static methods into it.
     public static void init(final TypedArray mainKeyboardViewAttr, final TimerProxy timerProxy,
             final DrawingProxy drawingProxy) {
         sParams = new PointerTrackerParams(mainKeyboardViewAttr);
         sGestureStrokeRecognitionParams = new GestureStrokeRecognitionParams(mainKeyboardViewAttr);
-        sGestureStrokeDrawingParams = new GestureStrokeDrawingParams(mainKeyboardViewAttr);
         sTypingTimeRecorder = new TypingTimeRecorder(
                 sGestureStrokeRecognitionParams.mStaticTimeThresholdAfterFastTyping,
                 sParams.mSuppressKeyPreviewAfterBatchInputDuration);
@@ -186,7 +180,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
         sProxyMap.put(drawingProxy, new Object[] {
                 sParams,
                 sGestureStrokeRecognitionParams,
-                sGestureStrokeDrawingParams,
                 sTypingTimeRecorder,
                 sTimerProxy,
                 sTrackers
@@ -248,7 +241,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
     private PointerTracker(final int id) {
         mPointerId = id;
         mBatchInputArbiter = new BatchInputArbiter(id, sGestureStrokeRecognitionParams);
-        mGestureStrokeDrawingPoints = new GestureStrokeDrawingPoints(sGestureStrokeDrawingParams);
     }
 
     // Returns true if keyboard has been changed by this callback.
@@ -451,20 +443,8 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
         }
     }
 
-    public GestureStrokeDrawingPoints getGestureStrokeDrawingPoints() {
-        return mGestureStrokeDrawingPoints;
-    }
-
     public void getLastCoordinates(@NonNull final int[] outCoords) {
         CoordinateUtils.set(outCoords, mLastX, mLastY);
-    }
-
-    public long getDownTime() {
-        return mDownTime;
-    }
-
-    public void getDownCoordinates(@NonNull final int[] outCoords) {
-        CoordinateUtils.copy(outCoords, mDownCoordinates);
     }
 
     private Key onDownKey(final int x, final int y, final long eventTime) {
@@ -500,10 +480,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
         return sPointerTrackerQueue.size();
     }
 
-    private boolean isOldestTrackerInQueue() {
-        return sPointerTrackerQueue.getOldestElement() == this;
-    }
-
     // Implements {@link BatchInputArbiterListener}.
     @Override
     public void onStartBatchInput() {
@@ -513,10 +489,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
         sListener.onStartBatchInput();
         dismissAllPopupKeysPanels();
         sTimerProxy.cancelLongPressTimersOf(this);
-    }
-
-    private void showGestureTrail() {
-        return;
     }
 
     public void updateBatchInputByTimer(final long syntheticMoveEventTime) {
