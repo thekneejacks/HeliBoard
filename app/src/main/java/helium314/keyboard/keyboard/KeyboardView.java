@@ -34,7 +34,6 @@ import helium314.keyboard.latin.R;
 import helium314.keyboard.latin.common.ColorType;
 import helium314.keyboard.latin.common.Colors;
 import helium314.keyboard.latin.common.Constants;
-import helium314.keyboard.latin.common.StringUtilsKt;
 import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.utils.TypefaceUtils;
 
@@ -143,12 +142,6 @@ public class KeyboardView extends View {
         setFitsSystemWindows(true);
     }
 
-    private static void blendAlpha(@NonNull final Paint paint, final int alpha) {
-        final int color = paint.getColor();
-        paint.setARGB((paint.getAlpha() * alpha) / Constants.Color.ALPHA_OPAQUE,
-                Color.red(color), Color.green(color), Color.blue(color));
-    }
-
     public void setHardwareAcceleratedDrawingEnabled(final boolean enabled) {
         if (!enabled) return;
         // TODO: Should use LAYER_TYPE_SOFTWARE when hardware acceleration is off?
@@ -245,7 +238,7 @@ public class KeyboardView extends View {
             return false;
         }
         freeOffscreenBuffer();
-        mOffscreenBuffer = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        mOffscreenBuffer = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
         return true;
     }
 
@@ -423,7 +416,7 @@ public class KeyboardView extends View {
                 paint.setColor(Color.TRANSPARENT);
                 paint.clearShadowLayer();
             }
-            blendAlpha(paint, params.mAnimAlpha);
+            //blendAlpha(paint, params.mAnimAlpha);
             canvas.drawText(label, 0, label.length(), labelX, labelBaseline, paint);
             // Turn off drop shadow and reset x-scale.
             paint.clearShadowLayer();
@@ -439,7 +432,7 @@ public class KeyboardView extends View {
             paint.setColor(key.selectHintTextColor(params));
             // TODO: Should add a way to specify type face for hint letters
             paint.setTypeface(KeyboardTypeface.resolve(hintLabel, Typeface.DEFAULT_BOLD));
-            blendAlpha(paint, params.mAnimAlpha);
+            //blendAlpha(paint, params.mAnimAlpha);
             final float labelCharHeight = TypefaceUtils.getReferenceCharHeight(paint);
             final float labelCharWidth = TypefaceUtils.getReferenceCharWidth(paint);
             final boolean isFunctionalKeyAndRoundedStyle = false;
