@@ -38,21 +38,20 @@ private fun getBrightnessSquared(@ColorInt color: Int): Int {
 }
 
 @ColorInt
-fun adjustLuminosityAndKeepAlpha(@ColorInt color: Int, amount: Float): Int {
-    val alpha = Color.alpha(color)
+fun adjustLuminosity(@ColorInt color: Int, amount: Float): Int {
     val hsl = FloatArray(3)
     ColorUtils.colorToHSL(color, hsl)
     hsl[2] += amount
     val newColor = ColorUtils.HSLToColor(hsl)
-    return Color.argb(alpha, Color.red(newColor), Color.green(newColor), Color.blue(newColor))
+    return Color.rgb(Color.red(newColor), Color.green(newColor), Color.blue(newColor))
 }
 
 @ColorInt
 fun brighten(@ColorInt color: Int) =
     if (Color.red(color) < 20 && Color.green(color) < 15 && Color.blue(color) < 25)
-        adjustLuminosityAndKeepAlpha(color, 0.09f) // really dark colors need more brightening
+        adjustLuminosity(color, 0.09f) // really dark colors need more brightening
     else
-        adjustLuminosityAndKeepAlpha(color, 0.06f)
+        adjustLuminosity(color, 0.06f)
 
 @ColorInt
-fun darken(@ColorInt color: Int) = adjustLuminosityAndKeepAlpha(color, -0.06f)
+fun darken(@ColorInt color: Int) = adjustLuminosity(color, -0.06f)

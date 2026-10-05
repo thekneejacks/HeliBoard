@@ -80,8 +80,6 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
     private final KeyPreviewDrawParams mKeyPreviewDrawParams;
     private final KeyPreviewChoreographer mKeyPreviewChoreographer;
 
-    // More keys keyboard
-    private final Paint mBackgroundDimAlphaPaint = new Paint(); // todo: not used at all
     private final View mPopupKeysKeyboardContainer;
     private final View mPopupKeysKeyboardForActionContainer;
     private final WeakHashMap<Key, Keyboard> mPopupKeysKeyboardCache = new WeakHashMap<>();
@@ -130,10 +128,6 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
                 && !forceNonDistinctMultitouch;
         mNonDistinctMultitouchHelper = hasDistinctMultitouch ? null : new NonDistinctMultitouchHelper();
 
-        final int backgroundDimAlpha = mainKeyboardViewAttr.getInt(
-                R.styleable.MainKeyboardView_backgroundDimAlpha, 0);
-        mBackgroundDimAlphaPaint.setColor(Color.BLACK);
-        mBackgroundDimAlphaPaint.setAlpha(backgroundDimAlpha);
         mLanguageOnSpacebarTextRatio = mainKeyboardViewAttr.getFraction(
                 R.styleable.MainKeyboardView_languageOnSpacebarTextRatio, 1, 1, 1.0f)
                 * Settings.getValues().mFontSizeMultiplier;
@@ -530,9 +524,6 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
     @Override
     protected void onDrawKeyTopVisuals(@NonNull final Key key, @NonNull final Canvas canvas,
             @NonNull final Paint paint, @NonNull final KeyDrawParams params) {
-        if (key.altCodeWhileTyping() && key.isEnabled()) {
-            params.mAnimAlpha = Constants.Color.ALPHA_OPAQUE;
-        }
         super.onDrawKeyTopVisuals(key, canvas, paint, params);
         final int code = key.getCode();
         if (code == Constants.CODE_SPACE) {

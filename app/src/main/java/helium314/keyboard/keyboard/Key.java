@@ -725,24 +725,18 @@ public class Key implements Comparable<Key> {
     }
 
     @Nullable
-    public Drawable getIcon(final KeyboardIconsSet iconSet, final int alpha) {
+    public Drawable getIcon(final KeyboardIconsSet iconSet) {
         final OptionalAttributes attrs = mOptionalAttributes;
         final String iconName = mEnabled ? getIconName() : ((attrs != null) ? attrs.mDisabledIconName : null);
         final Drawable icon = iconSet.getIconDrawable(iconName);
-        if (icon != null) {
-            icon.setAlpha(alpha);
-        }
         return icon;
     }
 
     @Nullable
-    public Drawable getHintIcon(final KeyboardIconsSet iconSet, final int alpha) {
+    public Drawable getHintIcon(final KeyboardIconsSet iconSet) {
         OptionalAttributes attrs = mOptionalAttributes;
         String iconName = mEnabled ? mHintIconName : ((attrs != null) ? attrs.mDisabledIconName : null);
         Drawable icon = iconSet.getIconDrawable(iconName);
-        if (icon != null) {
-            icon.setAlpha(alpha);
-        }
         return icon;
     }
 

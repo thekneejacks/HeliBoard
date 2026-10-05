@@ -309,7 +309,6 @@ public class KeyboardView extends View {
         final KeyVisualAttributes attr = key.getVisualAttributes();
         // don't use the raw key height, linear font scaling with height is too extreme
         final KeyDrawParams params = mKeyDrawParams.mayCloneAndUpdateParams((int) (key.getHeight() * mKeyScaleForText), attr);
-        params.mAnimAlpha = Constants.Color.ALPHA_OPAQUE;
 
         if (!key.isSpacer()) {
             final Drawable background = key.selectBackgroundDrawable(
@@ -358,7 +357,7 @@ public class KeyboardView extends View {
         // Draw key label.
         final Keyboard keyboard = getKeyboard();
         final Drawable icon = (keyboard == null) ? null
-                : key.getIcon(keyboard.mIconsSet, params.mAnimAlpha);
+                : key.getIcon(keyboard.mIconsSet);
         float labelX = centerX;
         float labelBaseline = centerY;
         final String label = key.getLabel();
@@ -416,7 +415,6 @@ public class KeyboardView extends View {
                 paint.setColor(Color.TRANSPARENT);
                 paint.clearShadowLayer();
             }
-            //blendAlpha(paint, params.mAnimAlpha);
             canvas.drawText(label, 0, label.length(), labelX, labelBaseline, paint);
             // Turn off drop shadow and reset x-scale.
             paint.clearShadowLayer();
@@ -426,13 +424,12 @@ public class KeyboardView extends View {
         // Draw hint label.
         String hintLabel = key.getHintLabel();
         Drawable hintIcon = (keyboard == null || !mShowsHints || hintLabel != null) ? null
-                        : key.getHintIcon(keyboard.mIconsSet, params.mAnimAlpha);
+                        : key.getHintIcon(keyboard.mIconsSet);
         if (hintLabel != null && mShowsHints) {
             paint.setTextSize(key.selectHintTextSize(params) * mHintFontSizeMultiplier);
             paint.setColor(key.selectHintTextColor(params));
             // TODO: Should add a way to specify type face for hint letters
             paint.setTypeface(KeyboardTypeface.resolve(hintLabel, Typeface.DEFAULT_BOLD));
-            //blendAlpha(paint, params.mAnimAlpha);
             final float labelCharHeight = TypefaceUtils.getReferenceCharHeight(paint);
             final float labelCharWidth = TypefaceUtils.getReferenceCharWidth(paint);
             final boolean isFunctionalKeyAndRoundedStyle = false;

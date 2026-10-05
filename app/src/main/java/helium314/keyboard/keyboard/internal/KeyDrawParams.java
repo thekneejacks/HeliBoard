@@ -39,8 +39,6 @@ public final class KeyDrawParams {
     public float mLabelOffCenterRatio;
     public float mHintLabelOffCenterRatio;
 
-    public int mAnimAlpha;
-
     public KeyDrawParams() {}
 
     private KeyDrawParams(@NonNull final KeyDrawParams copyFrom) {
@@ -67,8 +65,6 @@ public final class KeyDrawParams {
         mHintLabelVerticalAdjustment = copyFrom.mHintLabelVerticalAdjustment;
         mLabelOffCenterRatio = copyFrom.mLabelOffCenterRatio;
         mHintLabelOffCenterRatio = copyFrom.mHintLabelOffCenterRatio;
-
-        mAnimAlpha = copyFrom.mAnimAlpha;
     }
 
     public void updateParams(int keySize, @Nullable KeyVisualAttributes attr) {

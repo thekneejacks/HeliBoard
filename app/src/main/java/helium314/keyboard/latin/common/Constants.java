@@ -12,13 +12,6 @@ import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
 
 public final class Constants {
 
-    public static final class Color {
-        /**
-         * The alpha value for fully opaque.
-         */
-        public final static int ALPHA_OPAQUE = 255;
-    }
-
     public static final class ImeOption {
         /**
          * The private IME option used to indicate that no microphone should be shown for a given
