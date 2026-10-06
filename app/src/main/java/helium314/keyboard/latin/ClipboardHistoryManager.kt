@@ -3,7 +3,6 @@
 package helium314.keyboard.latin
 
 import android.content.ClipData
-import android.content.ClipDescription
 import android.content.ClipboardManager
 import android.content.Context
 import android.net.Uri
@@ -14,7 +13,6 @@ import helium314.keyboard.compat.ClipboardManagerCompat
 import helium314.keyboard.event.Event
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode
 import helium314.keyboard.latin.common.Constants
-import helium314.keyboard.latin.database.ClipboardDao
 import helium314.keyboard.latin.settings.Defaults
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.utils.prefs
@@ -27,13 +25,11 @@ class ClipboardHistoryManager(
 ) : ClipboardManager.OnPrimaryClipChangedListener {
 
     private lateinit var clipboardManager: ClipboardManager
-    private var clipboardDao: ClipboardDao? = null
     private var tempPrimaryClip = false
 
     fun onCreate() {
         clipboardManager = latinIME.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         clipboardManager.addPrimaryClipChangedListener(this)
-        clipboardDao = ClipboardDao.getInstance(latinIME)
         if (latinIME.mSettings.current.mClipboardHistoryEnabled)
             fetchPrimaryClip()
     }
@@ -64,9 +60,6 @@ class ClipboardHistoryManager(
         if (description.hasMimeType("text/*")) {
             val content = clipItem.coerceToText(latinIME)
             if (TextUtils.isEmpty(content)) return
-            clipboardDao?.addClip(timeStamp, false, content.toString())
-        } else if (maySaveFromUri(clipItem.uri, latinIME)) {
-            clipboardDao?.addClipUri(timeStamp, false, clipItem.uri, description, latinIME)
         }
     }
 
@@ -100,29 +93,11 @@ class ClipboardHistoryManager(
         // todo: replacing the current primary clip is far from ideal, try finding a different way
         GlobalScope.launch {
             delay(500)
-            try {
-                clipboardManager.setPrimaryClip(primaryClip)
-            } catch (e: Exception) {
-                //Log.i(TAG, "could not go back to old primary clip", e)
-                // happens wen the clip was a file
-                // try to find it in out clipboard entries
-                val clip = clipboardDao?.getAll()?.firstOrNull { it.timeStamp == ClipboardManagerCompat.getClipTimestamp(primaryClip) }
-                if (clip?.filename != null)
-                    clipboardManager.setPrimaryClip(ClipData(
-                        ClipDescription(clip.text, clip.mimeTypes?.toTypedArray()),
-                        ClipData.Item(clip.getContentUri(latinIME))
-                    ))
-                else if (clip != null)
-                    clipboardManager.setPrimaryClip(ClipData(
-                        ClipDescription("", arrayOf("text/*")),
-                        ClipData.Item(clip.text)
-                    ))
-            }
+            clipboardManager.setPrimaryClip(primaryClip)
         }
     }
 
     fun clearHistory() {
-        clipboardDao?.clearNonPinned()
         ClipboardManagerCompat.clearPrimaryClip(clipboardManager)
     }
 

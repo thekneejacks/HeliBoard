@@ -12,7 +12,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import helium314.keyboard.keyboard.KeyboardLayoutSet
 import helium314.keyboard.keyboard.KeyboardSwitcher
 import helium314.keyboard.latin.R
-import helium314.keyboard.latin.database.ClipboardDao
 import helium314.keyboard.latin.settings.Defaults
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.utils.SubtypeSettings
@@ -157,46 +156,8 @@ fun createPreferencesSettings(context: Context) = listOf(
     {
         SwitchPreference(it, Defaults.PREF_REMOVE_REDUNDANT_POPUPS) { KeyboardSwitcher.getInstance().setThemeNeedsReload() }
     },
-    Setting(context, Settings.PREF_ENABLE_CLIPBOARD_HISTORY,
-        R.string.enable_clipboard_history, R.string.enable_clipboard_history_summary)
-    {
-        val ctx = LocalContext.current
-        SwitchPreference(it, Defaults.PREF_ENABLE_CLIPBOARD_HISTORY) { ClipboardDao.getInstance(ctx)?.clearNonPinned() }
-    },
-    Setting(context, Settings.PREF_CLIPBOARD_HISTORY_RETENTION_TIME, R.string.clipboard_history_retention_time) { setting ->
-        val ctx = LocalContext.current
-        SliderPreference(
-            name = setting.title,
-            key = setting.key,
-            default = Defaults.PREF_CLIPBOARD_HISTORY_RETENTION_TIME,
-            description = {
-                if (it > 120) stringResource(R.string.settings_no_limit)
-                else stringResource(R.string.abbreviation_unit_minutes, it.toString())
-            },
-            range = 1f..121f,
-        ) { ClipboardDao.getInstance(ctx)?.clearOldClips(true) }
-    },
     Setting(context, Settings.PREF_CLIPBOARD_HISTORY_PINNED_FIRST, R.string.clipboard_history_pinned_first) {
         SwitchPreference(it, Defaults.PREF_CLIPBOARD_HISTORY_PINNED_FIRST)
-    },
-    Setting(context, Settings.PREF_CLIPBOARD_USE_FILES, R.string.clipboard_history_files) {
-        val ctx = LocalContext.current
-        SwitchPreference(it, Defaults.PREF_CLIPBOARD_USE_FILES) {
-            ClipboardDao.getInstance(ctx)?.cleanupFiles(ctx.prefs())
-        }
-    },
-    Setting(context, Settings.PREF_CLIPBOARD_FILES_SIZE_LIMIT, R.string.clipboard_history_max_file_size) { setting ->
-        val ctx = LocalContext.current
-        SliderPreference(
-            name = setting.title,
-            key = setting.key,
-            default = Defaults.PREF_CLIPBOARD_FILES_SIZE_LIMIT,
-            description = {
-                if (it > 1000) stringResource(R.string.settings_no_limit)
-                else stringResource(R.string.abbreviation_unit_mb, it.toString())
-            },
-            range = 1f..1001f,
-        ) { ClipboardDao.getInstance(ctx)?.cleanupFiles(ctx.prefs()) }
     },
     Setting(context, Settings.PREF_KEYPRESS_SOUND_VOLUME, R.string.prefs_keypress_sound_volume_settings) { setting ->
         val audioManager = LocalContext.current.getSystemService(Context.AUDIO_SERVICE) as AudioManager

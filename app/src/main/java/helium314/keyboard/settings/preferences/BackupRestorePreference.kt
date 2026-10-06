@@ -20,7 +20,6 @@ import helium314.keyboard.keyboard.KeyboardSwitcher
 import helium314.keyboard.latin.R
 import helium314.keyboard.latin.checkVersionUpgrade
 import helium314.keyboard.latin.common.FileUtils
-import helium314.keyboard.latin.database.Database
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.utils.DeviceProtectedUtils
 import helium314.keyboard.latin.utils.ExecutorUtils
@@ -133,14 +132,6 @@ private fun backupLauncher(onError: (String) -> Unit): ManagedActivityResultLaun
                         fileStream.close()
                         zipStream.closeEntry()
                     }
-                    val dbFile = ctx.getDatabasePath(Database.NAME)
-                    if (dbFile.exists()) {
-                        val fileStream = FileInputStream(dbFile).buffered()
-                        zipStream.putNextEntry(ZipEntry(Database.NAME))
-                        fileStream.copyTo(zipStream, 1024)
-                        fileStream.close()
-                        zipStream.closeEntry()
-                    }
                     zipStream.putNextEntry(ZipEntry(PREFS_FILE_NAME))
                     settingsToJsonStream(ctx.prefs().all, zipStream)
                     zipStream.closeEntry()
@@ -166,7 +157,6 @@ private fun restoreLauncher(onError: (String) -> Unit): ManagedActivityResultLau
     return filePicker { uri ->
         val wait = CountDownLatch(1)
         ExecutorUtils.getBackgroundExecutor(ExecutorUtils.KEYBOARD).execute {
-            val restoredDb = ctx.getDatabasePath(Database.NAME + "_restored")
             val oldPrefs = ctx.prefs().all.toMap()
             val oldProtectedPrefs = ctx.protectedPrefs().all.toMap()
             val filesDir = ctx.filesDir!!
@@ -196,9 +186,6 @@ private fun restoreLauncher(onError: (String) -> Unit): ManagedActivityResultLau
                                     //Log.w("AdvancedScreen", "skipping unsafe backup entry ${entry.name}")
                                 }
                                 anyMatch = true
-                            } else if (entry.name == Database.NAME) {
-                                anyMatch = true
-                                FileUtils.copyStreamToNewFile(zip, restoredDb)
                             } else if (entry.name == PREFS_FILE_NAME) {
                                 val prefLines = String(zip.readBytes()).split("\n")
                                 val prefs = ctx.prefs()
@@ -220,7 +207,6 @@ private fun restoreLauncher(onError: (String) -> Unit): ManagedActivityResultLau
                 if (!anyMatch)
                     throw Exception("nothing to restore in the given file")
 
-                Database.copyFromDb(restoredDb, ctx)
                 filesDir2.deleteRecursively()
                 deviceProtectedFilesDir2.deleteRecursively()
                 if (Looper.myLooper() == null)
