@@ -18,6 +18,8 @@ class App : Application() {
         RichInputMethodManager.init(this)
         app = this
         Defaults.initDynamicDefaults(this)
+
+        this.deleteDatabase("heliboard.db")
     }
 
     companion object {
