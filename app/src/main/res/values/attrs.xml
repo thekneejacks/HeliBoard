@@ -147,24 +147,6 @@
         <attr name="divider" format="reference" />
     </declare-styleable>
 
-    <declare-styleable name="EmojiPalettesView">
-        <attr name="categoryPageIndicatorBackground" format="color" />
-        <attr name="iconEmojiRecentsTab" format="reference" />
-        <attr name="iconEmojiSmileysTab" format="reference" />
-        <attr name="iconEmojiPeopleTab" format="reference" />
-        <attr name="iconEmojiNatureTab" format="reference" />
-        <attr name="iconEmojiFoodTab" format="reference" />
-        <attr name="iconEmojiTravelPlacesTab" format="reference" />
-        <attr name="iconEmojiActivitiesTab" format="reference" />
-        <attr name="iconEmojiObjectsTab" format="reference" />
-        <attr name="iconEmojiSymbolsTab" format="reference" />
-        <attr name="iconEmojiFlagsTab" format="reference" />
-        <attr name="iconEmojiEmoticonsTab" format="reference" />
-    </declare-styleable>
-
-    <declare-styleable name="ClipboardHistoryView">
-        <attr name="iconPinnedClip" format="reference" />
-    </declare-styleable>
 
     <declare-styleable name="SuggestionStripView">
         <attr name="suggestionStripOptions" format="integer">
@@ -173,10 +155,6 @@
             <flag name="validTypedWordBold" value="0x04" />
         </attr>
         <attr name="alphaObsoleted" format="fraction" />
-        <attr name="suggestionsCountInStrip" format="integer" />
-        <attr name="centerSuggestionPercentile" format="fraction" />
-        <attr name="maxMoreSuggestionsRow" format="integer" />
-        <attr name="minMoreSuggestionsWidth" format="float" />
     </declare-styleable>
 
     <declare-styleable name="Keyboard">

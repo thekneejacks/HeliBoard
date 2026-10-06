@@ -67,16 +67,6 @@
     <!-- Common key top visual configuration. -->
     <dimen name="config_key_popup_hint_letter_padding">2dp</dimen>
 
-    <!-- Common suggestion strip configuration. -->
-    <integer name="config_suggestions_count_in_strip">3</integer>
-    <fraction name="config_center_suggestion_percentile">36%</fraction>
-    <integer name="config_delay_in_milliseconds_to_update_suggestions">100</integer>
-
-    <!-- Common more suggestions configuration. -->
-    <dimen name="config_more_suggestions_key_horizontal_padding">12dp</dimen>
-    <dimen name="config_more_suggestions_bottom_gap">6dp</dimen>
-    <dimen name="config_more_suggestions_modal_tolerance">32.0dp</dimen>
-    <fraction name="config_more_suggestions_info_ratio">18%</fraction>
 
     <!-- Common gesture trail parameters -->
     <!-- Minimum distance between gesture trail sampling points. -->
@@ -95,14 +85,4 @@
     <integer name="config_gesture_trail_body_ratio">100</integer>
     <integer name="config_gesture_trail_shadow_ratio">-1</integer>
 
-    <!-- Common configuration of Emoji keyboard -->
-    <dimen name="config_emoji_category_page_id_height">2dp</dimen>
-
-    <!-- Common configuration of clipboard keyboard -->
-    <dimen name="config_clipboard_pinned_icon_size">18dp</dimen>
-
-    <!-- Inset used in Accessibility mode to avoid accidental key presses when a finger slides off the screen. -->
-    <dimen name="config_accessibility_edge_slop">8dp</dimen>
-
-    <integer name="config_user_dictionary_max_word_length">48</integer>
 </resources>
