@@ -53,7 +53,7 @@ public final class TimerHandler extends LeakGuardHandlerWrapper<DrawingProxy>
                 tracker2.onLongPressed();
             }
             case MSG_DISMISS_KEY_PREVIEW -> {
-                drawingProxy.onKeyReleased((Key)msg.obj, false /* withAnimation */);
+                drawingProxy.onKeyReleased((Key)msg.obj);
             }
         }
     }

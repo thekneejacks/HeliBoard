@@ -6,15 +6,10 @@
 
 package helium314.keyboard.keyboard;
 
-import android.animation.AnimatorInflater;
-import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.ContextThemeWrapper;
@@ -37,8 +32,6 @@ import helium314.keyboard.keyboard.internal.PopupKeySpec;
 import helium314.keyboard.keyboard.internal.TimerHandler;
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
 import helium314.keyboard.latin.R;
-import helium314.keyboard.latin.common.ColorType;
-import helium314.keyboard.latin.common.Colors;
 import helium314.keyboard.latin.common.Constants;
 import helium314.keyboard.latin.common.CoordinateUtils;
 import helium314.keyboard.latin.settings.Settings;
@@ -52,21 +45,9 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
     private KeyboardActionListener mKeyboardActionListener;
 
     /* Space key and its icon and background. */
-    private Key mSpaceKey;
     // Stuff to draw language name on spacebar.
-    private final int mLanguageOnSpacebarFinalAlpha;
-    private final ObjectAnimator mLanguageOnSpacebarFadeoutAnimator;
     private boolean mHasMultipleEnabledIMEsOrSubtypes;
-    private final float mLanguageOnSpacebarTextRatio;
-    private float mLanguageOnSpacebarTextSize;
-    private final int mLanguageOnSpacebarTextColor;
-    private final float mLanguageOnSpacebarTextShadowRadius;
-    private final int mLanguageOnSpacebarTextShadowColor;
-    private static final float LANGUAGE_ON_SPACEBAR_TEXT_SHADOW_RADIUS_DISABLED = -1.0f;
 
-    // Stuff to draw altCodeWhileTyping keys.
-    private final ObjectAnimator mAltCodeKeyWhileTypingFadeoutAnimator;
-    private final ObjectAnimator mAltCodeKeyWhileTypingFadeinAnimator;
 
     // Drawing preview placer view
     private final DrawingPreviewPlacerView mDrawingPreviewPlacerView;
@@ -83,11 +64,11 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
     // More keys panel (used by both popup keys keyboard and more suggestions view)
     // TODO: Consider extending to support multiple popup keys panels
     private PopupKeysPanel mPopupKeysPanel;
-
     private final KeyDetector mKeyDetector;
-
     private final TimerHandler mTimerHandler;
-    private final int mLanguageOnSpacebarHorizontalMargin;
+
+
+
 
     public MainKeyboardView(final Context context, final AttributeSet attrs) {
         this(context, attrs, R.attr.mainKeyboardViewStyle);
@@ -113,24 +94,6 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
 
         PointerTracker.init(mainKeyboardViewAttr, mTimerHandler, this /* DrawingProxy */);
 
-        mLanguageOnSpacebarTextRatio = mainKeyboardViewAttr.getFraction(
-                R.styleable.MainKeyboardView_languageOnSpacebarTextRatio, 1, 1, 1.0f)
-                * Settings.getValues().mFontSizeMultiplier;
-        final Colors colors = Settings.getValues().mColors;
-        mLanguageOnSpacebarTextColor = colors.get(ColorType.SPACE_BAR_TEXT);
-        mLanguageOnSpacebarTextShadowRadius = mainKeyboardViewAttr.getFloat(
-                R.styleable.MainKeyboardView_languageOnSpacebarTextShadowRadius,
-                LANGUAGE_ON_SPACEBAR_TEXT_SHADOW_RADIUS_DISABLED);
-        mLanguageOnSpacebarTextShadowColor = mainKeyboardViewAttr.getColor(
-                R.styleable.MainKeyboardView_languageOnSpacebarTextShadowColor, 0);
-        mLanguageOnSpacebarFinalAlpha = Color.alpha(mLanguageOnSpacebarTextColor);
-        final int languageOnSpacebarFadeoutAnimatorResId = mainKeyboardViewAttr.getResourceId(
-                R.styleable.MainKeyboardView_languageOnSpacebarFadeoutAnimator, 0);
-        final int altCodeKeyWhileTypingFadeoutAnimatorResId = mainKeyboardViewAttr.getResourceId(
-                R.styleable.MainKeyboardView_altCodeKeyWhileTypingFadeoutAnimator, 0);
-        final int altCodeKeyWhileTypingFadeinAnimatorResId = mainKeyboardViewAttr.getResourceId(
-                R.styleable.MainKeyboardView_altCodeKeyWhileTypingFadeinAnimator, 0);
-
         mKeyPreviewDrawParams = new KeyPreviewDrawParams(mainKeyboardViewAttr);
         mKeyPreviewChoreographer = new KeyPreviewChoreographer(mKeyPreviewDrawParams);
 
@@ -150,35 +113,14 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
         final LayoutInflater inflater = LayoutInflater.from(getContext());
         mPopupKeysKeyboardContainer = inflater.inflate(popupKeysKeyboardLayoutId, null);
         mPopupKeysKeyboardForActionContainer = inflater.inflate(popupKeysKeyboardForActionLayoutId, null);
-        mLanguageOnSpacebarFadeoutAnimator = loadObjectAnimator(languageOnSpacebarFadeoutAnimatorResId, this);
-        if (mLanguageOnSpacebarFadeoutAnimator != null)
-            mLanguageOnSpacebarFadeoutAnimator.setIntValues(255, mLanguageOnSpacebarFinalAlpha);
-        mAltCodeKeyWhileTypingFadeoutAnimator = loadObjectAnimator(altCodeKeyWhileTypingFadeoutAnimatorResId, this);
-        mAltCodeKeyWhileTypingFadeinAnimator = loadObjectAnimator(altCodeKeyWhileTypingFadeinAnimatorResId, this);
 
         mKeyboardActionListener = KeyboardActionListener.EMPTY_LISTENER;
-
-        mLanguageOnSpacebarHorizontalMargin = (int) getResources().getDimension(
-                R.dimen.config_language_on_spacebar_horizontal_margin);
     }
 
     @Override
     public void setHardwareAcceleratedDrawingEnabled(final boolean enabled) {
         super.setHardwareAcceleratedDrawingEnabled(enabled);
         mDrawingPreviewPlacerView.setHardwareAcceleratedDrawingEnabled(enabled);
-    }
-
-    private ObjectAnimator loadObjectAnimator(final int resId, final Object target) {
-        if (resId == 0) {
-            // TODO: Stop returning null.
-            return null;
-        }
-        final ObjectAnimator animator = (ObjectAnimator)AnimatorInflater.loadAnimator(
-                getContext(), resId);
-        if (animator != null) {
-            animator.setTarget(target);
-        }
-        return animator;
     }
 
     // Implements {@link DrawingProxy#startWhileTypingAnimation(int)}.
@@ -214,19 +156,6 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
                 keyboard, -getPaddingLeft(), -getPaddingTop() + getVerticalCorrection());
         PointerTracker.setKeyDetector(mKeyDetector);
         mPopupKeysKeyboardCache.clear();
-
-        mSpaceKey = keyboard.getKey(Constants.CODE_SPACE);
-        final int keyHeight = keyboard.mMostCommonKeyHeight - keyboard.mVerticalGap;
-        mLanguageOnSpacebarTextSize = keyHeight * mLanguageOnSpacebarTextRatio;
-
-        /*if (AccessibilityUtils.Companion.getInstance().isAccessibilityEnabled()) {
-            if (mAccessibilityDelegate == null) {
-                mAccessibilityDelegate = new MainKeyboardAccessibilityDelegate(this, mKeyDetector);
-            }
-            mAccessibilityDelegate.setKeyboard(keyboard);
-        } else {
-            mAccessibilityDelegate = null;
-        }*/
     }
 
     /**
@@ -288,23 +217,12 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
 
     // Implements {@link DrawingProxy#onKeyReleased(Key,boolean)}.
     @Override
-    public void onKeyReleased(@NonNull final Key key, final boolean withAnimation) {
+    public void onKeyReleased(@NonNull final Key key) {
         key.onReleased();
         if (key.hasPreview()) {
-            if (withAnimation) {
-                dismissKeyPreview(key);
-            } else {
-                dismissKeyPreviewWithoutDelay(key);
-            }
+            dismissKeyPreviewWithoutDelay(key);
         }
     }
-
-    private void dismissKeyPreview(@NonNull final Key key) {
-        if (isHardwareAccelerated()) {
-            mKeyPreviewChoreographer.dismissKeyPreview(key);
-        }
-    }
-
 
     @Override
     protected void onAttachedToWindow() {

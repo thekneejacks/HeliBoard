@@ -213,7 +213,7 @@ public final class PointerTracker implements PointerTrackerQueue.Element{
         final int trackersSize = sTrackers.size();
         for (int i = 0; i < trackersSize; ++i) {
             final PointerTracker tracker = sTrackers.get(i);
-            tracker.setReleasedKeyGraphics(tracker.getKey(), true);
+            tracker.setReleasedKeyGraphics(tracker.getKey());
         }
     }
 
@@ -353,17 +353,17 @@ public final class PointerTracker implements PointerTrackerQueue.Element{
         return mKeyDetector.detectHitKey(x, y);
     }
 
-    private void setReleasedKeyGraphics(@Nullable final Key key, final boolean withAnimation) {
+    private void setReleasedKeyGraphics(@Nullable final Key key) {
         if (key == null) {
             return;
         }
 
-        sDrawingProxy.onKeyReleased(key, withAnimation);
+        sDrawingProxy.onKeyReleased(key);
 
         if (key.isShift()) {
             for (final Key shiftKey : mKeyboard.mShiftKeys) {
                 if (shiftKey != key) {
-                    sDrawingProxy.onKeyReleased(shiftKey, false);
+                    sDrawingProxy.onKeyReleased(shiftKey);
                 }
             }
         }
@@ -372,11 +372,11 @@ public final class PointerTracker implements PointerTrackerQueue.Element{
             final int altCode = key.getAltCode();
             final Key altKey = mKeyboard.getKey(altCode);
             if (altKey != null) {
-                sDrawingProxy.onKeyReleased(altKey, false);
+                sDrawingProxy.onKeyReleased(altKey);
             }
             for (final Key k : mKeyboard.mAltCodeKeysWhileTyping) {
                 if (k != key && k.getAltCode() == altCode) {
-                    sDrawingProxy.onKeyReleased(k, false);
+                    sDrawingProxy.onKeyReleased(k);
                 }
             }
         }
@@ -635,7 +635,7 @@ public final class PointerTracker implements PointerTrackerQueue.Element{
     }
 
     private void processDraggingFingerOutFromOldKey(final Key oldKey) {
-        setReleasedKeyGraphics(oldKey, true);
+        setReleasedKeyGraphics(oldKey);
         callListenerOnRelease(oldKey, oldKey.getCode(), true);
         startKeySelectionByDraggingFinger(oldKey);
         sTimerProxy.cancelKeyTimersOf(this);
@@ -666,10 +666,10 @@ public final class PointerTracker implements PointerTrackerQueue.Element{
                 && !sPointerTrackerQueue.hasModifierKeyOlderThan(this)) {
             onUpEvent(x, y, eventTime);
             cancelTrackingForAction();
-            setReleasedKeyGraphics(oldKey, true);
+            setReleasedKeyGraphics(oldKey);
         } else {
             cancelTrackingForAction();
-            setReleasedKeyGraphics(oldKey, true);
+            setReleasedKeyGraphics(oldKey);
         }
     }
 
@@ -807,7 +807,7 @@ public final class PointerTracker implements PointerTrackerQueue.Element{
         final int currentRepeatingKeyCode = mCurrentRepeatingKeyCode;
         mCurrentRepeatingKeyCode = Constants.NOT_A_CODE;
         // Release the last pressed key.
-        setReleasedKeyGraphics(currentKey, true);
+        setReleasedKeyGraphics(currentKey);
 
         if (mInHorizontalSwipe && currentKey.getCode() == KeyCode.DELETE) {
             sListener.onUpWithDeletePointerActive();
@@ -897,7 +897,7 @@ public final class PointerTracker implements PointerTrackerQueue.Element{
             return;
         }
 
-        setReleasedKeyGraphics(key, false);
+        setReleasedKeyGraphics(key);
         final PopupKeysPanel popupKeysPanel = sDrawingProxy.showPopupKeysKeyboard(key, this);
         if (popupKeysPanel == null) {
             return;
@@ -915,7 +915,7 @@ public final class PointerTracker implements PointerTrackerQueue.Element{
     private void cancelKeyTracking() {
         resetKeySelectionByDraggingFinger();
         cancelTrackingForAction();
-        setReleasedKeyGraphics(mCurrentKey, true);
+        setReleasedKeyGraphics(mCurrentKey);
         sPointerTrackerQueue.remove(this);
     }
 
@@ -931,7 +931,7 @@ public final class PointerTracker implements PointerTrackerQueue.Element{
 
     private void onCancelEventInternal() {
         sTimerProxy.cancelKeyTimersOf(this);
-        setReleasedKeyGraphics(mCurrentKey, true);
+        setReleasedKeyGraphics(mCurrentKey);
         resetKeySelectionByDraggingFinger();
         dismissPopupKeysPanel();
     }

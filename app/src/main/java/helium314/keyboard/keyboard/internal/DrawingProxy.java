@@ -26,7 +26,7 @@ public interface DrawingProxy {
      * @param key the {@link Key} that is being released.
      * @param withAnimation when true, key popup preview should be dismissed with animation.
      */
-    void onKeyReleased(@NonNull Key key, boolean withAnimation);
+    void onKeyReleased(@NonNull Key key);
 
     /**
      * Start showing popup keys keyboard of a key that is being long pressed.
