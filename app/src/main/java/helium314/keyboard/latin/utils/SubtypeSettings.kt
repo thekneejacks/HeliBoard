@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Resources
 import android.view.inputmethod.InputMethodSubtype
-import android.widget.Toast
 import androidx.core.app.LocaleManagerCompat
 import androidx.core.content.edit
 import helium314.keyboard.compat.locale
@@ -15,7 +14,6 @@ import helium314.keyboard.keyboard.KeyboardSwitcher
 import helium314.keyboard.latin.RichInputMethodManager
 import helium314.keyboard.latin.common.Constants.Separators
 import helium314.keyboard.latin.common.LocaleUtils
-import helium314.keyboard.latin.define.DebugFlags
 import helium314.keyboard.latin.settings.Defaults
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.settings.SettingsSubtype
@@ -257,23 +255,13 @@ object SubtypeSettings {
             }
             val subtypesForLocale = resourceSubtypesByLocale[settingsSubtype.locale]
             if (subtypesForLocale == null) {
-                val message = "no resource subtype for $settingsSubtype"
-                //Log.w(TAG, message)
-                if (DebugFlags.DEBUG_ENABLED)
-                    Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-                else // don't remove in debug mode
-                    removeEnabledSubtype(prefs, settingsSubtype)
+                removeEnabledSubtype(prefs, settingsSubtype)
                 continue
             }
 
             val subtype = subtypesForLocale.firstOrNull { it.mainLayoutNameOrQwerty() == (settingsSubtype.mainLayoutName() ?: SubtypeLocaleUtils.QWERTY) }
             if (subtype == null) {
-                val message = "subtype $settingsSubtype could not be loaded"
-                //Log.w(TAG, message)
-                if (DebugFlags.DEBUG_ENABLED)
-                    Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-                else // don't remove in debug mode
-                    removeEnabledSubtype(prefs, settingsSubtype)
+                removeEnabledSubtype(prefs, settingsSubtype)
                 continue
             }
 

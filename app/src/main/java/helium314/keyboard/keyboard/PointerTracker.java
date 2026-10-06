@@ -33,7 +33,6 @@ import helium314.keyboard.latin.R;
 import helium314.keyboard.latin.common.Constants;
 import helium314.keyboard.latin.common.CoordinateUtils;
 import helium314.keyboard.latin.common.InputPointers;
-import helium314.keyboard.latin.define.DebugFlags;
 import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.settings.SettingsValues;
 import helium314.keyboard.latin.utils.KtxKt;
@@ -44,7 +43,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
     private static final boolean DEBUG_EVENT = false;
     private static final boolean DEBUG_MOVE_EVENT = false;
     private static final boolean DEBUG_LISTENER = false;
-    private static final boolean DEBUG_MODE = DebugFlags.DEBUG_ENABLED || DEBUG_EVENT;
 
     static final class PointerTrackerParams {
         public final boolean mKeySelectionByDraggingFinger;
@@ -693,13 +691,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
 
     private void processProximateBogusDownMoveUpEventHack(final Key key, final int x, final int y,
             final long eventTime, final Key oldKey, final int lastX, final int lastY) {
-        if (DEBUG_MODE) {
-            final float keyDiagonal = (float)Math.hypot(
-                    mKeyboard.mMostCommonKeyWidth, mKeyboard.mMostCommonKeyHeight);
-            final float radiusRatio =
-                    mBogusMoveEventDetector.getDistanceFromDownEvent(x, y)
-                    / keyDiagonal;
-        }
         onUpEventInternal(x, y, eventTime);
         onDownEventInternal(x, y, eventTime);
     }

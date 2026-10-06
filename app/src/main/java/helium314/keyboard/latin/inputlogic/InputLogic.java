@@ -40,7 +40,6 @@ import helium314.keyboard.latin.common.Constants;
 import helium314.keyboard.latin.common.InputPointers;
 import helium314.keyboard.latin.common.StringUtils;
 import helium314.keyboard.latin.common.StringUtilsKt;
-import helium314.keyboard.latin.define.DebugFlags;
 import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.settings.SettingsValues;
 import helium314.keyboard.latin.utils.InputTypeUtils;
@@ -649,8 +648,6 @@ public final class InputLogic {
                     return;
                 }
                 // unknown event
-                //Log.e(TAG, "unknown event, key code: " + keyCode + ", codepoint " + event.getCodePoint() + ", meta: " + event.getMetaState());
-                if (DebugFlags.DEBUG_ENABLED) throw new RuntimeException("Unknown event");
         }
     }
 

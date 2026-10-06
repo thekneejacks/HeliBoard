@@ -21,7 +21,6 @@ import java.util.HashSet;
 import helium314.keyboard.keyboard.Key;
 import helium314.keyboard.keyboard.KeyboardTypeface;
 import helium314.keyboard.latin.R;
-import helium314.keyboard.latin.common.StringUtilsKt;
 import helium314.keyboard.latin.settings.Settings;
 
 /** The pop up key preview view. */

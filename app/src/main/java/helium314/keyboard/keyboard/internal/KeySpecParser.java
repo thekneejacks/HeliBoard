@@ -12,7 +12,6 @@ import androidx.annotation.Nullable;
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
 import helium314.keyboard.latin.common.Constants;
 import helium314.keyboard.latin.common.StringUtils;
-import helium314.keyboard.latin.define.DebugFlags;
 
 /**
  * The string parser of the key specification.
@@ -87,9 +86,7 @@ public final class KeySpecParser {
                     // Treat a sole vertical bar as a special case of key label.
                     return -1;
                 }
-                if (DebugFlags.DEBUG_ENABLED)
-                    throw new KeySpecParserError("Empty label");
-                else return -1;
+                return -1;
             }
             return labelEnd;
         }
@@ -119,8 +116,6 @@ public final class KeySpecParser {
         if (indexOfLabelEnd(getAfterLabelEnd(keySpec, labelEnd)) < 0) {
             return;
         }
-        if (DebugFlags.DEBUG_ENABLED)
-            throw new KeySpecParserError("Multiple " + VERTICAL_BAR + ": " + keySpec);
     }
 
     @Nullable
@@ -134,9 +129,6 @@ public final class KeySpecParser {
         }
         final int labelEnd = indexOfLabelEnd(keySpec);
         final String label = parseEscape(getBeforeLabelEnd(keySpec, labelEnd));
-        if (label.isEmpty() && DebugFlags.DEBUG_ENABLED) {
-            throw new KeySpecParserError("Empty label: " + keySpec);
-        }
         return label;
     }
 
@@ -201,9 +193,7 @@ public final class KeySpecParser {
         }
         final String label = getLabel(keySpec);
         if (label == null) {
-            if (DebugFlags.DEBUG_ENABLED)
-                throw new KeySpecParserError("Empty label: " + keySpec);
-            else return KeyCode.MULTIPLE_CODE_POINTS;
+            return KeyCode.MULTIPLE_CODE_POINTS;
         }
         // Code is automatically generated for one letter label.
         return (StringUtils.codePointCount(label) == 1) ? label.codePointAt(0) : KeyCode.MULTIPLE_CODE_POINTS;

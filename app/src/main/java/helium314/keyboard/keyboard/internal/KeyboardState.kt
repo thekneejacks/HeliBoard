@@ -12,7 +12,6 @@ import helium314.keyboard.keyboard.internal.LayoutDirective.Alphabet
 import helium314.keyboard.keyboard.internal.LayoutDirective.Utility
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode
 import helium314.keyboard.latin.common.Constants
-import helium314.keyboard.latin.define.DebugFlags
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.utils.RecapitalizeMode
 
@@ -120,18 +119,12 @@ class KeyboardState(private val switchActions: SwitchActions) {
     private fun setShifted(shiftMode: ShiftMode) {
         if (mode != Mode.ALPHABET) return
         if (this.shiftMode != shiftMode) {
-            if (DebugFlags.DEBUG_ENABLED) {
-                ////Log.(TAG, "setShifted: shiftMode=$shiftMode $this")
-            }
             this.shiftMode = shiftMode
             switchActions.setAlphabetKeyboard(shiftMode)
         }
     }
 
     private fun resetToAlpha(autoCapsFlags: Int, recapitalizeMode: RecapitalizeMode?) {
-        if (DebugFlags.DEBUG_ENABLED) {
-            ////Log.(TAG, "resetToAlpha: ${stateToString(autoCapsFlags, recapitalizeMode)}")
-        }
         prevLayouts.wipe()
         if (mode == Mode.ALPHABET) {
             return
@@ -150,9 +143,6 @@ class KeyboardState(private val switchActions: SwitchActions) {
     }
 
     private fun loadLayout(layout: LayoutDirective) {
-        if (DebugFlags.DEBUG_ENABLED) {
-            ////Log.(TAG, "loadLayout($layout)")
-        }
         when (layout) {
             is Alphabet -> switchActions.setAlphabetKeyboard(layout.shiftMode)
             Utility.SYMBOLS -> switchActions.setSymbolsKeyboard()
@@ -175,9 +165,6 @@ class KeyboardState(private val switchActions: SwitchActions) {
     }
 
     fun toggleLayout(layout: Utility, autoCapsFlags: Int, recapitalizeMode: RecapitalizeMode?) {
-        if (DebugFlags.DEBUG_ENABLED) {
-            ////Log.(TAG, "toggleLayout(layout=$layout, autoCapsFlags=${CapsModeUtils.flagsToString(autoCapsFlags)}, recapitalizeMode=$recapitalizeMode)")
-        }
         if (mode == layout.mode()) {
             loadPreviousLayout(autoCapsFlags, recapitalizeMode)
         } else {

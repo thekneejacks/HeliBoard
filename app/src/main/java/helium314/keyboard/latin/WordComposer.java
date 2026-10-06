@@ -15,7 +15,6 @@ import helium314.keyboard.event.Event;
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
 import helium314.keyboard.latin.common.InputPointers;
 import helium314.keyboard.latin.common.StringUtils;
-import helium314.keyboard.latin.define.DebugFlags;
 import helium314.keyboard.latin.define.DecoderSpecificConstants;
 
 /**
@@ -207,10 +206,6 @@ public final class WordComposer {
     }
 
     public boolean isCursorFrontOrMiddleOfComposingWord() {
-        if (DebugFlags.DEBUG_ENABLED && mCursorPositionWithinWord > mCodePointSize) {
-            throw new RuntimeException("Wrong cursor position : " + mCursorPositionWithinWord
-                    + "in a word of size " + mCodePointSize);
-        }
         return mCursorPositionWithinWord != mCodePointSize;
     }
 
