@@ -13,7 +13,6 @@ import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -23,7 +22,6 @@ import android.view.accessibility.AccessibilityEvent
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
-import android.widget.TextView
 import androidx.core.view.doOnNextLayout
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
@@ -31,8 +29,6 @@ import helium314.keyboard.latin.R
 import helium314.keyboard.latin.common.ColorType
 import helium314.keyboard.latin.common.Colors
 import helium314.keyboard.latin.common.Constants
-import helium314.keyboard.latin.settings.DebugSettings
-import helium314.keyboard.latin.settings.Defaults
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.utils.ToolbarKey
 import helium314.keyboard.latin.utils.ToolbarMode
@@ -58,31 +54,9 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
 
     }
 
-
-    private val wordViews = ArrayList<TextView>()
-    private val debugInfoViews = ArrayList<TextView>()
-    private val dividerViews = ArrayList<View>()
-
     init {
         val inflater = LayoutInflater.from(context)
         inflater.inflate(R.layout.suggestions_strip, this)
-
-        val colors = Settings.getValues().mColors
-        colors.setBackground(this, ColorType.STRIP_BACKGROUND)
-        val word = TextView(context, null, R.attr.suggestionWordStyle)
-        word.contentDescription = resources.getString(R.string.spoken_empty_suggestion)
-        word.setOnClickListener(this)
-        word.setOnLongClickListener(this)
-        colors.setBackground(word, ColorType.STRIP_BACKGROUND)
-        wordViews.add(word)
-        val divider = inflater.inflate(R.layout.suggestion_divider, null)
-        dividerViews.add(divider)
-        val info = TextView(context, null, R.attr.suggestionWordStyle)
-        info.setTextColor(colors.get(ColorType.KEY_TEXT))
-        info.setTextSize(TypedValue.COMPLEX_UNIT_DIP, DEBUG_INFO_TEXT_SIZE_IN_DIP)
-        debugInfoViews.add(info)
-
-        DEBUG_SUGGESTIONS = context.prefs().getBoolean(DebugSettings.PREF_SHOW_SUGGESTION_INFOS, Defaults.PREF_SHOW_SUGGESTION_INFOS)
     }
 
     // toolbar views, drawables and setup
@@ -108,10 +82,8 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
         enabledToolKeyBackground.gradientType = GradientDrawable.RADIAL_GRADIENT
         enabledToolKeyBackground.gradientRadius = resources.getDimensionPixelSize(R.dimen.config_suggestions_strip_height) / 2.1f
 
-        val mToolbarMode = if (isGone) ToolbarMode.HIDDEN else Settings.getValues().mToolbarMode
-        if (mToolbarMode == ToolbarMode.TOOLBAR_KEYS) {
-            setToolbarVisibility(true)
-        }
+        setToolbarVisibility(true)
+
 
         // toolbar keys setup (no need to hide them any more when locked, because then suggestion strip is gone anyway
         for (key in getEnabledToolbarKeys(context.prefs())) {
@@ -165,12 +137,6 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
         pinnedKeys.isVisible = !toolbarVisible
         suggestionsStrip.isVisible = !toolbarVisible
         toolbarContainer.isVisible = toolbarVisible
-
-        if (DEBUG_SUGGESTIONS) {
-            for (view in debugInfoViews) {
-                view.visibility = suggestionsStrip.visibility
-            }
-        }
     }
 
 
@@ -241,26 +207,6 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
         }
     }
 
-    private fun clear() {
-        suggestionsStrip.removeAllViews()
-        if (DEBUG_SUGGESTIONS) removeAllDebugInfoViews()
-        if (!toolbarContainer.isVisible)
-            suggestionsStrip.isVisible = true
-
-        for (word in wordViews) {
-            word.setOnTouchListener(null)
-        }
-    }
-
-    private fun removeAllDebugInfoViews() {
-        for (debugInfoView in debugInfoViews) {
-            val parent = debugInfoView.parent
-            if (parent is ViewGroup) {
-                parent.removeView(debugInfoView)
-            }
-        }
-    }
-
     private fun updateKeys() {
         pinnedKeys.visibility = suggestionsStrip.visibility
     }
@@ -287,12 +233,5 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
         (view.layoutParams as LinearLayout.LayoutParams).weight = 1f
         colors.setColor(view, ColorType.TOOL_BAR_KEY)
         colors.setBackground(view, ColorType.STRIP_BACKGROUND)
-    }
-
-    companion object {
-        @JvmField
-        var DEBUG_SUGGESTIONS = false
-        private const val DEBUG_INFO_TEXT_SIZE_IN_DIP = 6.5f
-        private val TAG = SuggestionStripView::class.java.simpleName
     }
 }

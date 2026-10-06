@@ -104,7 +104,6 @@ object Defaults {
     const val PREF_REMOVE_REDUNDANT_POPUPS = false
     const val PREF_TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss"
     const val PREF_SHOW_SUGGESTION_INFOS = false
-    const val PREF_FORCE_NON_DISTINCT_MULTITOUCH = false
     const val PREF_SAVE_SUBTYPE_PER_APP = false
     const val PREF_SHOW_ONLY_TOOLBAR_WITH_HARDWARE_KEYBOARD = false
 }

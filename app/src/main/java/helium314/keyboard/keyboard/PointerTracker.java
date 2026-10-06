@@ -344,11 +344,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element{
         mBogusMoveEventDetector.setKeyboardGeometry(keyWidth, keyHeight);
     }
 
-    @Override
-    public boolean isInDraggingFinger() {
-        return mIsInDraggingFinger;
-    }
-
     @Nullable
     public Key getKey() {
         return mCurrentKey;

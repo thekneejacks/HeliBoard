@@ -33,7 +33,6 @@ import helium314.keyboard.keyboard.internal.DrawingProxy;
 import helium314.keyboard.keyboard.internal.KeyDrawParams;
 import helium314.keyboard.keyboard.internal.KeyPreviewChoreographer;
 import helium314.keyboard.keyboard.internal.KeyPreviewDrawParams;
-import helium314.keyboard.keyboard.internal.NonDistinctMultitouchHelper;
 import helium314.keyboard.keyboard.internal.PopupKeySpec;
 import helium314.keyboard.keyboard.internal.TimerHandler;
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
@@ -42,10 +41,7 @@ import helium314.keyboard.latin.common.ColorType;
 import helium314.keyboard.latin.common.Colors;
 import helium314.keyboard.latin.common.Constants;
 import helium314.keyboard.latin.common.CoordinateUtils;
-import helium314.keyboard.latin.settings.DebugSettings;
-import helium314.keyboard.latin.settings.Defaults;
 import helium314.keyboard.latin.settings.Settings;
-import helium314.keyboard.latin.utils.KtxKt;
 
 /** A view that is responsible for detecting key presses and touch movements. */
 public final class MainKeyboardView extends KeyboardView implements DrawingProxy,
@@ -89,7 +85,6 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
     private PopupKeysPanel mPopupKeysPanel;
 
     private final KeyDetector mKeyDetector;
-    private final NonDistinctMultitouchHelper mNonDistinctMultitouchHelper;
 
     private final TimerHandler mTimerHandler;
     private final int mLanguageOnSpacebarHorizontalMargin;
@@ -119,14 +114,6 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
         mKeyDetector = new KeyDetector(keyHysteresisDistance, keyHysteresisDistanceForSlidingModifier);
 
         PointerTracker.init(mainKeyboardViewAttr, mTimerHandler, this /* DrawingProxy */);
-
-        final SharedPreferences prefs = KtxKt.prefs(context);
-        final boolean forceNonDistinctMultitouch = prefs.getBoolean(
-                DebugSettings.PREF_FORCE_NON_DISTINCT_MULTITOUCH, Defaults.PREF_FORCE_NON_DISTINCT_MULTITOUCH);
-        final boolean hasDistinctMultitouch = context.getPackageManager()
-                .hasSystemFeature(PackageManager.FEATURE_TOUCHSCREEN_MULTITOUCH_DISTINCT)
-                && !forceNonDistinctMultitouch;
-        mNonDistinctMultitouchHelper = hasDistinctMultitouch ? null : new NonDistinctMultitouchHelper();
 
         mLanguageOnSpacebarTextRatio = mainKeyboardViewAttr.getFraction(
                 R.styleable.MainKeyboardView_languageOnSpacebarTextRatio, 1, 1, 1.0f)
@@ -431,15 +418,6 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
     public boolean onTouchEvent(final MotionEvent event) {
         if (getKeyboard() == null) {
             return false;
-        }
-        if (mNonDistinctMultitouchHelper != null) {
-            if (event.getPointerCount() > 1 && mTimerHandler.isInKeyRepeat()) {
-                // Key repeating timer will be canceled if 2 or popup keys are in action.
-                mTimerHandler.cancelKeyRepeatTimers();
-            }
-            // Non distinct multitouch screen support
-            mNonDistinctMultitouchHelper.processMotionEvent(event, mKeyDetector);
-            return true;
         }
         return processMotionEvent(event);
     }

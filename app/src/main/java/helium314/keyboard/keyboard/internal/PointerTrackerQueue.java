@@ -16,7 +16,6 @@ public final class PointerTrackerQueue {
 
     public interface Element {
         boolean isModifier();
-        boolean isInDraggingFinger();
         void onPhantomUpEvent(long eventTime);
         void cancelTrackingForAction();
     }
@@ -73,12 +72,6 @@ public final class PointerTrackerQueue {
                 newIndex++;
             }
             mArraySize = newIndex;
-        }
-    }
-
-    public Element getOldestElement() {
-        synchronized (mExpandableArrayOfActivePointers) {
-            return (mArraySize == 0) ? null : mExpandableArrayOfActivePointers.get(0);
         }
     }
 
@@ -162,19 +155,6 @@ public final class PointerTrackerQueue {
                     return false; // Stop searching modifier key.
                 }
                 if (element.isModifier()) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
-
-    public boolean isAnyInDraggingFinger() {
-        synchronized (mExpandableArrayOfActivePointers) {
-            final int arraySize = mArraySize;
-            for (int index = 0; index < arraySize; index++) {
-                final Element element = mExpandableArrayOfActivePointers.get(index);
-                if (element.isInDraggingFinger()) {
                     return true;
                 }
             }
