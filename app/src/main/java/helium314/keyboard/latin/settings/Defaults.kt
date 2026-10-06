@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Build
 import android.util.TypedValue
 import helium314.keyboard.keyboard.KeyboardActionListener
-import helium314.keyboard.latin.BuildConfig
 import helium314.keyboard.latin.common.Constants.Separators
 import helium314.keyboard.latin.common.Constants.Subtype.ExtraValue
 import helium314.keyboard.latin.utils.LayoutType
@@ -13,7 +12,6 @@ import helium314.keyboard.latin.utils.POPUP_KEYS_ORDER_DEFAULT
 
 object Defaults {
     fun initDynamicDefaults(context: Context) {
-        PREF_GESTURE_DYNAMIC_PREVIEW_FOLLOW_SYSTEM = getTransitionAnimationScale(context) != 0.0f
         val dm = context.resources.displayMetrics
         val px600 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 600f, dm)
         PREF_POPUP_ON = dm.widthPixels >= px600 || dm.heightPixels >= px600
@@ -71,11 +69,8 @@ object Defaults {
     const val PREF_AUTOSPACE_AFTER_PUNCTUATION = false
     const val PREF_AUTOSPACE_BEFORE_GESTURE_TYPING = true
     const val PREF_SHIFT_REMOVES_AUTOSPACE = false
-    const val PREF_ALWAYS_INCOGNITO_MODE = false
     const val PREF_KEY_LONGPRESS_TIMEOUT = 300
 
-    @JvmField
-    var PREF_GESTURE_DYNAMIC_PREVIEW_FOLLOW_SYSTEM = true
     const val PREF_GESTURE_FAST_TYPING_COOLDOWN = 500
     const val PREF_GESTURE_TRAIL_FADEOUT_DURATION = 800
     const val PREFS_LONG_PRESS_SYMBOLS_FOR_NUMPAD = false
@@ -100,7 +95,6 @@ object Defaults {
     val PREF_NAVBAR_COLOR = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
     const val PREF_ENABLED_SUBTYPES = ""
     const val PREF_SELECTED_SUBTYPE = ""
-    const val PREF_URL_DETECTION = false
     const val PREF_TOOLBAR_MODE = "EXPANDABLE"
     const val PREF_TOOLBAR_HIDING_GLOBAL = true
     const val PREF_QUICK_PIN_TOOLBAR_KEYS = false
@@ -109,7 +103,6 @@ object Defaults {
     const val PREF_ABC_AFTER_NUMPAD_SPACE = false
     const val PREF_REMOVE_REDUNDANT_POPUPS = false
     const val PREF_TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss"
-    val PREF_DEBUG_MODE = BuildConfig.DEBUG
     const val PREF_SHOW_SUGGESTION_INFOS = false
     const val PREF_FORCE_NON_DISTINCT_MULTITOUCH = false
     const val PREF_SAVE_SUBTYPE_PER_APP = false

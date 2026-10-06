@@ -18,7 +18,6 @@ import helium314.keyboard.latin.settings.Defaults
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.settings.SettingsSubtype
 import helium314.keyboard.latin.settings.SettingsSubtype.Companion.toSettingsSubtype
-import helium314.keyboard.latin.utils.ScriptUtils.script
 import java.util.Locale
 
 object SubtypeSettings {
@@ -35,35 +34,6 @@ object SubtypeSettings {
 
     fun getAllAvailableSubtypes(): List<InputMethodSubtype> =
         resourceSubtypesByLocale.values.flatten() + additionalSubtypes
-
-    fun getMatchingMainLayoutNameForLocale(locale: Locale): String {
-        val subtypes = resourceSubtypesByLocale.values.flatten()
-        val name = LocaleUtils.getBestMatch(locale, subtypes) { it.locale() }?.mainLayoutName()
-        if (name != null) return name
-        return when (locale.script()) {
-            ScriptUtils.SCRIPT_LATIN -> "qwerty"
-            ScriptUtils.SCRIPT_ARMENIAN -> "armenian_phonetic"
-            ScriptUtils.SCRIPT_CYRILLIC -> "ru"
-            ScriptUtils.SCRIPT_GREEK -> "greek"
-            ScriptUtils.SCRIPT_HEBREW -> "hebrew"
-            ScriptUtils.SCRIPT_GEORGIAN -> "georgian"
-            ScriptUtils.SCRIPT_BENGALI -> "bengali_unijoy"
-            else -> throw RuntimeException("Wrong script supplied: ${locale.script()}")
-        }
-    }
-
-    fun addEnabledSubtype(prefs: SharedPreferences, newSubtype: InputMethodSubtype) {
-        val subtype = newSubtype.toSettingsSubtype()
-        val subtypes = createSettingsSubtypes(prefs.getString(Settings.PREF_ENABLED_SUBTYPES, Defaults.PREF_ENABLED_SUBTYPES)!!) + subtype
-        val newString = createPrefSubtypes(subtypes)
-        prefs.edit { putString(Settings.PREF_ENABLED_SUBTYPES, newString) }
-
-        if (newSubtype !in enabledSubtypes) {
-            enabledSubtypes.add(newSubtype)
-            enabledSubtypes.sortBy { it.locale().toLanguageTag() } // for consistent order
-            RichInputMethodManager.getInstance().refreshSubtypeCaches()
-        }
-    }
 
     /** @return whether subtype was actually removed */
     fun removeEnabledSubtype(context: Context, subtype: InputMethodSubtype): Boolean {
@@ -121,10 +91,6 @@ object SubtypeSettings {
         prefs.edit { putString(Settings.PREF_SELECTED_SUBTYPE, settingsSubtype.toPref()) }
     }
 
-    fun isAdditionalSubtype(subtype: InputMethodSubtype): Boolean = subtype in additionalSubtypes
-
-    fun getAdditionalSubtypes(): List<InputMethodSubtype> = additionalSubtypes.toList()
-
     fun reloadSystemLocales(context: Context) {
         systemLocales.clear()
         try {
@@ -139,11 +105,7 @@ object SubtypeSettings {
         systemSubtypes.clear()
     }
 
-    fun getSystemLocales(): List<Locale> = systemLocales.toList()
-
     fun getResourceSubtypesForLocale(locale: Locale): List<InputMethodSubtype> = resourceSubtypesByLocale[locale].orEmpty()
-
-    fun getAvailableSubtypeLocales(): List<Locale> = resourceSubtypesByLocale.keys.toList()
 
     /**
      * Update subtypes that contain the layout. If new name is null (layout deleted) and the

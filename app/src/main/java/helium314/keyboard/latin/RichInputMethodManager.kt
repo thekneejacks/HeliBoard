@@ -192,10 +192,6 @@ class RichInputMethodManager private constructor() {
 
         private var forcedSubtypeForTesting: RichInputMethodSubtype? = null
 
-        fun forceSubtype(subtype: InputMethodSubtype) {
-            forcedSubtypeForTesting = RichInputMethodSubtype.get(subtype)
-        }
-
         fun canSwitchLanguage(): Boolean {
             if (!isInitialized()) return false
             if (Settings.getValues().mLanguageSwitchKeyToOtherSubtypes && instance.hasMultipleEnabledSubtypesInThisIme(false)) return true
