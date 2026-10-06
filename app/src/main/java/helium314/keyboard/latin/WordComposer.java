@@ -30,14 +30,6 @@ public final class WordComposer {
     private final ArrayList<Event> mEvents;
     private final InputPointers mInputPointers;
     private boolean mIsResumed;
-    private boolean mIsBatchMode;
-    // A memory of the last rejected batch mode suggestion, if any. This goes like this: the user
-    // gestures a word, is displeased with the results and hits backspace, then gestures again.
-    // At the very least we should avoid re-suggesting the same thing, and to do that we memorize
-    // the rejected suggestion in this variable.
-    // TODO: this should be done in a comprehensive way by the User History feature instead of
-    // as an ad-hockery here.
-    private String mRejectedBatchModeSuggestion;
 
     // Cache these values for performance
     private CharSequence mTypedWordCache;
@@ -61,9 +53,7 @@ public final class WordComposer {
         mEvents = new ArrayList<>();
         mInputPointers = new InputPointers(MAX_WORD_LENGTH);
         mIsResumed = false;
-        mIsBatchMode = false;
         mCursorPositionWithinWord = 0;
-        mRejectedBatchModeSuggestion = null;
         refreshTypedWordCache();
     }
 
@@ -77,8 +67,6 @@ public final class WordComposer {
         mEvents = null;
         mInputPointers = other.mInputPointers; // ideally we would have an actual copy, but for current use it should be ok
         mIsResumed = other.mIsResumed;
-        mIsBatchMode = other.mIsBatchMode;
-        mRejectedBatchModeSuggestion = other.mRejectedBatchModeSuggestion;
         mTypedWordCache = other.mTypedWordCache;
         mCapsCount = other.mCapsCount;
         mDigitsCount = other.mDigitsCount;
@@ -110,8 +98,6 @@ public final class WordComposer {
         mDigitsCount = 0;
         mIsOnlyFirstCharCapitalized = false;
         mIsResumed = false;
-        mIsBatchMode = false;
-        mRejectedBatchModeSuggestion = null;
         refreshTypedWordCache();
         mCursorPositionWithinWord = 0;
     }
@@ -189,10 +175,10 @@ public final class WordComposer {
                 // In the batch input mode, the {@code mInputPointers} holds batch input points and
                 // shouldn't be overridden by the "typed key" coordinates
                 // (See {@link #setBatchInputWord}).
-                if (!mIsBatchMode) {
-                    // TODO: Set correct pointer id and time
-                    mInputPointers.addPointerAt(newIndex, keyX, keyY, 0, 0);
-                }
+
+                // TODO: Set correct pointer id and time
+                mInputPointers.addPointerAt(newIndex, keyX, keyY, 0, 0);
+
             }
             if (0 == newIndex) {
                 mIsOnlyFirstCharCapitalized = Character.isUpperCase(primaryCode);
@@ -253,11 +239,6 @@ public final class WordComposer {
         return true;
     }
 
-    public void setBatchInputPointers(final InputPointers batchPointers) {
-        mInputPointers.set(batchPointers);
-        mIsBatchMode = true;
-    }
-
     /**
      * Returns the word as it was typed, without any correction applied.
      * @return the word that was typed so far. Never returns null.
@@ -299,7 +280,6 @@ public final class WordComposer {
         mInputPointers.reset();
         mCapsCount = 0;
         mDigitsCount = 0;
-        mIsBatchMode = false;
         mCombinerChain.reset();
         mEvents.clear();
         mCodePointSize = 0;
@@ -308,20 +288,7 @@ public final class WordComposer {
         refreshTypedWordCache();
         mCursorPositionWithinWord = 0;
         mIsResumed = false;
-        mRejectedBatchModeSuggestion = null;
         return lastComposedWord;
-    }
-
-    public boolean isBatchMode() {
-        return mIsBatchMode;
-    }
-
-    public void unsetBatchMode() {
-        mIsBatchMode = false;
-    }
-
-    public void setRejectedBatchModeSuggestion(final String rejectedSuggestion) {
-        mRejectedBatchModeSuggestion = rejectedSuggestion;
     }
 
     /**

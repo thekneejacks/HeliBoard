@@ -6,7 +6,6 @@
 
 package helium314.keyboard.keyboard.internal;
 import android.os.Message;
-import android.os.SystemClock;
 import android.view.ViewConfiguration;
 
 import androidx.annotation.NonNull;
@@ -25,17 +24,14 @@ public final class TimerHandler extends LeakGuardHandlerWrapper<DrawingProxy>
     private static final int MSG_LONGPRESS_SHIFT_KEY = 3;
     private static final int MSG_LONGPRESS_ALPHA_SYMBOL_KEY = 4;
     private static final int MSG_DOUBLE_TAP_SHIFT_KEY = 5;
-    private static final int MSG_UPDATE_BATCH_INPUT = 6;
     private static final int MSG_DISMISS_KEY_PREVIEW = 7;
 
     private final int mIgnoreAltCodeKeyTimeout;
-    private final int mGestureRecognitionUpdateTime;
 
     public TimerHandler(@NonNull DrawingProxy ownerInstance,
-            int ignoreAltCodeKeyTimeout, int gestureRecognitionUpdateTime) {
+            int ignoreAltCodeKeyTimeout) {
         super(ownerInstance);
         mIgnoreAltCodeKeyTimeout = ignoreAltCodeKeyTimeout;
-        mGestureRecognitionUpdateTime = gestureRecognitionUpdateTime;
     }
 
     @Override
@@ -184,29 +180,8 @@ public final class TimerHandler extends LeakGuardHandlerWrapper<DrawingProxy>
         cancelLongPressTimers();
     }
 
-    @Override
-    public void startUpdateBatchInputTimer(@NonNull PointerTracker tracker) {
-        if (mGestureRecognitionUpdateTime <= 0) {
-            return;
-        }
-        removeMessages(MSG_UPDATE_BATCH_INPUT, tracker);
-        sendMessageDelayed(obtainMessage(MSG_UPDATE_BATCH_INPUT, tracker),
-                mGestureRecognitionUpdateTime);
-    }
-
-    @Override
-    public void cancelUpdateBatchInputTimer(@NonNull PointerTracker tracker) {
-        removeMessages(MSG_UPDATE_BATCH_INPUT, tracker);
-    }
-
-    @Override
-    public void cancelAllUpdateBatchInputTimers() {
-        removeMessages(MSG_UPDATE_BATCH_INPUT);
-    }
-
     public void cancelAllMessages() {
         cancelAllKeyTimers();
-        cancelAllUpdateBatchInputTimers();
         removeMessages(MSG_DISMISS_KEY_PREVIEW);
     }
 }

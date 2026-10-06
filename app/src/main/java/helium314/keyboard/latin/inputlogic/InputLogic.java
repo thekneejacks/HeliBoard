@@ -37,7 +37,6 @@ import helium314.keyboard.latin.LatinIME;
 import helium314.keyboard.latin.RichInputConnection;
 import helium314.keyboard.latin.WordComposer;
 import helium314.keyboard.latin.common.Constants;
-import helium314.keyboard.latin.common.InputPointers;
 import helium314.keyboard.latin.common.StringUtils;
 import helium314.keyboard.latin.common.StringUtilsKt;
 import helium314.keyboard.latin.settings.Settings;
@@ -108,7 +107,7 @@ public final class InputLogic {
             // For messaging apps that offer send button, the IME does not get the opportunity
             // to capture the last word. This block should capture those uncommitted words.
             // The timestamp at which it is captured is not accurate but close enough.
-            StatsUtils.onWordCommitUserTyped(mWordComposer.getTypedWord(), mWordComposer.isBatchMode());
+            StatsUtils.onWordCommitUserTyped(mWordComposer.getTypedWord(), false);
         }
         mWordComposer.restartCombining(combiningSpec);
         resetComposingState(true /* alsoResetLastComposedWord */);
@@ -159,7 +158,7 @@ public final class InputLogic {
     public void finishInput() {
         if (mWordComposer.isComposingWord()) {
             mConnection.finishComposingText();
-            StatsUtils.onWordCommitUserTyped(mWordComposer.getTypedWord(), mWordComposer.isBatchMode());
+            StatsUtils.onWordCommitUserTyped(mWordComposer.getTypedWord(), false);
         }
         resetComposingState(true);
         mInputLogicHandler.reset();
@@ -197,7 +196,7 @@ public final class InputLogic {
             insertAutomaticSpaceIfOptionsAndTextAllow(settingsValues);
         }
         mConnection.commitText(text, 1);
-        StatsUtils.onWordCommitUserTyped(mEnteredText, mWordComposer.isBatchMode());
+        StatsUtils.onWordCommitUserTyped(mEnteredText, false);
         mConnection.endBatchEdit();
         // Space state must be updated before calling updateShiftState
         mSpaceState = SpaceState.NONE;
@@ -343,90 +342,6 @@ public final class InputLogic {
         }
         mConnection.endBatchEdit();
         return inputTransaction;
-    }
-
-    public void onStartBatchInput(final SettingsValues settingsValues, final KeyboardSwitcher keyboardSwitcher, final LatinIME.UIHandler handler) {
-        mInputLogicHandler.onStartBatchInput();
-        //handler.showGesturePreviewAndSetSuggestions(SuggestedWords.getEmptyBatchInstance(), false);
-        //handler.cancelUpdateSuggestionStrip();
-        ++mAutoCommitSequenceNumber;
-
-
-        mConnection.beginBatchEdit();
-        if (mWordComposer.isComposingWord()) {
-            if (mWordComposer.isCursorFrontOrMiddleOfComposingWord()) {
-                // If we are in the middle of a recorrection, we need to commit the recorrection
-                // first so that we can insert the batch input at the current cursor position.
-                // We also need to unlearn the original word that is now being corrected.
-                resetEntireInputState(mConnection.getExpectedSelectionStart(), mConnection.getExpectedSelectionEnd(), true);
-            } else if (mWordComposer.isSingleLetter() && !isInlineEmojiSearchAction()) {
-                // We auto-correct the previous (typed, not gestured) string iff it's one character
-                // long. The reason for this is, even in the middle of gesture typing, you'll still
-                // tap one-letter words and you want them auto-corrected (typically, "i" in English
-                // should become "I"). However for any longer word, we assume that the reason for
-                // tapping probably is that the word you intend to type is not in the dictionary,
-                // so we do not attempt to correct, on the assumption that if that was a dictionary
-                // word, the user would probably have gestured instead.
-                //commitCurrentAutoCorrection(settingsValues, LastComposedWord.NOT_A_SEPARATOR, handler);
-            } else {
-                commitTyped(LastComposedWord.NOT_A_SEPARATOR);
-            }
-        } else if (mConnection.hasSelection()) {
-            final CharSequence selectedText = mConnection.getSelectedText(0);
-            if (selectedText != null)
-                // set selected text as rejected to avoid glide typing resulting in exactly the selected word again
-                mWordComposer.setRejectedBatchModeSuggestion(selectedText.toString());
-        }
-        final int codePointBeforeCursor = mConnection.getCodePointBeforeCursor();
-        if (Character.isLetterOrDigit(codePointBeforeCursor) || settingsValues.isUsuallyFollowedBySpace(codePointBeforeCursor)) {
-            // autoShiftHasBeenOverridden is weird
-            // before switching CapsMode to enum, it was CapsMode != autoCapsState
-            // autoCapsState is 0 (off), 0x1000, 0x2000, 0x4000 or a combination
-            // old CapsMode was 0 (off), 1, 3, 5, 7
-            // meaning both were incompatible, and the check was just returning whether both were 0
-            // todo: maybe adjust this?
-            boolean autoShiftHasBeenOverridden = (keyboardSwitcher.getKeyboardCapsMode() == CapsMode.OFF) != (getCurrentAutoCapsState(settingsValues) == 0);
-            if (settingsValues.mAutospaceBeforeGestureTyping) mSpaceState = SpaceState.PHANTOM; // influences autoCapsState
-            if (!autoShiftHasBeenOverridden) {
-                // When we change the space state, we need to update the shift state of the
-                // keyboard unless it has been overridden manually. This is happening for example
-                // after typing some letters and a period, then gesturing; the keyboard is not in
-                // caps mode yet, but since a gesture is starting, it should go in caps mode,
-                // unless the user explicitly said it should not.
-                keyboardSwitcher.updateShiftState(getCurrentAutoCapsState(settingsValues), getCurrentRecapitalizeState());
-            }
-        }
-        mConnection.endBatchEdit();
-        mWordComposer.setCapitalizedModeAtStartComposingTime(getActualCapsMode(settingsValues, keyboardSwitcher.getKeyboardCapsMode()));
-    }
-
-    /* The sequence number member is only used in onUpdateBatchInput. It is increased each time
-     * auto-commit happens. The reason we need this is, when auto-commit happens we trim the
-     * input pointers that are held in a singleton, and to know how much to trim we rely on the
-     * results of the suggestion process that is held in mSuggestedWords.
-     * However, the suggestion process is asynchronous, and sometimes we may enter the
-     * onUpdateBatchInput method twice without having recomputed suggestions yet, or having
-     * received new suggestions generated from not-yet-trimmed input pointers. In this case, the
-     * mIndexOfTouchPointOfSecondWords member will be out of date, and we must not use it lest we
-     * remove an unrelated number of pointers (possibly even more than are left in the input
-     * pointers, leading to a crash).
-     * To avoid that, we increase the sequence number each time we auto-commit and trim the
-     * input pointers, and we do not use any suggested words that have been generated with an
-     * earlier sequence number.
-     */
-    private int mAutoCommitSequenceNumber = 1;
-
-    public void onUpdateBatchInput(final InputPointers batchPointers) {
-        mInputLogicHandler.onUpdateBatchInput(batchPointers, mAutoCommitSequenceNumber);
-    }
-
-    public void onEndBatchInput(final InputPointers batchPointers) {
-        mInputLogicHandler.updateTailBatchInput(batchPointers, mAutoCommitSequenceNumber);
-        ++mAutoCommitSequenceNumber;
-    }
-
-    public void onCancelBatchInput(final LatinIME.UIHandler handler) {
-        mInputLogicHandler.onCancelBatchInput();
     }
 
 
@@ -750,7 +665,6 @@ public final class InputLogic {
         // handleNonSpecialCharacterEvent which has the same name as other handle* methods but is
         // not the same.
         boolean isComposingWord = mWordComposer.isComposingWord();
-        mWordComposer.unsetBatchMode(); // relevant in case we continue a batch word with normal typing
 
         // if we continue directly after a sometimesWordConnector, restart suggestions for the whole word
         // (only with URL detection and suggestions enabled)
@@ -943,15 +857,8 @@ public final class InputLogic {
             // When we exit this if-clause, mWordComposer.isComposingWord() will return false.
         }
         if (mWordComposer.isComposingWord()) {
-            if (mWordComposer.isBatchMode()) {
-                final String rejectedSuggestion = mWordComposer.getTypedWord();
-                mWordComposer.reset();
-                mWordComposer.setRejectedBatchModeSuggestion(rejectedSuggestion);
-                StatsUtils.onBackspaceWordDelete(rejectedSuggestion.length());
-            } else {
-                mWordComposer.applyProcessedEvent(event);
-                StatsUtils.onBackspacePressed(1);
-            }
+            mWordComposer.applyProcessedEvent(event);
+            StatsUtils.onBackspacePressed(1);
             if (mWordComposer.isComposingWord()) {
                 setComposingTextInternal(getTextWithUnderline(mWordComposer.getTypedWord()), 1);
             } else {
@@ -1562,9 +1469,8 @@ public final class InputLogic {
         if (!mWordComposer.isComposingWord()) return;
         final String typedWord = mWordComposer.getTypedWord();
         if (typedWord.length() > 0) {
-            final boolean isBatchMode = mWordComposer.isBatchMode();
             commitChosenWord(typedWord, LastComposedWord.COMMIT_TYPE_USER_TYPED_WORD, separatorString);
-            StatsUtils.onWordCommitUserTyped(typedWord, isBatchMode);
+            StatsUtils.onWordCommitUserTyped(typedWord, false);
         }
     }
 

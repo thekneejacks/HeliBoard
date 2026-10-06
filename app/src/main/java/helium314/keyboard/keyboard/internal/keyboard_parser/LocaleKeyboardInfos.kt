@@ -7,7 +7,6 @@ import helium314.keyboard.keyboard.KeyboardElement
 import helium314.keyboard.keyboard.internal.KeyboardParams
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyData
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.toTextKey
-import helium314.keyboard.latin.R
 import helium314.keyboard.latin.common.splitOnFirstSpacesOnly
 import helium314.keyboard.latin.common.splitOnWhitespace
 import helium314.keyboard.latin.settings.Settings
@@ -202,9 +201,6 @@ class LocaleKeyboardInfos(dataStream: InputStream?, locale: Locale) {
             }
         }
 
-        fun hasLocalizedNumberRow(locale: Locale, context: Context) =
-            getStreamForLocale(locale, context)?.bufferedReader()?.readLines()?.any { it == "[number_row]" } == true
-
         private fun createLocaleKeyTexts(context: Context, params: KeyboardParams, popupKeysSetting: String): LocaleKeyboardInfos {
             val lkt = LocaleKeyboardInfos(getStreamForLocale(params.mId.locale, context), params.mId.locale)
             params.mSecondaryLocales.forEach { locale ->
@@ -303,13 +299,6 @@ class LocaleKeyboardInfos(dataStream: InputStream?, locale: Locale) {
                 "yo" -> "₦"
                 else -> "$"
             }
-        }
-
-        fun morePopupKeysResId(popupKeysSetting: String) = when (popupKeysSetting) {
-            POPUP_KEYS_ALL -> R.string.show_popup_keys_all
-            POPUP_KEYS_MORE -> R.string.show_popup_keys_more
-            POPUP_KEYS_NORMAL -> R.string.show_popup_keys_normal
-            else -> R.string.show_popup_keys_main
         }
 
         // needs at least 4 popupKeys for working shift-symbol keyboard

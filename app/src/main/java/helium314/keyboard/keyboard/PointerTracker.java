@@ -43,7 +43,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element{
         public final boolean mKeySelectionByDraggingFinger;
         public final int mTouchNoiseThresholdTime;
         public final int mTouchNoiseThresholdDistance;
-        public final int mSuppressKeyPreviewAfterBatchInputDuration;
         public final int mKeyRepeatStartTimeout;
         public final int mKeyRepeatInterval;
 
@@ -54,8 +53,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element{
                     R.styleable.MainKeyboardView_touchNoiseThresholdTime, 0);
             mTouchNoiseThresholdDistance = mainKeyboardViewAttr.getDimensionPixelSize(
                     R.styleable.MainKeyboardView_touchNoiseThresholdDistance, 0);
-            mSuppressKeyPreviewAfterBatchInputDuration = mainKeyboardViewAttr.getInt(
-                    R.styleable.MainKeyboardView_suppressKeyPreviewAfterBatchInputDuration, 0);
             mKeyRepeatStartTimeout = mainKeyboardViewAttr.getInt(
                     R.styleable.MainKeyboardView_keyRepeatStartTimeout, 0);
             mKeyRepeatInterval = mainKeyboardViewAttr.getInt(
@@ -159,9 +156,7 @@ public final class PointerTracker implements PointerTrackerQueue.Element{
             500);
 
         sParams = new PointerTrackerParams(mainKeyboardViewAttr);
-        sTypingTimeRecorder = new TypingTimeRecorder(
-                mStaticTimeThresholdAfterFastTyping,
-                sParams.mSuppressKeyPreviewAfterBatchInputDuration);
+        sTypingTimeRecorder = new TypingTimeRecorder(mStaticTimeThresholdAfterFastTyping);
 
         final Resources res = mainKeyboardViewAttr.getResources();
         BogusMoveEventDetector.init(res);
@@ -463,11 +458,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element{
 
     /* package */ static int getActivePointerTrackerCount() {
         return sPointerTrackerQueue.size();
-    }
-
-    private void cancelBatchInput() {
-        cancelAllPointerTrackers();
-        return;
     }
 
     public void processMotionEvent(final MotionEvent me, final KeyDetector keyDetector) {
@@ -783,9 +773,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element{
     }
 
     private void onUpEvent(final int x, final int y, final long eventTime) {
-
-        sTimerProxy.cancelUpdateBatchInputTimer(this);
-
             if (mCurrentKey != null && mCurrentKey.isModifier()) {
                 // Before processing an up event of modifier key, all pointers already being
                 // tracked should be released.
@@ -937,7 +924,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element{
             printTouchEvent("onCancelEvt:", x, y, eventTime);
         }
 
-        cancelBatchInput();
         cancelAllPointerTrackers();
         sPointerTrackerQueue.releaseAllPointers(eventTime);
         onCancelEventInternal();

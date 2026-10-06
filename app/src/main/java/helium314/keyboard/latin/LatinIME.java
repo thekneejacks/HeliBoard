@@ -49,7 +49,6 @@ import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
 import helium314.keyboard.latin.common.ColorType;
 import helium314.keyboard.latin.common.Constants;
 import helium314.keyboard.latin.common.CoordinateUtils;
-import helium314.keyboard.latin.common.InputPointers;
 import helium314.keyboard.latin.common.InsetsOutlineProvider;
 import helium314.keyboard.latin.common.ViewOutlineProviderUtilsKt;
 import helium314.keyboard.latin.inputlogic.InputLogic;
@@ -975,22 +974,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
             event, mKeyboardSwitcher.getKeyboardCapsMode(), mHandler);
         updateStateAfterInputTransaction(completeInputTransaction);
         mKeyboardSwitcher.onEvent(event, getCurrentAutoCapsState(), getCurrentRecapitalizeState());
-    }
-
-    public void onStartBatchInput() {
-        mInputLogic.onStartBatchInput(mSettings.getCurrent(), mKeyboardSwitcher, mHandler);
-    }
-
-    public void onUpdateBatchInput(final InputPointers batchPointers) {
-        mInputLogic.onUpdateBatchInput(batchPointers);
-    }
-
-    public void onEndBatchInput(final InputPointers batchPointers) {
-        mInputLogic.onEndBatchInput(batchPointers);
-    }
-
-    public void onCancelBatchInput() {
-        mInputLogic.onCancelBatchInput(mHandler);
     }
 
     public boolean hasSuggestionStripView() {

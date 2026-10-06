@@ -103,9 +103,7 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
                 attrs, R.styleable.MainKeyboardView, defStyle, R.style.MainKeyboardView);
         final int ignoreAltCodeKeyTimeout = mainKeyboardViewAttr.getInt(
                 R.styleable.MainKeyboardView_ignoreAltCodeKeyTimeout, 0);
-        final int gestureRecognitionUpdateTime = mainKeyboardViewAttr.getInt(
-                R.styleable.MainKeyboardView_gestureRecognitionUpdateTime, 0);
-        mTimerHandler = new TimerHandler(this, ignoreAltCodeKeyTimeout, gestureRecognitionUpdateTime);
+        mTimerHandler = new TimerHandler(this, ignoreAltCodeKeyTimeout);
 
         final float keyHysteresisDistance = mainKeyboardViewAttr.getDimension(
                 R.styleable.MainKeyboardView_keyHysteresisDistance, 0.0f);

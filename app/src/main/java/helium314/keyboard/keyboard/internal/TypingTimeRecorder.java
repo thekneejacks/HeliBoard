@@ -8,14 +8,11 @@ package helium314.keyboard.keyboard.internal;
 
 public final class TypingTimeRecorder {
     private final int mStaticTimeThresholdAfterFastTyping; // msec
-    private final int mSuppressKeyPreviewAfterBatchInputDuration;
     private long mLastTypingTime;
     private long mLastLetterTypingTime;
 
-    public TypingTimeRecorder(final int staticTimeThresholdAfterFastTyping,
-            final int suppressKeyPreviewAfterBatchInputDuration) {
+    public TypingTimeRecorder(final int staticTimeThresholdAfterFastTyping) {
         mStaticTimeThresholdAfterFastTyping = staticTimeThresholdAfterFastTyping;
-        mSuppressKeyPreviewAfterBatchInputDuration = suppressKeyPreviewAfterBatchInputDuration;
     }
 
     public boolean isInFastTyping(final long eventTime) {

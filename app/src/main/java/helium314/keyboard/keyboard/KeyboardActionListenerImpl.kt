@@ -6,8 +6,6 @@ import android.util.SparseArray
 import android.view.KeyEvent
 import android.view.inputmethod.InputMethodSubtype
 import androidx.core.util.forEach
-import androidx.core.view.inputmethod.EditorInfoCompat
-import androidx.core.view.inputmethod.InputContentInfoCompat
 import helium314.keyboard.event.Event
 import helium314.keyboard.event.HangulEventDecoder
 import helium314.keyboard.event.HapticEvent
@@ -18,7 +16,6 @@ import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode
 import helium314.keyboard.latin.LatinIME
 import helium314.keyboard.latin.RichInputMethodManager
 import helium314.keyboard.latin.common.Constants
-import helium314.keyboard.latin.common.InputPointers
 import helium314.keyboard.latin.common.combiningRange
 import helium314.keyboard.latin.common.moveStepsToCharCount
 import helium314.keyboard.latin.define.ProductionFlags
@@ -117,24 +114,6 @@ class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inp
     }
 
     override fun onTextInput(text: String?) = latinIME.onTextInput(text)
-
-    override fun onContent(content: InputContentInfoCompat) {
-        val editorInfo = latinIME.currentInputEditorInfo
-        val editorMimeTypes = EditorInfoCompat.getContentMimeTypes(editorInfo)
-        if (editorMimeTypes.any { content.description.hasMimeType(it) }) {
-            connection.commitContent(content, editorInfo)
-        } else if (editorMimeTypes.isEmpty()) { // make the fallback optional?
-            latinIME.clipboardHistoryManager.pasteWithoutChangingClips(content)
-        }
-    }
-
-    override fun onStartBatchInput() = latinIME.onStartBatchInput()
-
-    override fun onUpdateBatchInput(batchPointers: InputPointers?) = latinIME.onUpdateBatchInput(batchPointers)
-
-    override fun onEndBatchInput(batchPointers: InputPointers?) = latinIME.onEndBatchInput(batchPointers)
-
-    override fun onCancelBatchInput() = latinIME.onCancelBatchInput()
 
     // User released a finger outside any key
     override fun onCancelInput() { }

@@ -11,10 +11,8 @@ import android.view.inputmethod.InputMethodSubtype
 import helium314.keyboard.compat.locale
 import helium314.keyboard.latin.R
 import helium314.keyboard.latin.common.Constants.Subtype.ExtraValue
-import helium314.keyboard.latin.common.LocaleUtils.constructLocale
 import helium314.keyboard.latin.common.LocaleUtils.localizedDisplayName
 import helium314.keyboard.latin.common.StringUtils
-import helium314.keyboard.latin.utils.LayoutType.Companion.getMainLayoutFromExtraValue
 import java.util.Locale
 import kotlin.concurrent.Volatile
 
@@ -68,31 +66,6 @@ object SubtypeLocaleUtils {
     // see SubtypeUtilsAdditional.getAdditionalExtraValues, currently not needed
     //fun isExceptionalLocale(locale: Locale) = exceptionalLocaleDisplayedInRootLocale.containsKey(locale.toLanguageTag())
 
-    /** Usually the [locale], but Locale.ROOT for exceptionalLocaleDisplayedInRootLocale, and system locale for NO_LANGUAGE */
-    private fun getDisplayLocaleOfSubtypeLocale(locale: Locale): Locale {
-        val languageTag = locale.toLanguageTag()
-        if (languageTag == NO_LANGUAGE)
-            return resources.configuration.locale()
-        if (exceptionalLocaleDisplayedInRootLocale.containsKey(languageTag))
-            return Locale.ROOT
-        return locale
-    }
-
-    /** Returns the full locale display name for use on space bar (considers exceptionalLocaleDisplayedInRootLocale) */
-    fun getSubtypeLocaleDisplayName(locale: Locale): String {
-        val displayLocale = getDisplayLocaleOfSubtypeLocale(locale)
-        return getSubtypeLocaleDisplayNameInternal(locale, displayLocale)
-    }
-
-    /** Returns the language display name for use on space bar (considers exceptionalLocaleDisplayedInRootLocale) */
-    fun getSubtypeLanguageDisplayName(locale: Locale): String {
-        val languageLocale = if (exceptionalLocaleDisplayedInRootLocale.containsKey(locale.toLanguageTag()))
-            locale
-        else
-            locale.language.constructLocale()
-        return getSubtypeLocaleDisplayNameInternal(languageLocale, getDisplayLocaleOfSubtypeLocale(locale))
-    }
-
     /**
      *  Display name of subtype [locale] in [displayLocale].
      *  Considers exceptionalLocaleDisplayedInRootLocale and exceptionalLocaleToNameIds, defaults to Locale.localizedDisplayName.
@@ -114,14 +87,6 @@ object SubtypeLocaleUtils {
     @JvmStatic
     fun clearSubtypeDisplayNameCache() {
         resourceSubtypeDisplayNameCache.clear()
-    }
-
-    @JvmStatic
-    fun getSubtypeNameForLogging(subtype: InputMethodSubtype?): String {
-        if (subtype == null) {
-            return "<null subtype>"
-        }
-        return subtype.locale().toString() + "/" + subtype.mainLayoutNameOrQwerty()
     }
 
     /**
@@ -162,21 +127,6 @@ object SubtypeLocaleUtils {
         if (displayLocale == null && !containsExtraValueKey(ExtraValue.IS_ADDITIONAL_SUBTYPE))
             resourceSubtypeDisplayNameCache[hashCode()] = displayName
         return displayName
-    }
-
-    fun getMainLayoutDisplayName(layoutName: String): String? =
-        if (LayoutUtilsCustom.isCustomLayout(layoutName)) LayoutUtilsCustom.getDisplayName(layoutName)
-        else keyboardLayoutToDisplayName[layoutName]
-
-    fun getLayoutDisplayNameInSystemLocale(mainLayoutName: String, locale: Locale): String {
-        getMainLayoutDisplayName(mainLayoutName)?.let { return it } // works for custom and latin layouts
-
-        // we have some locale-specific layout, use the subtype name
-        for (subtype in SubtypeSettings.getResourceSubtypesForLocale(locale)) {
-            if (mainLayoutName == getMainLayoutFromExtraValue(subtype.extraValue))
-                return subtype.displayName()
-        }
-        return mainLayoutName // should never happen...
     }
 
     @JvmStatic
