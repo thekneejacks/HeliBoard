@@ -279,7 +279,6 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
     @Override
     public void onKeyPressed(@NonNull final Key key, final boolean withPreview) {
         key.onPressed();
-        invalidateKey(key);
 
         final Keyboard keyboard = getKeyboard();
         if (keyboard == null) {
@@ -300,14 +299,12 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
 
     private void dismissKeyPreviewWithoutDelay(@NonNull final Key key) {
         mKeyPreviewChoreographer.dismissKeyPreview(key);
-        invalidateKey(key);
     }
 
     // Implements {@link DrawingProxy#onKeyReleased(Key,boolean)}.
     @Override
     public void onKeyReleased(@NonNull final Key key, final boolean withAnimation) {
         key.onReleased();
-        invalidateKey(key);
         if (key.hasPreview()) {
             if (withAnimation) {
                 dismissKeyPreview(key);
@@ -505,7 +502,6 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
             return;
         }
         shortcutKey.setEnabled(available);
-        invalidateKey(shortcutKey);
     }
 
     public void updateLockState(final int keyCode, final boolean locked) {
@@ -518,7 +514,6 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
             return;
         }
         lockKey.setLocked(locked);
-        invalidateKey(lockKey);
     }
 
     @Override

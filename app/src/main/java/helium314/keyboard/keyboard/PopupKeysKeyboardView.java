@@ -106,7 +106,6 @@ public class PopupKeysKeyboardView extends KeyboardView implements PopupKeysPane
         final Key shortcutKey = keyboard.getKey(KeyCode.VOICE_INPUT);
         if (shortcutKey != null) {
             shortcutKey.setEnabled(RichInputMethodManager.getInstance().isShortcutImeReady());
-            invalidateKey(shortcutKey);
         }
     }
 
@@ -236,23 +235,19 @@ public class PopupKeysKeyboardView extends KeyboardView implements PopupKeysPane
         // A new key is detected.
         if (oldKey != null) {
             updateReleaseKeyGraphics(oldKey);
-            invalidateKey(oldKey);
         }
         if (newKey != null) {
             updatePressKeyGraphics(newKey);
-            invalidateKey(newKey);
         }
         return newKey;
     }
 
     private void updateReleaseKeyGraphics(final Key key) {
         key.onReleased();
-        invalidateKey(key);
     }
 
     private void updatePressKeyGraphics(final Key key) {
         key.onPressed();
-        invalidateKey(key);
     }
 
     @Override

@@ -8,7 +8,6 @@ package helium314.keyboard.keyboard;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -24,8 +23,6 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import java.util.HashSet;
 
 import helium314.keyboard.keyboard.internal.KeyDrawParams;
 import helium314.keyboard.keyboard.internal.KeyVisualAttributes;
@@ -74,21 +71,9 @@ public class KeyboardView extends View {
     private final KeyDrawParams mKeyDrawParams = new KeyDrawParams();
 
     // Drawing
-    /** True if all keys should be drawn */
-    private boolean mInvalidateAllKeys;
-    /** The keys that should be drawn */
-    private final HashSet<Key> mInvalidatedKeys = new HashSet<>();
-    /** The working rectangle for clipping */
-    private final Rect mClipRect = new Rect();
-    /** The keyboard bitmap buffer for faster updates */
-    private Bitmap mOffscreenBuffer;
-    /** Flag for whether the key hints should be displayed */
-    private boolean mShowsHints;
     /** Scale for downscaling icons and fixed size backgrounds if keyboard height is set below 80% */
     private float mIconScaleFactor;
     /** The canvas for the above mutable keyboard bitmap */
-    @NonNull
-    private final Canvas mOffscreenCanvas = new Canvas();
     @NonNull
     private final Paint mPaint = new Paint();
     private final Paint.FontMetrics mFontMetrics = new Paint.FontMetrics();
@@ -159,7 +144,7 @@ public class KeyboardView extends View {
        if (keyboard instanceof PopupKeysKeyboard) {
             mColors.setBackground(this, ColorType.POPUP_KEYS_BACKGROUND);
         } else {
-            // actual background color/drawable is applied to main_keyboard_frame
+            //actual background color/drawable is applied to main_keyboard_frame
             setBackgroundColor(Color.TRANSPARENT);
         }
 
@@ -210,45 +195,7 @@ public class KeyboardView extends View {
     @Override
     protected void onDraw(@NonNull final Canvas canvas) {
         super.onDraw(canvas);
-        if (canvas.isHardwareAccelerated()) {
-            onDrawKeyboard(canvas);
-            return;
-        }
-
-        final boolean bufferNeedsUpdates = mInvalidateAllKeys || !mInvalidatedKeys.isEmpty();
-        if (bufferNeedsUpdates || mOffscreenBuffer == null) {
-            if (maybeAllocateOffscreenBuffer()) {
-                mInvalidateAllKeys = true;
-                // TODO: Stop using the offscreen canvas even when in software rendering
-                mOffscreenCanvas.setBitmap(mOffscreenBuffer);
-            }
-            onDrawKeyboard(mOffscreenCanvas);
-        }
-        canvas.drawBitmap(mOffscreenBuffer, 0.0f, 0.0f, null);
-    }
-
-    private boolean maybeAllocateOffscreenBuffer() {
-        final int width = getWidth();
-        final int height = getHeight();
-        if (width == 0 || height == 0) {
-            return false;
-        }
-        if (mOffscreenBuffer != null && mOffscreenBuffer.getWidth() == width
-                && mOffscreenBuffer.getHeight() == height) {
-            return false;
-        }
-        freeOffscreenBuffer();
-        mOffscreenBuffer = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
-        return true;
-    }
-
-    private void freeOffscreenBuffer() {
-        mOffscreenCanvas.setBitmap(null);
-        mOffscreenCanvas.setMatrix(null);
-        if (mOffscreenBuffer != null) {
-            mOffscreenBuffer.recycle();
-            mOffscreenBuffer = null;
-        }
+        onDrawKeyboard(canvas);
     }
 
     private void onDrawKeyboard(@NonNull final Canvas canvas) {
@@ -257,47 +204,14 @@ public class KeyboardView extends View {
             return;
         }
 
-        mShowsHints = Settings.getValues().mShowsHints;
         final float scale = Settings.getValues().mKeyboardHeightScale;
         mIconScaleFactor = scale < 0.8f ? scale + 0.2f : 1f;
         final Paint paint = mPaint;
-        final Drawable background = getBackground();
-        // Calculate clip region and set.
-        final boolean drawAllKeys = mInvalidateAllKeys || mInvalidatedKeys.isEmpty();
-        final boolean isHardwareAccelerated = canvas.isHardwareAccelerated();
-        // TODO: Confirm if it's really required to draw all keys when hardware acceleration is on.
-        if (drawAllKeys || isHardwareAccelerated) {
-            if (!isHardwareAccelerated && background != null) {
-                // Need to draw keyboard background on {@link #mOffscreenBuffer}.
-                canvas.drawColor(Color.BLACK, PorterDuff.Mode.CLEAR);
-                background.draw(canvas);
-            }
-            // Draw all keys.
-            for (final Key key : keyboard.getSortedKeys()) {
-                onDrawKey(key, canvas, paint);
-            }
-        } else {
-            for (final Key key : mInvalidatedKeys) {
-                if (!keyboard.hasKey(key)) {
-                    continue;
-                }
-                if (background != null) {
-                    // Need to redraw key's background on {@link #mOffscreenBuffer}.
-                    final int x = key.getX() + getPaddingLeft();
-                    final int y = key.getY() + getPaddingTop();
-                    mClipRect.set(x, y, x + key.getWidth(), y + key.getHeight());
-                    canvas.save();
-                    canvas.clipRect(mClipRect);
-                    canvas.drawColor(Color.BLACK, PorterDuff.Mode.CLEAR);
-                    background.draw(canvas);
-                    canvas.restore();
-                }
-                onDrawKey(key, canvas, paint);
-            }
-        }
 
-        mInvalidatedKeys.clear();
-        mInvalidateAllKeys = false;
+        // Draw all keys.
+        for (final Key key : keyboard.getSortedKeys()) {
+            onDrawKey(key, canvas, paint);
+        }
     }
 
     private void onDrawKey(@NonNull final Key key, @NonNull final Canvas canvas,
@@ -371,7 +285,7 @@ public class KeyboardView extends View {
             labelBaseline = centerY + labelCharHeight / 2.0f;
 
             // Horizontal label text alignment
-            if (key.isAlignLabelOffCenter() && mShowsHints) {
+            if (key.isAlignLabelOffCenter()) {
                 // The label is placed off center of the key. Currently used only on "phone number" layout
                 // to have letter hints shown nicely. We don't want to align it off center if hints are off.
                 // use a non-negative number to avoid label starting left of the letter for high keyboard scale on holo phone layout
@@ -423,9 +337,9 @@ public class KeyboardView extends View {
 
         // Draw hint label.
         String hintLabel = key.getHintLabel();
-        Drawable hintIcon = (keyboard == null || !mShowsHints || hintLabel != null) ? null
-                        : key.getHintIcon(keyboard.mIconsSet);
-        if (hintLabel != null && mShowsHints) {
+        Drawable hintIcon = (keyboard == null || hintLabel != null) ? null
+                                                                    : key.getHintIcon(keyboard.mIconsSet);
+        if (hintLabel != null) {
             paint.setTextSize(key.selectHintTextSize(params) * mHintFontSizeMultiplier);
             paint.setColor(key.selectHintTextColor(params));
             // TODO: Should add a way to specify type face for hint letters
@@ -562,36 +476,15 @@ public class KeyboardView extends View {
      * @see #invalidateKey(Key)
      */
     public void invalidateAllKeys() {
-        mInvalidatedKeys.clear();
-        mInvalidateAllKeys = true;
         invalidate();
-    }
-
-    /**
-     * Invalidates a key so that it will be redrawn on the next repaint. Use this method if only
-     * one key is changing it's content. Any changes that affect the position or size of the key
-     * may not be honored.
-     * @param key key in the attached {@link Keyboard}.
-     * @see #invalidateAllKeys
-     */
-    public void invalidateKey(@Nullable final Key key) {
-        if (mInvalidateAllKeys || key == null) {
-            return;
-        }
-        mInvalidatedKeys.add(key);
-        final int x = key.getX() + getPaddingLeft();
-        final int y = key.getY() + getPaddingTop();
-        invalidate(x, y, x + key.getWidth(), y + key.getHeight());
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        freeOffscreenBuffer();
     }
 
     public void deallocateMemory() {
-        freeOffscreenBuffer();
     }
 
     private void setKeyIconColor(Key key, Drawable icon, Keyboard keyboard) {
