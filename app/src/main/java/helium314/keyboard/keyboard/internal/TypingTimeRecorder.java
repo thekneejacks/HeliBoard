@@ -11,7 +11,6 @@ public final class TypingTimeRecorder {
     private final int mSuppressKeyPreviewAfterBatchInputDuration;
     private long mLastTypingTime;
     private long mLastLetterTypingTime;
-    private long mLastBatchInputTime;
 
     public TypingTimeRecorder(final int staticTimeThresholdAfterFastTyping,
             final int suppressKeyPreviewAfterBatchInputDuration) {
@@ -25,7 +24,7 @@ public final class TypingTimeRecorder {
     }
 
     private boolean wasLastInputTyping() {
-        return mLastTypingTime >= mLastBatchInputTime;
+        return true;
     }
 
     public void onCodeInput(final int code, final long eventTime) {
@@ -47,16 +46,4 @@ public final class TypingTimeRecorder {
         mLastTypingTime = eventTime;
     }
 
-    public void onEndBatchInput(final long eventTime) {
-        mLastBatchInputTime = eventTime;
-    }
-
-    public long getLastLetterTypingTime() {
-        return mLastLetterTypingTime;
-    }
-
-    public boolean needsToSuppressKeyPreviewPopup(final long eventTime) {
-        return !wasLastInputTyping()
-                && eventTime - mLastBatchInputTime < mSuppressKeyPreviewAfterBatchInputDuration;
-    }
 }

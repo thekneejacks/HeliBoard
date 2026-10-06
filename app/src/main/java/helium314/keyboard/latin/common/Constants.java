@@ -218,21 +218,8 @@ public final class Constants {
      * Screen metrics (a.k.a. Device form factor) constants of
      * {@link helium314.keyboard.latin.R.integer#config_screen_metrics}.
      */
-    public static final int SCREEN_METRICS_SMALL_PHONE = 0;
-    public static final int SCREEN_METRICS_LARGE_PHONE = 1;
     public static final int SCREEN_METRICS_LARGE_TABLET = 2;
     public static final int SCREEN_METRICS_SMALL_TABLET = 3;
-
-    /**
-     * Default capacity of gesture points container.
-     * This constant is used by {@link helium314.keyboard.keyboard.internal.BatchInputArbiter}
-     * and etc. to preallocate regions that contain gesture event points.
-     */
-    public static final int DEFAULT_GESTURE_POINTS_CAPACITY = 128;
-
-    public static final int MAX_IME_DECODER_RESULTS = 20;
-    public static final int DECODER_SCORE_SCALAR = 1000000;
-    public static final int DECODER_MAX_SCORE = 1000000000;
 
     private Constants() {
         // This utility class is not publicly instantiable.

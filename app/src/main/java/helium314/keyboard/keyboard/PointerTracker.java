@@ -20,11 +20,8 @@ import java.util.ArrayList;
 import java.util.WeakHashMap;
 
 import helium314.keyboard.event.HapticEvent;
-import helium314.keyboard.keyboard.internal.BatchInputArbiter;
-import helium314.keyboard.keyboard.internal.BatchInputArbiter.BatchInputArbiterListener;
 import helium314.keyboard.keyboard.internal.BogusMoveEventDetector;
 import helium314.keyboard.keyboard.internal.DrawingProxy;
-import helium314.keyboard.keyboard.internal.GestureStrokeRecognitionParams;
 import helium314.keyboard.keyboard.internal.PointerTrackerQueue;
 import helium314.keyboard.keyboard.internal.TimerProxy;
 import helium314.keyboard.keyboard.internal.TypingTimeRecorder;
@@ -32,13 +29,11 @@ import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
 import helium314.keyboard.latin.R;
 import helium314.keyboard.latin.common.Constants;
 import helium314.keyboard.latin.common.CoordinateUtils;
-import helium314.keyboard.latin.common.InputPointers;
 import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.settings.SettingsValues;
 import helium314.keyboard.latin.utils.KtxKt;
 
-public final class PointerTracker implements PointerTrackerQueue.Element,
-        BatchInputArbiterListener {
+public final class PointerTracker implements PointerTrackerQueue.Element{
     private static final String TAG = PointerTracker.class.getSimpleName();
     private static final boolean DEBUG_EVENT = false;
     private static final boolean DEBUG_MOVE_EVENT = false;
@@ -83,18 +78,15 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
         sDrawingProxy = drawingProxy;
         final Object[] thatArray = sProxyMap.get(drawingProxy); // if it's null, the view we're switching to should not exist
         sParams = (PointerTrackerParams) thatArray[0];
-        sGestureStrokeRecognitionParams = (GestureStrokeRecognitionParams) thatArray[1];
-        sTypingTimeRecorder = (TypingTimeRecorder) thatArray[2];
-        sTimerProxy = (TimerProxy) thatArray[3];
+        sTypingTimeRecorder = (TypingTimeRecorder) thatArray[1];
+        sTimerProxy = (TimerProxy) thatArray[2];
         //noinspection unchecked
-        sTrackers = (ArrayList<PointerTracker>) thatArray[4];
+        sTrackers = (ArrayList<PointerTracker>) thatArray[3];
     }
 
     // Parameters for pointer handling.
     private static PointerTrackerParams sParams;
     private static final int sPointerStep = KtxKt.dpToPx(10, Resources.getSystem());
-    private static GestureStrokeRecognitionParams sGestureStrokeRecognitionParams;
-
     private static ArrayList<PointerTracker> sTrackers = new ArrayList<>();
     private static final PointerTrackerQueue sPointerTrackerQueue = new PointerTrackerQueue();
 
@@ -157,15 +149,18 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
     private boolean mKeySwipeAllowed = false;
     private static boolean sInKeySwipe = false;
 
-    private final BatchInputArbiter mBatchInputArbiter;
 
     // TODO: Add PointerTrackerFactory singleton and move some class static methods into it.
     public static void init(final TypedArray mainKeyboardViewAttr, final TimerProxy timerProxy,
             final DrawingProxy drawingProxy) {
+
+        int mStaticTimeThresholdAfterFastTyping = mainKeyboardViewAttr.getInt(
+            R.styleable.MainKeyboardView_gestureStaticTimeThresholdAfterFastTyping,
+            500);
+
         sParams = new PointerTrackerParams(mainKeyboardViewAttr);
-        sGestureStrokeRecognitionParams = new GestureStrokeRecognitionParams(mainKeyboardViewAttr);
         sTypingTimeRecorder = new TypingTimeRecorder(
-                sGestureStrokeRecognitionParams.mStaticTimeThresholdAfterFastTyping,
+                mStaticTimeThresholdAfterFastTyping,
                 sParams.mSuppressKeyPreviewAfterBatchInputDuration);
 
         final Resources res = mainKeyboardViewAttr.getResources();
@@ -177,7 +172,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
 
         sProxyMap.put(drawingProxy, new Object[] {
                 sParams,
-                sGestureStrokeRecognitionParams,
                 sTypingTimeRecorder,
                 sTimerProxy,
                 sTrackers
@@ -238,7 +232,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
 
     private PointerTracker(final int id) {
         mPointerId = id;
-        mBatchInputArbiter = new BatchInputArbiter(id, sGestureStrokeRecognitionParams);
     }
 
     // Returns true if keyboard has been changed by this callback.
@@ -345,7 +338,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
         mKeyboardLayoutHasBeenChanged = true;
         final int keyWidth = mKeyboard.mMostCommonKeyWidth;
         final int keyHeight = mKeyboard.mMostCommonKeyHeight;
-        mBatchInputArbiter.setKeyboardGeometry(keyWidth, mKeyboard.mOccupiedHeight);
         // Keep {@link #mCurrentKey} that comes from previous keyboard. The key preview of
         // {@link #mCurrentKey} will be dismissed by {@setReleasedKeyGraphics(Key)} via
         // {@link onMoveEventInternal(int,int,long)} or {@link #onUpEventInternal(int,int,long)}.
@@ -476,44 +468,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
 
     /* package */ static int getActivePointerTrackerCount() {
         return sPointerTrackerQueue.size();
-    }
-
-    // Implements {@link BatchInputArbiterListener}.
-    @Override
-    public void onStartBatchInput() {
-        if (DEBUG_LISTENER) {
-            ////Log.(TAG, String.format(Locale.US, "[%d] onStartBatchInput", mPointerId));
-        }
-        sListener.onStartBatchInput();
-        dismissAllPopupKeysPanels();
-        sTimerProxy.cancelLongPressTimersOf(this);
-    }
-
-    public void updateBatchInputByTimer(final long syntheticMoveEventTime) {
-        mBatchInputArbiter.updateBatchInputByTimer(syntheticMoveEventTime, this);
-    }
-
-    // Implements {@link BatchInputArbiterListener}.
-    @Override
-    public void onUpdateBatchInput(final InputPointers aggregatedPointers, final long eventTime) {
-        sListener.onUpdateBatchInput(aggregatedPointers);
-    }
-
-    // Implements {@link BatchInputArbiterListener}.
-    @Override
-    public void onStartUpdateBatchInputTimer() {
-        sTimerProxy.startUpdateBatchInputTimer(this);
-    }
-
-    // Implements {@link BatchInputArbiterListener}.
-    @Override
-    public void onEndBatchInput(final InputPointers aggregatedPointers, final long eventTime) {
-        sTypingTimeRecorder.onEndBatchInput(eventTime);
-        sTimerProxy.cancelAllUpdateBatchInputTimers();
-        if (mIsTrackingForActionDisabled) {
-            return;
-        }
-        sListener.onEndBatchInput(aggregatedPointers);
     }
 
     private void cancelBatchInput() {

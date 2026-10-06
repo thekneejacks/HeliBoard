@@ -56,11 +56,6 @@ public final class TimerHandler extends LeakGuardHandlerWrapper<DrawingProxy>
                 PointerTracker tracker2 = (PointerTracker)msg.obj;
                 tracker2.onLongPressed();
             }
-            case MSG_UPDATE_BATCH_INPUT -> {
-                PointerTracker tracker3 = (PointerTracker)msg.obj;
-                tracker3.updateBatchInputByTimer(SystemClock.uptimeMillis());
-                startUpdateBatchInputTimer(tracker3);
-            }
             case MSG_DISMISS_KEY_PREVIEW -> {
                 drawingProxy.onKeyReleased((Key)msg.obj, false /* withAnimation */);
             }
