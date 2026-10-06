@@ -33,18 +33,12 @@ class RichInputMethodSubtype private constructor(val rawSubtype: InputMethodSubt
 
     fun hasExtraValue(key: String): Boolean = rawSubtype.containsExtraValueKey(key)
 
-    val isNoLanguage: Boolean get() = SubtypeLocaleUtils.NO_LANGUAGE == locale.language
-
     val mainLayoutName: String get() = layouts[LayoutType.MAIN] ?: "qwerty"
 
     /** layout names for this subtype by LayoutType */
     val layouts = LayoutType.getLayoutMap(getExtraValueOf(KEYBOARD_LAYOUT_SET) ?: "")
 
     val isCustom: Boolean get() = LayoutUtilsCustom.isCustomLayout(mainLayoutName)
-
-    val fullDisplayName: String get() = SubtypeLocaleUtils.getSubtypeLocaleDisplayName(locale)
-
-    val middleDisplayName: String get() = SubtypeLocaleUtils.getSubtypeLanguageDisplayName(locale)
 
     override fun equals(other: Any?): Boolean {
         if (other !is RichInputMethodSubtype) return false

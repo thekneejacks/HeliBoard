@@ -355,10 +355,6 @@ public final class RichInputConnection implements PrivateCommandPerformer {
         return isConnected() ?  mIC.getSelectedText(flags) : null;
     }
 
-    public boolean canDeleteCharacters() {
-        return mExpectedSelStart > 0;
-    }
-
     public boolean hasTextAfterCursor() {
         final CharSequence after = getTextAfterCursor(1, 0);
         return !TextUtils.isEmpty(after);

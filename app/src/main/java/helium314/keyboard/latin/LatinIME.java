@@ -8,10 +8,8 @@ package helium314.keyboard.latin;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -19,7 +17,6 @@ import android.inputmethodservice.InputMethodService;
 import android.os.Build;
 import android.os.Debug;
 import android.os.Message;
-import android.os.Process;
 import android.util.PrintWriterPrinter;
 import android.util.Printer;
 import android.view.KeyEvent;
@@ -28,16 +25,13 @@ import android.view.Window;
 import android.view.inputmethod.CompletionInfo;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodSubtype;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
-
 import helium314.keyboard.compat.EditorInfoCompatUtils;
 import helium314.keyboard.compat.ImeCompat;
 import helium314.keyboard.event.Event;
@@ -110,25 +104,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
     @Nullable
     private Context mDisplayContext;
 
-
-    final static class RestartAfterDeviceUnlockReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-            // Restart the keyboard if credential encrypted storage is unlocked. This reloads the
-            // dictionary and other data from credential-encrypted storage (with the onCreate()
-            // method).
-            if (Intent.ACTION_USER_UNLOCKED.equals(action)) {
-                final int myPid = Process.myPid();
-                //Log.i(TAG, "Killing my process: pid=" + myPid);
-                Process.killProcess(myPid);
-            } else {
-                //Log.e(TAG, "Unexpected intent " + intent);
-            }
-        }
-    }
-    final RestartAfterDeviceUnlockReceiver mRestartAfterDeviceUnlockReceiver = new RestartAfterDeviceUnlockReceiver();
-
     private AlertDialog mOptionsDialog;
 
     private final boolean mIsHardwareAcceleratedDrawingEnabled;
@@ -146,8 +121,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
         private static final int MSG_SWITCH_LANGUAGE_AUTOMATICALLY = 10;
 
         private static final int ARG1_TRUE = 1;
-
-        private int mDelayInMillisecondsToUpdateSuggestions;
         private int mDelayInMillisecondsToUpdateShiftState;
 
         public UIHandler(@NonNull final LatinIME ownerInstance) {
@@ -160,8 +133,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
                 return;
             }
             final Resources res = latinIme.getResources();
-            mDelayInMillisecondsToUpdateSuggestions = res.getInteger(
-                    R.integer.config_delay_in_milliseconds_to_update_suggestions);
             mDelayInMillisecondsToUpdateShiftState = res.getInteger(
                     R.integer.config_delay_in_milliseconds_to_update_shift_state);
         }
@@ -372,24 +343,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
         mClipboardHistoryManager.onCreate();
         mHandler.onCreate();
 
-
-        // Register to receive ringer mode change.
-        /*final IntentFilter filter = new IntentFilter();
-        filter.addAction(AudioManager.RINGER_MODE_CHANGED_ACTION);
-        registerReceiver(mRingerModeChangeReceiver, filter);*/
-
-        // Register to receive installation and removal of a dictionary pack.
-        /*final IntentFilter packageFilter = new IntentFilter();
-        packageFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
-        packageFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
-        packageFilter.addDataScheme(SCHEME_PACKAGE);*/
-
-
-        final IntentFilter restartAfterUnlockFilter = new IntentFilter();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-            restartAfterUnlockFilter.addAction(Intent.ACTION_USER_UNLOCKED);
-        registerReceiver(mRestartAfterDeviceUnlockReceiver, restartAfterUnlockFilter);
-
         StatsUtils.onCreate(mSettings.getCurrent(), mRichImm);
     }
 
@@ -419,7 +372,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
         mClipboardHistoryManager.onDestroy();
         mSettings.onDestroy();
         //unregisterReceiver(mRingerModeChangeReceiver);
-        unregisterReceiver(mRestartAfterDeviceUnlockReceiver);
         super.onDestroy();
         mHandler.removeCallbacksAndMessages(null);
         deallocateMemory();

@@ -46,18 +46,12 @@ public final class SystemBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, final Intent intent) {
         final String intentAction = intent.getAction();
-        if (Intent.ACTION_MY_PACKAGE_REPLACED.equals(intentAction)) {
-            //Log.i(TAG, "Package has been replaced: " + context.getPackageName());
-            toggleAppIcon(context);
-        } else if (Intent.ACTION_BOOT_COMPLETED.equals(intentAction)) {
-            //Log.i(TAG, "Boot has been completed");
-            toggleAppIcon(context);
-        } else if (Intent.ACTION_LOCALE_CHANGED.equals(intentAction)) {
+        if (Intent.ACTION_LOCALE_CHANGED.equals(intentAction)) {
             //Log.i(TAG, "System locale changed");
             KeyboardLayoutSet.Companion.onSystemLocaleChanged();
         }
 
-        // The process that hosts this broadcast receiver is invoked and remains alive even after
+        /*// The process that hosts this broadcast receiver is invoked and remains alive even after
         // 1) the package has been re-installed,
         // 2) the device has just booted,
         // 3) a new user has been created.
@@ -73,12 +67,11 @@ public final class SystemBroadcastReceiver extends BroadcastReceiver {
             final int myPid = Process.myPid();
             //Log.i(TAG, "Killing my process: pid=" + myPid);
             Process.killProcess(myPid);
-        }
-    }
+        }*/
 
-    public static void toggleAppIcon(final Context context) {
-        //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-            return; // can't change visibility in Android 10 and above
+        // I removed the receiver on LatinIME, which means this is the only receiver in the app.
+        // There's no good reason to keep the receiver process running. The system would probably kill it anyway
+        Process.killProcess(Process.myPid());
 
     }
 }
