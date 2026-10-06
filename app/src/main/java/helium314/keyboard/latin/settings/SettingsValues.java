@@ -86,7 +86,6 @@ public class SettingsValues {
     public final float mSidePaddingScale;
     public final ToolbarMode mToolbarMode;
     public final boolean mToolbarHidingGlobal;
-    public final boolean mAutoShowToolbar;
     public final EnumSet<KeyboardState.Mode> mAlphaAfterSpace = EnumSet.noneOf(KeyboardState.Mode.class);
     public final boolean mRemoveRedundantPopups;
     public final float mFontSizeMultiplier;
@@ -176,7 +175,6 @@ public class SettingsValues {
         mBottomPaddingScale = Settings.readBottomPaddingScale(prefs, isLandscape, isFolded);
         mSidePaddingScale = Settings.readSidePaddingScale(prefs, isLandscape, false, isFolded);
         mLongPressSymbolsForNumpad = prefs.getBoolean(Settings.PREFS_LONG_PRESS_SYMBOLS_FOR_NUMPAD, Defaults.PREFS_LONG_PRESS_SYMBOLS_FOR_NUMPAD);
-        mAutoShowToolbar = mToolbarMode == ToolbarMode.EXPANDABLE && prefs.getBoolean(Settings.PREF_AUTO_SHOW_TOOLBAR, Defaults.PREF_AUTO_SHOW_TOOLBAR);
         if (prefs.getBoolean(Settings.PREF_ABC_AFTER_SYMBOL_SPACE, Defaults.PREF_ABC_AFTER_SYMBOL_SPACE)) {
             mAlphaAfterSpace.add(KeyboardState.Mode.SYMBOLS);
             mAlphaAfterSpace.add(KeyboardState.Mode.SYMBOLS_SHIFTED);

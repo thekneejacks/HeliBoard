@@ -6,7 +6,6 @@ import android.content.SharedPreferences
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
-import androidx.core.content.edit
 import helium314.keyboard.keyboard.internal.KeyboardIconsSet
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode
 import helium314.keyboard.latin.R
@@ -117,69 +116,7 @@ val defaultToolbarPref by lazy {
             others.joinToString(Separators.ENTRY) { it.name + Separators.KV + false }
 }
 
-val defaultPinnedToolbarPref = entries.filterNot { false }.joinToString(Separators.ENTRY) {
-    it.name + Separators.KV + false
-}
-
-val defaultClipboardToolbarPref by lazy {
-    val default = listOf(CLEAR_CLIPBOARD, UP, DOWN, LEFT, RIGHT, UNDO, CUT, COPY, PASTE, SELECT_WORD)
-    val others = entries.filterNot { it in default }
-    default.joinToString(Separators.ENTRY) { it.name + Separators.KV + true } + Separators.ENTRY +
-            others.joinToString(Separators.ENTRY) { it.name + Separators.KV + false }
-}
-
-/** add missing keys, typically because a new key has been added */
-fun upgradeToolbarPrefs(prefs: SharedPreferences) {
-    upgradeToolbarPref(prefs, Settings.PREF_TOOLBAR_KEYS, defaultToolbarPref)
-    upgradeToolbarPref(prefs, Settings.PREF_PINNED_TOOLBAR_KEYS, defaultPinnedToolbarPref)
-    upgradeToolbarPref(prefs, Settings.PREF_CLIPBOARD_TOOLBAR_KEYS, defaultClipboardToolbarPref)
-}
-
-private fun upgradeToolbarPref(prefs: SharedPreferences, pref: String, default: String) {
-    if (!prefs.contains(pref)) return
-    val list = prefs.getString(pref, default)!!.split(Separators.ENTRY).toMutableList()
-    val splitDefault = defaultToolbarPref.split(Separators.ENTRY)
-    splitDefault.forEach { entry ->
-        val keyWithSeparator = entry.substringBefore(Separators.KV) + Separators.KV
-        if (list.none { it.startsWith(keyWithSeparator) })
-            list.add("${keyWithSeparator}false")
-    }
-    // likely not needed, but better prepare for possibility of key removal
-    list.removeAll {
-        try {
-            ToolbarKey.valueOf(it.substringBefore(Separators.KV))
-            false
-        } catch (_: IllegalArgumentException) {
-            true
-        }
-    }
-    prefs.edit { putString(pref, list.joinToString(Separators.ENTRY)) }
-}
-
 fun getEnabledToolbarKeys(prefs: SharedPreferences) = getEnabledToolbarKeys(prefs, Settings.PREF_TOOLBAR_KEYS, defaultToolbarPref)
-
-fun getPinnedToolbarKeys(prefs: SharedPreferences) = getEnabledToolbarKeys(prefs, Settings.PREF_PINNED_TOOLBAR_KEYS, defaultPinnedToolbarPref)
-
-fun addPinnedKey(prefs: SharedPreferences, key: ToolbarKey) {
-    // remove the existing version of this key and add the enabled one after the last currently enabled key
-    val string = prefs.getString(Settings.PREF_PINNED_TOOLBAR_KEYS, defaultPinnedToolbarPref)!!
-    val keys = string.split(Separators.ENTRY).toMutableList()
-    keys.removeAll { it.startsWith(key.name + Separators.KV) }
-    val lastEnabledIndex = keys.indexOfLast { it.endsWith("true") }
-    keys.add(lastEnabledIndex + 1, key.name + Separators.KV + "true")
-    prefs.edit { putString(Settings.PREF_PINNED_TOOLBAR_KEYS, keys.joinToString(Separators.ENTRY)) }
-}
-
-fun removePinnedKey(prefs: SharedPreferences, key: ToolbarKey) {
-    // just set it to disabled
-    val string = prefs.getString(Settings.PREF_PINNED_TOOLBAR_KEYS, defaultPinnedToolbarPref)!!
-    val result = string.split(Separators.ENTRY).joinToString(Separators.ENTRY) {
-        if (it.startsWith(key.name + Separators.KV))
-            key.name + Separators.KV + "false"
-        else it
-    }
-    prefs.edit { putString(Settings.PREF_PINNED_TOOLBAR_KEYS, result) }
-}
 
 private fun getEnabledToolbarKeys(prefs: SharedPreferences, pref: String, default: String): List<ToolbarKey> {
     val string = prefs.getString(pref, default)!!
@@ -193,11 +130,6 @@ private fun getEnabledToolbarKeys(prefs: SharedPreferences, pref: String, defaul
             }
         } else null
     }
-}
-
-fun writeCustomKeyCodes(prefs: SharedPreferences, codes: EnumMap<ToolbarKey, Pair<Int?, Int?>>) {
-    val string = codes.mapNotNull { entry -> entry.value?.let { "${entry.key.name},${it.first},${it.second}" } }.joinToString(";")
-    prefs.edit { putString(Settings.PREF_TOOLBAR_CUSTOM_KEY_CODES, string) }
 }
 
 fun readCustomKeyCodes(prefs: SharedPreferences): EnumMap<ToolbarKey, Pair<Int?, Int?>> {

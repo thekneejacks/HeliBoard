@@ -621,7 +621,7 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
         // Set neutral suggestions and show the toolbar if the "Auto show toolbar" setting is enabled.
         if (!mHandler.hasPendingResumeSuggestions()) {
             mHandler.cancelUpdateSuggestionStrip();
-            if (hasSuggestionStripView() && currentSettingsValues.mAutoShowToolbar) {
+            if (hasSuggestionStripView()) {
                 mSuggestionStripView.setToolbarVisibility(true);
             }
         }

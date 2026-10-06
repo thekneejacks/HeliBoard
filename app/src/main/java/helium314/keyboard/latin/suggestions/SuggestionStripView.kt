@@ -10,7 +10,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -23,23 +22,17 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import androidx.core.view.doOnNextLayout
-import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import helium314.keyboard.latin.R
 import helium314.keyboard.latin.common.ColorType
 import helium314.keyboard.latin.common.Colors
 import helium314.keyboard.latin.common.Constants
 import helium314.keyboard.latin.settings.Settings
-import helium314.keyboard.latin.utils.ToolbarKey
-import helium314.keyboard.latin.utils.ToolbarMode
-import helium314.keyboard.latin.utils.addPinnedKey
 import helium314.keyboard.latin.utils.createToolbarKey
 import helium314.keyboard.latin.utils.getEnabledToolbarKeys
-import helium314.keyboard.latin.utils.getPinnedToolbarKeys
 import helium314.keyboard.latin.utils.onClickToolbarKey
 import helium314.keyboard.latin.utils.onLongClickToolbarKey
 import helium314.keyboard.latin.utils.prefs
-import helium314.keyboard.latin.utils.removePinnedKey
 
 @SuppressLint("InflateParams")
 class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int) :
@@ -62,9 +55,7 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
     // toolbar views, drawables and setup
     private val toolbar: ViewGroup = findViewById(R.id.toolbar)
     private val toolbarContainer: View = findViewById(R.id.toolbar_container)
-    private val pinnedKeys: ViewGroup = findViewById(R.id.pinned_keys)
     private val suggestionsStrip: ViewGroup = findViewById(R.id.suggestions_strip)
-    private val defaultToolbarBackground: Drawable = resources.getDrawable(R.drawable.toolbar_expand_key_background)
     private val enabledToolKeyBackground = GradientDrawable()
     private var direction = 1 // 1 if LTR, -1 if RTL
 
@@ -92,22 +83,11 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
             setupKey(button, colors)
             toolbar.addView(button)
         }
-        for (pinnedKey in getPinnedToolbarKeys(context.prefs())) {
-            val button = createToolbarKey(context, pinnedKey)
-            button.layoutParams = toolbarKeyLayoutParams
-            setupKey(button, colors)
-            pinnedKeys.addView(button)
-            val pinnedKeyInToolbar = toolbar.findViewWithTag<View>(pinnedKey)
-            if (pinnedKeyInToolbar != null && Settings.getValues().mQuickPinToolbarKeys)
-                pinnedKeyInToolbar.background = enabledToolKeyBackground
-        }
         toolbarContainer.doOnNextLayout {
             // set min with of the toolbar so the weight of the toolbar keys actually does something
             // todo: results in requestLayout() improperly called by android.widget.LinearLayout during layout: running second layout pass
             toolbar.minimumWidth = toolbarContainer.width
         }
-
-        updateKeys()
     }
 
     private lateinit var listener: Listener
@@ -134,7 +114,6 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
     }
 
     fun setToolbarVisibility(toolbarVisible: Boolean) {
-        pinnedKeys.isVisible = !toolbarVisible
         suggestionsStrip.isVisible = !toolbarVisible
         toolbarContainer.isVisible = toolbarVisible
     }
@@ -177,55 +156,16 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
     }
 
     override fun onClick(view: View) {
-            onClickToolbarKey(view) { listener.onCodeInput(it, Constants.SUGGESTION_STRIP_COORDINATE, Constants.SUGGESTION_STRIP_COORDINATE, false) }
-            return
+        onClickToolbarKey(view) { listener.onCodeInput(it, Constants.SUGGESTION_STRIP_COORDINATE, Constants.SUGGESTION_STRIP_COORDINATE, false) }
+        return
     }
 
     override fun onLongClick(view: View): Boolean {
-
-            onLongClickToolbarKey(view)
-            return true
+        onLongClickToolbarKey(view) { code, isRepeat -> listener.onCodeInput(code, Constants.SUGGESTION_STRIP_COORDINATE, Constants.SUGGESTION_STRIP_COORDINATE, isRepeat) }
+        return true
     }
 
     // actually private stuff
-
-    private fun onLongClickToolbarKey(view: View) {
-        val tag = view.tag as? ToolbarKey ?: return
-        if (!Settings.getValues().mQuickPinToolbarKeys || view.parent === pinnedKeys) {
-            onLongClickToolbarKey(view) { code, isRepeat -> listener.onCodeInput(code, Constants.SUGGESTION_STRIP_COORDINATE, Constants.SUGGESTION_STRIP_COORDINATE, isRepeat) }
-        } else if (view.parent === toolbar) {
-            val pinnedKeyView = pinnedKeys.findViewWithTag<View>(tag)
-            if (pinnedKeyView == null) {
-                addKeyToPinnedKeys(tag)
-                toolbar.findViewWithTag<View>(tag).background = enabledToolKeyBackground
-                addPinnedKey(context.prefs(), tag)
-            } else {
-                removePinnedKey(context.prefs(), tag)
-                toolbar.findViewWithTag<View>(tag).background = defaultToolbarBackground.constantState?.newDrawable(resources)
-                pinnedKeys.removeView(pinnedKeyView)
-            }
-        }
-    }
-
-    private fun updateKeys() {
-        pinnedKeys.visibility = suggestionsStrip.visibility
-    }
-
-    private fun addKeyToPinnedKeys(pinnedKey: ToolbarKey) {
-        val original = toolbar.findViewWithTag<ImageButton>(pinnedKey) ?: return
-        // copy the original key to a new ImageButton
-        val copy = ImageButton(context, null, R.attr.suggestionWordStyle)
-        copy.tag = pinnedKey
-        copy.scaleType = original.scaleType
-        copy.scaleX = original.scaleX
-        copy.scaleY = original.scaleY
-        copy.contentDescription = original.contentDescription
-        copy.setImageDrawable(original.drawable)
-        copy.layoutParams = original.layoutParams
-        copy.isActivated = original.isActivated
-        setupKey(copy, Settings.getValues().mColors)
-        pinnedKeys.addView(copy)
-    }
 
     private fun setupKey(view: ImageButton, colors: Colors) {
         view.setOnClickListener(this)
