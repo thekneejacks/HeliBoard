@@ -66,35 +66,28 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     public static final String PREF_AUTOSPACE_AFTER_PUNCTUATION = "autospace_after_punctuation";
     public static final String PREF_AUTOSPACE_BEFORE_GESTURE_TYPING = "autospace_before_gesture_typing";
     public static final String PREF_SHIFT_REMOVES_AUTOSPACE = "shift_removes_autospace";
-    public static final String PREF_ALWAYS_INCOGNITO_MODE = "always_incognito_mode";
     public static final String PREF_KEY_LONGPRESS_TIMEOUT = "key_longpress_timeout";
     public static final String PREF_GESTURE_FAST_TYPING_COOLDOWN = "gesture_fast_typing_cooldown";
     public static final String PREF_GESTURE_TRAIL_FADEOUT_DURATION = "gesture_trail_fadeout_duration";
     public static final String PREFS_LONG_PRESS_SYMBOLS_FOR_NUMPAD = "long_press_symbols_for_numpad";
-
     public static final String PREF_SHOW_NUMBER_ROW = "show_number_row";
     public static final String PREF_SHOW_NUMBER_ROW_IN_SYMBOLS = "show_number_row_in_symbols";
     public static final String PREF_LOCALIZED_NUMBER_ROW = "localized_number_row";
     public static final String PREF_SHOW_NUMBER_ROW_HINTS = "show_number_row_hints";
     public static final String PREF_CUSTOM_CURRENCY_KEY = "custom_currency_key";
-
     public static final String PREF_SHOW_HINTS = "show_hints";
     public static final String PREF_POPUP_KEYS_ORDER = "popup_keys_order";
     public static final String PREF_POPUP_KEYS_HINT_ORDER = "popup_keys_labels_order";
     public static final String PREF_SHOW_POPUP_HINTS = "show_popup_hints";
     public static final String PREF_MORE_POPUP_KEYS = "more_popup_keys";
     public static final String PREF_SHOW_TLD_POPUP_KEYS = "show_tld_popup_keys";
-
     public static final String PREF_SPACE_TO_CHANGE_LANG = "prefs_long_press_keyboard_to_change_lang";
     public static final String PREF_LANGUAGE_SWIPE_DISTANCE = "language_swipe_distance";
     public static final String PREF_TOUCHPAD_SENSITIVITY = "touchpad_sensitivity";
     public static final String PREF_TOUCHPAD_EDGE_SCROLL = "touchpad_edge_scroll";
-
-    public static final String PREF_ENABLE_CLIPBOARD_HISTORY = "enable_clipboard_history";
     public static final String PREF_NAVBAR_COLOR = "navbar_color";
     public static final String PREF_ENABLED_SUBTYPES = "enabled_subtypes";
     public static final String PREF_SELECTED_SUBTYPE = "selected_subtype";
-    public static final String PREF_URL_DETECTION = "url_detection";
     public static final String PREF_DONT_SHOW_MISSING_DICTIONARY_DIALOG = "dont_show_missing_dict_dialog";
     public static final String PREF_QUICK_PIN_TOOLBAR_KEYS = "quick_pin_toolbar_keys";
     public static final String PREF_PINNED_TOOLBAR_KEYS = "pinned_toolbar_keys";
@@ -113,7 +106,6 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     public static final String PREF_LAST_SHOWN_EMOJI_CATEGORY_ID = "last_shown_emoji_category_id";
     public static final String PREF_LAST_SHOWN_EMOJI_CATEGORY_PAGE_ID = "last_shown_emoji_category_page_id";
 
-    public static final String PREF_LIBRARY_CHECKSUM = "lib_checksum";
     public static final String PREF_SAVE_SUBTYPE_PER_APP = "save_subtype_per_app";
     public static final String PREF_SAVED_APP_SUBTYPE_PREFIX = "saved_app_subtype_";
 

@@ -14,19 +14,8 @@ class App : Application() {
         SubtypeSettings.init(this)
 
         RichInputMethodManager.init(this)
-        app = this
         Defaults.initDynamicDefaults(this)
 
         this.deleteDatabase("heliboard.db")
-    }
-
-    companion object {
-        // used so JniUtils can access application once
-        private var app: App? = null
-        fun getApp(): App? {
-            val application = app
-            app = null
-            return application
-        }
     }
 }

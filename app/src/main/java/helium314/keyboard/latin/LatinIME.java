@@ -63,7 +63,6 @@ import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.settings.SettingsValues;
 import helium314.keyboard.latin.suggestions.SuggestionStripView;
 import helium314.keyboard.latin.utils.InputMethodPickerKt;
-import helium314.keyboard.latin.utils.JniUtils;
 import helium314.keyboard.latin.utils.KtxKt;
 import helium314.keyboard.latin.utils.LeakGuardHandlerWrapper;
 import helium314.keyboard.latin.utils.RecapitalizeMode;
@@ -349,11 +348,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
         }
     }
 
-    // Loading the native library eagerly to avoid unexpected UnsatisfiedLinkError at the initial
-    // JNI call as much as possible.
-    static {
-        JniUtils.loadNativeLibrary();
-    }
 
     public LatinIME() {
         super();

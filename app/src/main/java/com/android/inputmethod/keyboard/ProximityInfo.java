@@ -17,7 +17,6 @@ import java.util.List;
 import helium314.keyboard.keyboard.Key;
 import helium314.keyboard.keyboard.internal.TouchPositionCorrection;
 import helium314.keyboard.latin.common.Constants;
-import helium314.keyboard.latin.utils.JniUtils;
 
 public class ProximityInfo {
     private static final String TAG = ProximityInfo.class.getSimpleName();
@@ -75,9 +74,6 @@ public class ProximityInfo {
     }
 
     private long mNativeProximityInfo;
-    static {
-        JniUtils.loadNativeLibrary();
-    }
 
     // TODO: Stop passing proximityCharsArray
     private static native long setProximityInfoNative(int displayWidth, int displayHeight,
