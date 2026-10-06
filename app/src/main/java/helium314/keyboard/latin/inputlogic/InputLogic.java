@@ -43,7 +43,6 @@ import helium314.keyboard.latin.common.StringUtilsKt;
 import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.settings.SettingsValues;
 import helium314.keyboard.latin.utils.InputTypeUtils;
-import helium314.keyboard.latin.utils.IntentUtils;
 import helium314.keyboard.latin.utils.RecapitalizeMode;
 import helium314.keyboard.latin.utils.RecapitalizeStatus;
 import helium314.keyboard.latin.utils.ScriptUtils;
@@ -611,8 +610,6 @@ public final class InputLogic {
             case KeyCode.TIMESTAMP:
                 mLatinIME.onTextInput(TimestampKt.getTimestamp(mLatinIME));
                 break;
-            case KeyCode.SEND_INTENT_ONE, KeyCode.SEND_INTENT_TWO, KeyCode.SEND_INTENT_THREE:
-                IntentUtils.handleSendIntentKey(mLatinIME, event.getKeyCode());
             case KeyCode.IME_HIDE_UI:
                 mLatinIME.requestHideSelf(0);
                 break;
