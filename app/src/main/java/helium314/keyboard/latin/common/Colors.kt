@@ -146,7 +146,6 @@ class DefaultColors (
         suggestionText,
         brighten(brighten(suggestionText))
     )
-    private var backgroundSetupDone = false
 
     init {
 

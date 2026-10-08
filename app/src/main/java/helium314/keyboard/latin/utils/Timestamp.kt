@@ -11,7 +11,7 @@ fun getTimestamp(context: Context): String = getTimestampFormatter(context).form
 
 fun getTimestampFormatter(context: Context): SimpleDateFormat {
     val format = context.prefs().getString(Settings.PREF_TIMESTAMP_FORMAT, Defaults.PREF_TIMESTAMP_FORMAT)
-    return runCatching<SimpleDateFormat> { SimpleDateFormat(format, Settings.getValues().mLocale) }.getOrNull()
+    return runCatching { SimpleDateFormat(format, Settings.getValues().mLocale) }.getOrNull()
         ?: SimpleDateFormat(Defaults.PREF_TIMESTAMP_FORMAT, Settings.getValues().mLocale)
 }
 

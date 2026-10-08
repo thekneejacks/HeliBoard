@@ -57,11 +57,6 @@ fun <T> addCollections(a: Collection<T>?, b: Collection<T>?): Collection<T>? {
     return a + b
 }
 
-fun <T> MutableList<T>.removeFirst(predicate: (T) -> Boolean) {
-    val i = indexOfFirst(predicate)
-    if (i >= 0) removeAt(i)
-}
-
 fun <T> MutableList<T>.replaceFirst(predicate: (T) -> Boolean, with: (T) -> T) {
     val i = indexOfFirst(predicate)
     if (i >= 0) this[i] = with(this[i])
@@ -70,9 +65,6 @@ fun <T> MutableList<T>.replaceFirst(predicate: (T) -> Boolean, with: (T) -> T) {
 /** SharedPreferences from deviceProtectedContext, which are accessible even without unlocking.
  *  They should not be used to store sensitive data! */
 fun Context.prefs(): SharedPreferences = DeviceProtectedUtils.getSharedPreferences(this)
-
-/** The "default" preferences that are only accessible after the device has been unlocked. */
-fun Context.protectedPrefs(): SharedPreferences = getSharedPreferences("${packageName}_preferences", Context.MODE_PRIVATE)
 
 /**
  * Returns the context object whose resources are adjusted to match the metrics of the display.

@@ -5,10 +5,8 @@ import android.view.inputmethod.InputMethodSubtype
 import android.view.inputmethod.InputMethodSubtype.InputMethodSubtypeBuilder
 import helium314.keyboard.latin.R
 import helium314.keyboard.latin.common.Constants
-import helium314.keyboard.latin.common.Constants.Separators
 import helium314.keyboard.latin.common.Constants.Subtype.ExtraValue
 import helium314.keyboard.latin.settings.Defaults.default
-import helium314.keyboard.latin.settings.SettingsSubtype.Companion.toSettingsSubtype
 import helium314.keyboard.latin.utils.LayoutType.Companion.toExtraValue
 import helium314.keyboard.latin.utils.ScriptUtils.script
 import java.util.Locale
@@ -19,7 +17,7 @@ object SubtypeUtilsAdditional {
                                         isEmojiCapable: Boolean): InputMethodSubtype {
         val mainLayoutName = LayoutType.getMainLayoutFromExtraValue(extraValue) ?: "qwerty"
         val nameId = getNameResId(locale, mainLayoutName)
-        val fullExtraValue = extraValue + "," + getAdditionalExtraValues(locale, mainLayoutName, isAsciiCapable, isEmojiCapable)
+        val fullExtraValue = extraValue + "," + getAdditionalExtraValues(isAsciiCapable, isEmojiCapable)
         val subtypeId = getSubtypeId(locale, fullExtraValue, isAsciiCapable)
         val builder = InputMethodSubtypeBuilder()
             .setSubtypeNameResId(nameId)
@@ -44,12 +42,6 @@ object SubtypeUtilsAdditional {
         val extra = ExtraValue.KEYBOARD_LAYOUT_SET + "=" + layouts.toExtraValue()
         return createAdditionalSubtype(locale, extra, locale.script() == ScriptUtils.SCRIPT_LATIN, true)
     }
-
-    fun createAdditionalSubtypes(prefSubtypes: String): List<InputMethodSubtype> =
-        prefSubtypes.split(Separators.SETS).mapNotNull {
-            if (it.isEmpty()) null
-            else it.toSettingsSubtype().toAdditionalSubtype()
-        }
 
     private fun getNameResId(locale: Locale, mainLayoutName: String): Int {
         SubtypeSettings.getResourceSubtypesForLocale(locale).forEach {
@@ -90,13 +82,12 @@ object SubtypeUtilsAdditional {
      * assume that the extra values stored in a persistent storage are always valid. We need to
      * regenerate the extra value on the fly instead.
      *
-     * @param mainLayoutName the keyboard main layout name (e.g., "dvorak").
      * @param isAsciiCapable true when ASCII characters are supported with this layout.
      * @param isEmojiCapable true when Unicode Emoji characters are supported with this layout.
      * @return extra value that is optimized for the running OS.
      * @see .getPlatformVersionIndependentSubtypeId
      */
-    private fun getAdditionalExtraValues(locale: Locale, mainLayoutName: String, isAsciiCapable: Boolean, isEmojiCapable: Boolean): String {
+    private fun getAdditionalExtraValues(isAsciiCapable: Boolean, isEmojiCapable: Boolean): String {
         val extraValueItems = mutableListOf<String>()
         if (isAsciiCapable)
             extraValueItems.add(ExtraValue.ASCII_CAPABLE)

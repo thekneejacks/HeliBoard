@@ -6,8 +6,6 @@
 
 package helium314.keyboard.latin.utils;
 
-import android.os.Build;
-import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -107,13 +105,6 @@ public final class SpannableStringUtils {
         }
 
         return new SpannedString(ss);
-    }
-
-    @SuppressWarnings("deprecation")
-    public static Spanned fromHtml(final String text) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-            return Html.fromHtml(text, Html.FROM_HTML_MODE_LEGACY);
-        return Html.fromHtml(text);
     }
 
     public static boolean hasUrlSpans(final CharSequence text,

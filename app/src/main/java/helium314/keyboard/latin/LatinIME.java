@@ -47,8 +47,6 @@ import helium314.keyboard.keyboard.MainKeyboardView;
 import helium314.keyboard.keyboard.internal.KeyboardIconsSet;
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
 import helium314.keyboard.latin.common.ColorType;
-import helium314.keyboard.latin.common.Constants;
-import helium314.keyboard.latin.common.CoordinateUtils;
 import helium314.keyboard.latin.common.InsetsOutlineProvider;
 import helium314.keyboard.latin.common.ViewOutlineProviderUtilsKt;
 import helium314.keyboard.latin.inputlogic.InputLogic;
@@ -147,7 +145,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
                             latinIme.getCurrentRecapitalizeState());
                     break;
                 case MSG_RESET_CACHES:
-                    final SettingsValues settingsValues = latinIme.mSettings.getCurrent();
                     if (latinIme.mInputLogic.retryResetCachesAndReturnSuccess(
                             msg.arg1 == ARG1_TRUE /* tryResumeSuggestions */,
                             msg.arg2 /* remainingTries */, this /* handler */)) {
@@ -380,7 +377,7 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
                                null : view.findViewById(R.id.suggestion_strip_view);
         if (hasSuggestionStripView()) {
             mSuggestionStripView.setRtl(mRichImm.getCurrentSubtype().isRtlSubtype());
-            mSuggestionStripView.setListener(this, view);
+            mSuggestionStripView.setListener(this);
         }
     }
 
@@ -819,21 +816,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
         mInsetsUpdater.setInsets(outInsets);
     }
 
-    public void startShowingInputView(final boolean needsToLoadKeyboard) {
-        mIsExecutingStartShowingInputView = true;
-        // This {@link #showWindow(boolean)} will eventually call back
-        // {@link #onEvaluateInputViewShown()}.
-        showWindow(true /* showInput */);
-        mIsExecutingStartShowingInputView = false;
-        if (needsToLoadKeyboard) {
-            loadKeyboard();
-        }
-    }
-
-    public void stopShowingInputView() {
-        showWindow(false /* showInput */);
-    }
-
     @Override
     public boolean onShowInputRequested(final int flags, final boolean configChange) {
         if (isImeSuppressedByHardwareKeyboard()) {
@@ -890,19 +872,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
     @Nullable
     public RecapitalizeMode getCurrentRecapitalizeState() {
         return mInputLogic.getCurrentRecapitalizeState();
-    }
-
-    /**
-     * @param codePoints code points to get coordinates for.
-     * @return x,y coordinates for this keyboard, as a flattened array.
-     */
-    public int[] getCoordinatesForCurrentKeyboard(final int[] codePoints) {
-        final Keyboard keyboard = mKeyboardSwitcher.getKeyboard();
-        if (null == keyboard) {
-            return CoordinateUtils.newCoordinateArray(codePoints.length,
-                    Constants.NOT_A_COORDINATE, Constants.NOT_A_COORDINATE);
-        }
-        return keyboard.getCoordinates(codePoints);
     }
 
     public boolean showInputPickerDialog() {
@@ -1112,8 +1081,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
         mOriginalNavBarColor = window.getNavigationBarColor();
         window.setNavigationBarColor(color);
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-            return;
         final View view = window.getDecorView();
         mOriginalNavBarFlags = view.getSystemUiVisibility();
         view.setSystemUiVisibility(mOriginalNavBarFlags & ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
@@ -1131,8 +1098,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
         }
         window.setNavigationBarColor(mOriginalNavBarColor);
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-            return;
         final View view = window.getDecorView();
         view.setSystemUiVisibility(mOriginalNavBarFlags);
     }

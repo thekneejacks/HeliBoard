@@ -11,7 +11,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.inputmethodservice.InputMethodService;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
@@ -36,7 +35,6 @@ import helium314.keyboard.latin.common.ConstantsKt;
 import helium314.keyboard.latin.common.StringUtils;
 import helium314.keyboard.latin.common.StringUtilsKt;
 import helium314.keyboard.latin.common.UnicodeSurrogate;
-import helium314.keyboard.latin.inputlogic.PrivateCommandPerformer;
 import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.settings.SpacingAndPunctuations;
 import helium314.keyboard.latin.utils.CapsModeUtils;
@@ -51,7 +49,7 @@ import helium314.keyboard.latin.utils.TextRange;
  * all the time to find out what text is in the buffer, when we need it to determine caps mode
  * for example.
  */
-public final class RichInputConnection implements PrivateCommandPerformer {
+public final class RichInputConnection {
     private static final String TAG = "RichInputConnection";
     private static final boolean DBG = false;
     private static final boolean DEBUG_PREVIOUS_TEXT = false;
@@ -411,17 +409,6 @@ public final class RichInputConnection implements PrivateCommandPerformer {
         return Character.codePointBefore(text, length);
     }
 
-    public int getCharBeforeBeforeCursor() {
-        if (mComposingText.length() >= 2) return mComposingText.charAt(mComposingText.length() - 2);
-        final int length = mCommittedTextBeforeComposingText.length();
-        if (mComposingText.length() == 1) {
-            if (length < 1) return Constants.NOT_A_CODE;
-            return mCommittedTextBeforeComposingText.charAt(length - 1);
-        }
-        if (length < 2) return Constants.NOT_A_CODE;
-        return mCommittedTextBeforeComposingText.charAt(length - 2);
-    }
-
     @Nullable public CharSequence getTextBeforeCursor(final int n, final int flags) {
         final int cachedLength = mCommittedTextBeforeComposingText.length() + mComposingText.length();
         // If we have enough characters to satisfy the request, or if we have all characters in
@@ -534,7 +521,6 @@ public final class RichInputConnection implements PrivateCommandPerformer {
     private void detectLaggyConnection(final int operation, final long timeout, final long startTime) {
         final long duration = SystemClock.uptimeMillis() - startTime;
         if (duration >= timeout) {
-            final String operationName = OPERATION_NAMES[operation];
             //Log.w(TAG, "Slow InputConnection: " + operationName + " took " + duration + " ms.");
             StatsUtils.onInputConnectionLaggy(operation, duration);
             mLastSlowInputConnectionTime = SystemClock.uptimeMillis();
@@ -635,32 +621,6 @@ public final class RichInputConnection implements PrivateCommandPerformer {
         }
         if (isConnected()) {
             mIC.sendKeyEvent(keyEvent);
-        }
-    }
-
-    public void setComposingRegion(final int start, final int end) {
-        if (DEBUG_BATCH_NESTING) checkBatchEdit();
-        if (DEBUG_PREVIOUS_TEXT) checkConsistencyForDebug();
-        final int moveBy = mExpectedSelStart - start; // determine now, as mExpectedSelStart may change in getTextBeforeCursor
-        final CharSequence textBeforeCursor =
-                getTextBeforeCursor(Constants.EDITOR_CONTENTS_CACHE_SIZE + (end - start), 0);
-        mCommittedTextBeforeComposingText.setLength(0);
-        // also clear composing text, otherwise we may append existing text
-        // this can happen when we're a little out of sync with the editor
-        mComposingText.setLength(0);
-        if (!TextUtils.isEmpty(textBeforeCursor)) {
-            // The cursor is not necessarily at the end of the composing text, but we have its
-            // position in mExpectedSelStart and mExpectedSelEnd. In this case we want the start
-            // of the text, so we should use mExpectedSelStart. In other words, the composing
-            // text starts (mExpectedSelStart - start) characters before the end of textBeforeCursor
-            final int indexOfStartOfComposingText = Math.max(textBeforeCursor.length() - moveBy, 0);
-            mComposingText.append(textBeforeCursor.subSequence(indexOfStartOfComposingText,
-                    textBeforeCursor.length()));
-            mCommittedTextBeforeComposingText.append(
-                    textBeforeCursor.subSequence(0, indexOfStartOfComposingText));
-        }
-        if (isConnected()) {
-            mIC.setComposingRegion(start, end);
         }
     }
 
@@ -795,19 +755,6 @@ public final class RichInputConnection implements PrivateCommandPerformer {
             return null;
         }
         return StringUtilsKt.getTouchedWordRange(before, after, script, spacingAndPunctuations);
-    }
-
-    public boolean isCursorTouchingWord(final SpacingAndPunctuations spacingAndPunctuations,
-            boolean checkTextAfter) {
-        if (checkTextAfter && isCursorFollowedByWordCharacter(spacingAndPunctuations)) {
-            // If what's after the cursor is a word character, then we're touching a word.
-            return true;
-        }
-        if (mComposingText.length() > 0) {
-            // a composing region should always count as a word
-            return true;
-        }
-        return StringUtilsKt.endsWithWordCodepoint(mCommittedTextBeforeComposingText.toString(), spacingAndPunctuations);
     }
 
     public boolean isCursorFollowedByWordCharacter(
@@ -1018,15 +965,6 @@ public final class RichInputConnection implements PrivateCommandPerformer {
                 reloadCursorPosition();
             }
         }
-    }
-
-    @Override
-    public boolean performPrivateCommand(final String action, final Bundle data) {
-        mIC = mParent.getCurrentInputConnection();
-        if (!isConnected()) {
-            return false;
-        }
-        return mIC.performPrivateCommand(action, data);
     }
 
     public int getExpectedSelectionStart() {

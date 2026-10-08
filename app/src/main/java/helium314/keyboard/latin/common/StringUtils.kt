@@ -53,22 +53,6 @@ fun nonWordCodePointAndNoSpaceBeforeCursor(text: CharSequence, spacingAndPunctua
     return nonWordCodePoint && !space // return true if a non-word codepoint and no space was found
 }
 
-/**
- *  Returns whether the [text] ends with word codepoint, ignoring all word connectors.
- *  If the [text] is empty (after ignoring word connectors), the method returns false.
- */
-fun endsWithWordCodepoint(text: String, spacingAndPunctuations: SpacingAndPunctuations): Boolean {
-    if (text.isEmpty()) return false
-    var codePoint = Constants.NOT_A_CODE
-    loopOverCodePointsBackwards(text) { cp, _ ->
-        val isNotWordConnector = !spacingAndPunctuations.isWordConnector(cp)
-        if (isNotWordConnector)
-            codePoint = cp
-        isNotWordConnector
-    }
-    return codePoint != Constants.NOT_A_CODE && spacingAndPunctuations.isWordCodePoint(codePoint)
-}
-
 // todo: simplify... maybe compare with original code?
 // todo: this breaks at e.g. э́, but should not
 fun getTouchedWordRange(before: CharSequence, after: CharSequence, script: String, spacingAndPunctuations: SpacingAndPunctuations): TextRange {
@@ -181,8 +165,6 @@ fun String.splitOnFirstSpacesOnly(): List<String> {
     if (sb.isNotBlank()) out.add(sb.toString())
     return out
 }
-
-fun encodeBase36(string: String): String = BigInteger(string.toByteArray()).toString(36)
 
 fun decodeBase36(string: String) = BigInteger(string, 36).toByteArray().decodeToString()
 

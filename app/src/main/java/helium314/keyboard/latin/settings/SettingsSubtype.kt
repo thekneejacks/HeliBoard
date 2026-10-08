@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 package helium314.keyboard.latin.settings
 
-import android.content.SharedPreferences
 import android.view.inputmethod.InputMethodSubtype
 import helium314.keyboard.keyboard.internal.keyboard_parser.LocaleKeyboardInfos
 import helium314.keyboard.latin.common.Constants.Separators
@@ -54,10 +53,6 @@ data class SettingsSubtype(val locale: Locale, val extraValues: String) {
         map[type] = name
         return with(KEYBOARD_LAYOUT_SET, map.toExtraValue())
     }
-
-    fun isAdditionalSubtype(prefs: SharedPreferences) =
-        prefs.getString(Settings.PREF_ADDITIONAL_SUBTYPES, Defaults.PREF_ADDITIONAL_SUBTYPES)!!
-            .split(Separators.SETS).contains(toPref())
 
     fun toEnabledSubtype(): InputMethodSubtype? =
         SubtypeSettings.getEnabledSubtypes().firstOrNull { it.toSettingsSubtype() == this }

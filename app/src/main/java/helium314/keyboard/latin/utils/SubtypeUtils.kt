@@ -20,10 +20,8 @@ import org.xmlpull.v1.XmlPullParser
 import java.util.Locale
 
 fun InputMethodSubtype.locale(): Locale {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        if (languageTag.isNotEmpty())
-            return languageTag.constructLocale()
-    }
+    if (languageTag.isNotEmpty())
+        return languageTag.constructLocale()
     @Suppress("deprecation") return locale.constructLocale()
 }
 
@@ -56,8 +54,7 @@ fun getResourceSubtypes(resources: Resources): List<InputMethodSubtype> {
             if (subtypeId != 0)
                 b.setSubtypeId(subtypeId)
             b.setSubtypeLocale(localeString)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                b.setLanguageTag(languageTag)
+            b.setLanguageTag(languageTag)
             b.setSubtypeMode(imeSubtypeMode)
             b.setSubtypeExtraValue(imeSubtypeExtraValue)
             b.setIsAsciiCapable(isAsciiCapable)

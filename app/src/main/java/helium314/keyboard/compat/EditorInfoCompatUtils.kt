@@ -12,22 +12,6 @@ import java.util.Locale
 
 object EditorInfoCompatUtils {
 
-    @JvmStatic
-    fun imeActionName(imeOptions: Int): String {
-        return when (val actionId = imeOptions and EditorInfo.IME_MASK_ACTION) {
-            EditorInfo.IME_ACTION_UNSPECIFIED -> "actionUnspecified"
-            EditorInfo.IME_ACTION_NONE -> "actionNone"
-            EditorInfo.IME_ACTION_GO -> "actionGo"
-            EditorInfo.IME_ACTION_SEARCH -> "actionSearch"
-            EditorInfo.IME_ACTION_SEND -> "actionSend"
-            EditorInfo.IME_ACTION_NEXT -> "actionNext"
-            EditorInfo.IME_ACTION_DONE -> "actionDone"
-            EditorInfo.IME_ACTION_PREVIOUS -> "actionPrevious"
-            else -> "actionUnknown($actionId)"
-        }
-    }
-
-
 
     @JvmStatic
     fun getHintLocales(editorInfo: EditorInfo?): List<Locale> {

@@ -20,10 +20,6 @@ public final class DeviceProtectedUtils {
     public static SharedPreferences getSharedPreferences(final Context context) {
         if (prefs != null)
             return prefs;
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            prefs = getDefaultSharedPreferences(context);
-            return prefs;
-        }
         final Context deviceProtectedContext = getDeviceProtectedContext(context);
         prefs = getDefaultSharedPreferences(deviceProtectedContext);
         if (prefs.getAll() == null)
@@ -37,7 +33,6 @@ public final class DeviceProtectedUtils {
 
     // keep this private to avoid accidental use of device protected context anywhere in the app
     private static Context getDeviceProtectedContext(final Context context) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return context;
         final Context ctx = context.isDeviceProtectedStorage() ? context : context.createDeviceProtectedStorageContext();
         if (ctx == null) return context; // happens for compose previews
         else return ctx;

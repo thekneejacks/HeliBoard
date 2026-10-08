@@ -97,7 +97,7 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
 
 
     /** A connection back to the input method. */
-    fun setListener(newListener: Listener, inputView: View) {
+    fun setListener(newListener: Listener) {
         listener = newListener
     }
 

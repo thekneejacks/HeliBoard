@@ -27,12 +27,6 @@ public final class InputTypeUtils implements InputType {
         // This utility class is not publicly instantiable.
     }
 
-    public static boolean isNumberInputType(final int inputType) {
-        // flags like TYPE_NUMBER_FLAG_DECIMAL are only meaningful within their class, and
-        // TYPE_NUMBER_FLAG_DECIMAL == TYPE_TEXT_FLAG_CAP_WORDS, so the class must be checked
-        return (inputType & TYPE_MASK_CLASS) == TYPE_CLASS_NUMBER;
-    }
-
     public static boolean isEmailVariation(final int variation) {
         return variation == TYPE_TEXT_VARIATION_EMAIL_ADDRESS || variation == TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS;
     }
