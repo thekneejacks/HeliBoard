@@ -53,7 +53,7 @@ class RichInputMethodManager private constructor() {
     fun hasMultipleEnabledIMEsOrSubtypes(shouldIncludeAuxiliarySubtypes: Boolean) =
         hasMultipleEnabledSubtypes(shouldIncludeAuxiliarySubtypes, imm.enabledInputMethodList)
 
-    fun hasMultipleEnabledSubtypesInThisIme(shouldIncludeAuxiliarySubtypes: Boolean) =
+    fun hasMultipleEnabledSubtypesInThisIme() =
         SubtypeSettings.getEnabledSubtypes().size > 1
 
     fun getNextSubtypeInThisIme(onlyCurrentIme: Boolean): InputMethodSubtype? {
@@ -194,7 +194,7 @@ class RichInputMethodManager private constructor() {
 
         fun canSwitchLanguage(): Boolean {
             if (!isInitialized()) return false
-            if (Settings.getValues().mLanguageSwitchKeyToOtherSubtypes && instance.hasMultipleEnabledSubtypesInThisIme(false)) return true
+            if (Settings.getValues().mLanguageSwitchKeyToOtherSubtypes && instance.hasMultipleEnabledSubtypesInThisIme()) return true
             if (Settings.getValues().mLanguageSwitchKeyToOtherImes && instance.imm.enabledInputMethodList.size > 1) return true
             return false
         }

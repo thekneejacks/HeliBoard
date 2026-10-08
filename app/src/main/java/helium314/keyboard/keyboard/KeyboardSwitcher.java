@@ -245,12 +245,6 @@ public final class KeyboardSwitcher {
         mState.onUpdateShiftState(autoCapsFlags, recapitalizeMode);
     }
 
-    public void reloadKeyboard() {
-        if (mCurrentInputView == null)
-            return;
-        reloadMainKeyboard();
-    }
-
     public void reloadMainKeyboard() {
         // Reload the entire keyboard, and switch to the previous layout
         loadKeyboard(mLatinIME.getCurrentInputEditorInfo(), Settings.getValues(),
@@ -388,24 +382,6 @@ public final class KeyboardSwitcher {
     }
 
 
-
-    /** Marks the theme as outdated. The theme will be reloaded next time the keyboard is shown.
-     *  If the keyboard is currently showing, theme will be reloaded immediately. */
-    public void setThemeNeedsReload() {
-        mThemeNeedsReload = true;
-        if (mLatinIME == null || !mLatinIME.isInputViewShown())
-            return; // will be reloaded right before showing IME
-
-        // Hide and show IME, showing will trigger the reload.
-        // Reloading while IME is shown is glitchy, and hiding / showing is so fast the user shouldn't notice.
-        mLatinIME.hideWindow();
-        try {
-            mLatinIME.showWindow(true);
-        } catch (IllegalStateException e) {
-            // in tests isInputViewShown returns true, but showWindow throws "IllegalStateException: Window token is not set yet."
-        }
-    }
-
     // private SwitchActions implementation so e.g. setEmojiKeyboard can only be called via KeyboardState (avoid inconsistencies!)
     private class SwitchActions implements KeyboardState.SwitchActions {
         @Override
@@ -482,14 +458,11 @@ public final class KeyboardSwitcher {
             setMainKeyboardFrame(currentSettingsValues, toggleState);
             // TODO: pass this object to setKeyboard instead of getting the current values.
             MainKeyboardView keyboardView = mKeyboardView;
-            Keyboard oldKeyboard = keyboardView.getKeyboard();
             Keyboard newKeyboard = mKeyboardLayoutSet.getKeyboard(keyboardElement);
             keyboardView.setKeyboard(newKeyboard);
             mCurrentInputView.setKeyboardTopPadding(newKeyboard.mTopPadding);
             keyboardView.setKeyPreviewPopupEnabled(currentSettingsValues.mKeyPreviewPopupOn);
             keyboardView.updateShortcutKey(mRichImm.isShortcutImeReady());
-            boolean subtypeChanged = (oldKeyboard == null) || !newKeyboard.mId.getSubtype().equals(oldKeyboard.mId.getSubtype());
-            boolean hasMultipleEnabledIMEsOrSubtypes = mRichImm.hasMultipleEnabledIMEsOrSubtypes(true);
 
 
         }

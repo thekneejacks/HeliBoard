@@ -27,8 +27,6 @@ object SubtypeSettings {
 
     fun getSelectedSubtype(prefs: SharedPreferences): InputMethodSubtype {
         val selectedSubtype = prefs.getString(Settings.PREF_SELECTED_SUBTYPE, Defaults.PREF_SELECTED_SUBTYPE)!!.toSettingsSubtype()
-        if (selectedSubtype.isAdditionalSubtype(prefs) || selectedSubtype == SettingsSubtype.fallbackSubtype)
-            return selectedSubtype.toAdditionalSubtype()
 
         // no additional subtype, must be a resource subtype
         val defaultSubtypes = getDefaultEnabledSubtypes()

@@ -61,7 +61,6 @@ import helium314.keyboard.latin.utils.LeakGuardHandlerWrapper;
 import helium314.keyboard.latin.utils.RecapitalizeMode;
 import helium314.keyboard.latin.utils.StatsUtils;
 import helium314.keyboard.latin.utils.SubtypeLocaleUtils;
-import helium314.keyboard.latin.utils.SubtypeSettings;
 import helium314.keyboard.latin.utils.SubtypeState;
 import helium314.keyboard.latin.utils.ToolbarMode;
 import kotlin.Unit;
@@ -480,7 +479,7 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
             return;
         }
 
-        mSubtypeState.onSubtypeChanged(oldSubtype, subtype);
+        mSubtypeState.onSubtypeChanged(oldSubtype);
         StatsUtils.onSubtypeChanged(oldSubtype, subtype);
         mRichImm.onSubtypeChanged(subtype);
         mInputLogic.onSubtypeChanged(SubtypeLocaleUtils.getCombiningRulesExtraValue(subtype),
@@ -928,7 +927,7 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
         // switch IME if wanted and possible
         if (switchIme && !switchSubtype && ImeCompat.INSTANCE.switchInputMethod(this))
             return;
-        final boolean hasMoreThanOneSubtype = mRichImm.hasMultipleEnabledSubtypesInThisIme(true);
+        final boolean hasMoreThanOneSubtype = mRichImm.hasMultipleEnabledSubtypesInThisIme();
         // switch subtype if wanted, do nothing if no other subtype is available
         if (switchSubtype && !switchIme) {
             if (hasMoreThanOneSubtype)

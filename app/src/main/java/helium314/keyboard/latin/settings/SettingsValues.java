@@ -194,9 +194,9 @@ public class SettingsValues {
             return imm.hasMultipleEnabledIMEsOrSubtypes(false /* include aux subtypes */);
         }
         if (!mLanguageSwitchKeyToOtherImes) {
-            return imm.hasMultipleEnabledSubtypesInThisIme(true /* include aux subtypes */);
+            return imm.hasMultipleEnabledSubtypesInThisIme( /* include aux subtypes */);
         }
-        return imm.hasMultipleEnabledSubtypesInThisIme(false /* include aux subtypes */)
+        return imm.hasMultipleEnabledSubtypesInThisIme( /* include aux subtypes */)
             || imm.hasMultipleEnabledIMEsOrSubtypes(false /* include aux subtypes */);
     }
 

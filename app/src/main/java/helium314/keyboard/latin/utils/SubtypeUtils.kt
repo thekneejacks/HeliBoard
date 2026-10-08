@@ -172,7 +172,7 @@ class SubtypeState(private val switchToSubtype: (InputMethodSubtype?) -> Unit) {
         return null
     }
 
-    fun onSubtypeChanged(oldSubtype: InputMethodSubtype?, newSubtype: InputMethodSubtype?) {
+    fun onSubtypeChanged(oldSubtype: InputMethodSubtype?) {
         if (oldSubtype != overriddenByLocale) {
             // Whenever the subtype is changed, clear tracking
             // the subtype that is overridden by a HintLocale as
