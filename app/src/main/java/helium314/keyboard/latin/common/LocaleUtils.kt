@@ -6,6 +6,7 @@
 package helium314.keyboard.latin.common
 
 import android.content.res.Resources
+import android.util.Log
 import helium314.keyboard.compat.locale
 import helium314.keyboard.latin.R
 import helium314.keyboard.latin.RichInputMethodSubtype
@@ -58,8 +59,6 @@ object LocaleUtils {
 
     // The compared locales are fully identical. This is the best match level.
     private const val LOCALE_FULL_MATCH = 30
-
-    const val LOCALE_GOOD_MATCH = LOCALE_LANGUAGE_MATCH_COUNTRY_DIFFER
 
     /**
      * Return how well a tested locale matches a reference locale.
@@ -132,6 +131,7 @@ object LocaleUtils {
                 best = it
             }
         }
+        Log.d("", "getBestMatchHeli: $best")
         return best
     }
 

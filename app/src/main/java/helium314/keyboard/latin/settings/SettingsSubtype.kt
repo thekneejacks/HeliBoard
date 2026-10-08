@@ -32,8 +32,6 @@ data class SettingsSubtype(val locale: Locale, val extraValues: String) {
         return SubtypeUtilsAdditional.createAdditionalSubtype(locale, extraValues, asciiCapable, true)
     }
 
-    fun mainLayoutName() = LayoutType.getMainLayoutFromExtraValue(extraValues)
-
     fun with(extraValueKey: String, extraValue: String? = null): SettingsSubtype {
         val newList = extraValues.split(",")
             .filterNot { it.isBlank() || it.startsWith("$extraValueKey=") || it == extraValueKey }

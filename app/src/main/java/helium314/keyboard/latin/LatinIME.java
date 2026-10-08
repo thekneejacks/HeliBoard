@@ -394,7 +394,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
     public void onConfigurationChanged(final Configuration conf) {
         SettingsValues settingsValues = mSettings.getCurrent();
         //Log.i(TAG, "onConfigurationChanged");
-        SubtypeSettings.INSTANCE.reloadSystemLocales(this);
         if (settingsValues.mDisplayOrientation != conf.orientation) {
             mHandler.startOrientationChanging();
             mInputLogic.onOrientationChange();

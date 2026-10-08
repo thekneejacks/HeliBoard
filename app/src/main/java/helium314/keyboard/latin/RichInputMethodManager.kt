@@ -54,11 +54,11 @@ class RichInputMethodManager private constructor() {
         hasMultipleEnabledSubtypes(shouldIncludeAuxiliarySubtypes, imm.enabledInputMethodList)
 
     fun hasMultipleEnabledSubtypesInThisIme(shouldIncludeAuxiliarySubtypes: Boolean) =
-        SubtypeSettings.getEnabledSubtypes(shouldIncludeAuxiliarySubtypes).size > 1
+        SubtypeSettings.getEnabledSubtypes().size > 1
 
     fun getNextSubtypeInThisIme(onlyCurrentIme: Boolean): InputMethodSubtype? {
         val currentSubtype = currentSubtype.rawSubtype
-        val enabledSubtypes = SubtypeSettings.getEnabledSubtypes(true)
+        val enabledSubtypes = SubtypeSettings.getEnabledSubtypes()
         val currentIndex = enabledSubtypes.indexOf(currentSubtype)
         if (currentIndex == -1) {
             return if (onlyCurrentIme) enabledSubtypes[0] // just return first enabled subtype
@@ -74,7 +74,7 @@ class RichInputMethodManager private constructor() {
 
     fun findSubtypeForHintLocale(locale: Locale): InputMethodSubtype? {
         // Find the best subtype based on a locale matching
-        val subtypes = SubtypeSettings.getEnabledSubtypes(true)
+        val subtypes = SubtypeSettings.getEnabledSubtypes()
         var bestMatch = getBestMatch(locale, subtypes) { it.locale() }
         if (bestMatch != null) return bestMatch
 
@@ -146,7 +146,7 @@ class RichInputMethodManager private constructor() {
         if (filteredImisCount > 1) {
             return true
         }
-        val subtypes = SubtypeSettings.getEnabledSubtypes(true)
+        val subtypes = SubtypeSettings.getEnabledSubtypes()
         // imm.getEnabledInputMethodSubtypeList(null, true) will return the current IME's
         // both explicitly and implicitly enabled input method subtype.
         // (The current IME should be LatinIME.)
@@ -224,7 +224,7 @@ private class InputMethodInfoCache(private val imm: InputMethodManager, private 
         val result = if (imi == inputMethodOfThisIme) {
             // allowsImplicitlySelectedSubtypes means system should choose if nothing is enabled,
             // use it to fall back to system locales or en_US to avoid returning an empty list
-            SubtypeSettings.getEnabledSubtypes(allowsImplicitlySelectedSubtypes)
+            SubtypeSettings.getEnabledSubtypes()
         } else {
             imm.getEnabledInputMethodSubtypeList(imi, allowsImplicitlySelectedSubtypes)
         }

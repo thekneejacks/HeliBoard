@@ -12,16 +12,13 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.view.ContextThemeWrapper;
-import android.view.inputmethod.EditorInfo;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import java.util.Locale;
 import java.util.concurrent.locks.ReentrantLock;
 
-import helium314.keyboard.compat.ConfigurationCompatKt;
 import helium314.keyboard.keyboard.KeyboardActionListener;
 import helium314.keyboard.latin.InputAttributes;
 import helium314.keyboard.latin.R;
@@ -71,10 +68,8 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     public static final String PREF_LOCALIZED_NUMBER_ROW = "localized_number_row";
     public static final String PREF_SHOW_NUMBER_ROW_HINTS = "show_number_row_hints";
     public static final String PREF_CUSTOM_CURRENCY_KEY = "custom_currency_key";
-    public static final String PREF_SHOW_HINTS = "show_hints";
     public static final String PREF_POPUP_KEYS_ORDER = "popup_keys_order";
     public static final String PREF_POPUP_KEYS_HINT_ORDER = "popup_keys_labels_order";
-    public static final String PREF_SHOW_POPUP_HINTS = "show_popup_hints";
     public static final String PREF_MORE_POPUP_KEYS = "more_popup_keys";
     public static final String PREF_SHOW_TLD_POPUP_KEYS = "show_tld_popup_keys";
     public static final String PREF_SPACE_TO_CHANGE_LANG = "prefs_long_press_keyboard_to_change_lang";
@@ -89,7 +84,6 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     public static final String PREF_REMOVE_REDUNDANT_POPUPS = "remove_redundant_popups";
     public static final String PREF_TIMESTAMP_FORMAT = "timestamp_format";
     public static final String PREF_TOOLBAR_MODE = "toolbar_mode";
-    public static final String PREF_TOOLBAR_HIDING_GLOBAL = "toolbar_hiding_global";
     public static final String PREF_SHOW_ONLY_TOOLBAR_WITH_HARDWARE_KEYBOARD = "only_toolbar_with_hw_keyboard";
 
     public static final String PREF_RECENT_EMOJIS = "recent_emojis";
@@ -160,16 +154,8 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
             mSettingsValuesLock.unlock();
         }
         if (PREF_ADDITIONAL_SUBTYPES.equals(key)) {
-            SubtypeSettings.INSTANCE.reloadEnabledSubtypes(mContext);
+            SubtypeSettings.INSTANCE.reloadEnabledSubtypes();
         }
-    }
-
-    /** convenience function for the rare situations where we need to load settings but may not have a keyboard */
-    public void loadSettings(final Context context) {
-        if (mSettingsValues != null) return;
-        final Locale locale = ConfigurationCompatKt.locale(context.getResources().getConfiguration());
-        final InputAttributes inputAttributes = new InputAttributes(new EditorInfo(), false, context.getPackageName());
-        loadSettings(context, locale, inputAttributes);
     }
 
     public void loadSettings(final Context context, final Locale locale,
@@ -311,11 +297,6 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     // "default" layout as in this is used if nothing else is specified in the subtype
     public static String readDefaultLayoutName(final LayoutType type, final SharedPreferences prefs) {
         return prefs.getString(PREF_LAYOUT_PREFIX + type.name(), Defaults.INSTANCE.getDefault(type));
-    }
-
-    public static void writeDefaultLayoutName(@Nullable final String name, final LayoutType type, final SharedPreferences prefs) {
-        if (name == null) prefs.edit().remove(PREF_LAYOUT_PREFIX + type.name()).apply();
-        else prefs.edit().putString(PREF_LAYOUT_PREFIX + type.name(), name).apply();
     }
 
     public void saveSubtypeForApp(RichInputMethodSubtype subtype, String packageName) {
