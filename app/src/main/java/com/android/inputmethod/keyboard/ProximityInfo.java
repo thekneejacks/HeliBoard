@@ -339,32 +339,6 @@ y |---+---+---+---+-v-+-|-+---+---+---+---+---|          | thresholdBase and get
         }
     }
 
-    public void fillArrayWithNearestKeyCodes(final int x, final int y, final int primaryKeyCode,
-            final int[] dest) {
-        final int destLength = dest.length;
-        if (destLength < 1) {
-            return;
-        }
-        int index = 0;
-        if (primaryKeyCode > Constants.CODE_SPACE) {
-            dest[index++] = primaryKeyCode;
-        }
-        final List<Key> nearestKeys = getNearestKeys(x, y);
-        for (Key key : nearestKeys) {
-            if (index >= destLength) {
-                break;
-            }
-            final int code = key.getCode();
-            if (code <= Constants.CODE_SPACE) {
-                break;
-            }
-            dest[index++] = code;
-        }
-        if (index < destLength) {
-            dest[index] = Constants.NOT_A_CODE;
-        }
-    }
-
     @NonNull
     public List<Key> getNearestKeys(final int x, final int y) {
         if (x >= 0 && x < mKeyboardMinWidth && y >= 0 && y < mKeyboardHeight) {

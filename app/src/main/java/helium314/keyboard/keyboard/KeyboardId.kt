@@ -8,9 +8,7 @@ package helium314.keyboard.keyboard
 import android.text.InputType
 import android.text.TextUtils
 import android.view.inputmethod.EditorInfo
-import helium314.keyboard.compat.EditorInfoCompatUtils.imeActionName
 import helium314.keyboard.latin.CapsMode
-import helium314.keyboard.latin.R
 import helium314.keyboard.latin.RichInputMethodSubtype
 import helium314.keyboard.latin.utils.InputTypeUtils
 
@@ -81,22 +79,20 @@ data class KeyboardId(
             return a.inputType == b.inputType && a.imeOptions == b.imeOptions && TextUtils.equals(a.privateImeOptions, b.privateImeOptions)
         }
 
-        fun actionName(actionId: Int) = if (actionId == InputTypeUtils.IME_ACTION_CUSTOM_LABEL) "actionCustomLabel"
-            else imeActionName(actionId)
     }
 }
 
-enum class KeyboardElement(val descriptionResId: Int) {
-    ALPHABET(R.string.spoken_description_mode_alpha),
-    ALPHABET_AUTOMATIC_SHIFTED(R.string.spoken_description_mode_alpha),
-    ALPHABET_MANUAL_SHIFTED(R.string.spoken_description_shiftmode_on),
-    ALPHABET_SHIFT_LOCKED(R.string.spoken_description_shiftmode_locked),
-    SYMBOLS(R.string.spoken_description_mode_symbol),
-    SYMBOLS_SHIFTED(R.string.spoken_description_mode_symbol_shift),
-    NUMPAD(R.string.spoken_description_mode_numpad),
-    NUMBER(R.string.spoken_description_mode_number),
-    PHONE(R.string.spoken_description_mode_phone),
-    PHONE_SYMBOLS(R.string.spoken_description_mode_phone_shift),;
+enum class KeyboardElement() {
+    ALPHABET(),
+    ALPHABET_AUTOMATIC_SHIFTED(),
+    ALPHABET_MANUAL_SHIFTED(),
+    ALPHABET_SHIFT_LOCKED(),
+    SYMBOLS(),
+    SYMBOLS_SHIFTED(),
+    NUMPAD(),
+    NUMBER(),
+    PHONE(),
+    PHONE_SYMBOLS(),;
 
     val isAlphabet get() = this < SYMBOLS
     val isAlphaOrSymbol get() = this <= SYMBOLS_SHIFTED

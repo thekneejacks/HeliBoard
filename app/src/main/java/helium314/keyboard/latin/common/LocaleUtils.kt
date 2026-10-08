@@ -6,7 +6,6 @@
 package helium314.keyboard.latin.common
 
 import android.content.res.Resources
-import android.util.Log
 import helium314.keyboard.compat.locale
 import helium314.keyboard.latin.R
 import helium314.keyboard.latin.RichInputMethodSubtype
@@ -131,7 +130,6 @@ object LocaleUtils {
                 best = it
             }
         }
-        Log.d("", "getBestMatchHeli: $best")
         return best
     }
 

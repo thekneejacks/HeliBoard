@@ -59,7 +59,7 @@ class KeyboardLayoutSet internal constructor(private val mContext: Context, priv
             return getKeyboard(id)
         } catch (e: RuntimeException) {
             //Log.e(TAG, "Can't create keyboard: $id", e)
-            throw KeyboardLayoutSetException(e, id)
+            throw KeyboardLayoutSetException(e)
         }
     }
 
@@ -145,16 +145,6 @@ class KeyboardLayoutSet internal constructor(private val mContext: Context, priv
             return this
         }
 
-        fun setIsSpellChecker(isSpellChecker: Boolean): Builder {
-            params.isSpellChecker = isSpellChecker
-            return this
-        }
-
-        fun setVoiceInputKeyEnabled(enabled: Boolean): Builder {
-            params.voiceInputKeyEnabled = enabled
-            return this
-        }
-
         fun setNumberRowEnabled(enabled: Boolean): Builder {
             params.numberRowEnabled = enabled
             return this
@@ -209,7 +199,7 @@ class KeyboardLayoutSet internal constructor(private val mContext: Context, priv
         private val TAG = KeyboardLayoutSet::class.java.simpleName
         private const val DEBUG_CACHE = false
 
-        class KeyboardLayoutSetException(cause: Throwable, val keyboardId: KeyboardId) : RuntimeException(cause)
+        class KeyboardLayoutSetException(cause: Throwable) : RuntimeException(cause)
 
         // How many layouts we forcibly keep in cache. This only includes ALPHABET (default) and
         // ALPHABET_AUTOMATIC_SHIFTED layouts - other layouts may stay in memory in the map of
