@@ -77,23 +77,6 @@ class RichInputMethodSubtype private constructor(val rawSubtype: InputMethodSubt
                 .build()
         )
 
-        // Caveat: We probably should remove this when we add an Emoji subtype in {@link R.xml.method}.
-        // Dummy Emoji subtype. See {@link R.xml.method}.
-        private const val SUBTYPE_ID_OF_DUMMY_EMOJI_SUBTYPE = -0x2874d130
-        private const val EXTRA_VALUE_OF_DUMMY_EMOJI_SUBTYPE = ("KeyboardLayoutSet=" + SubtypeLocaleUtils.EMOJI
-                + "," + Constants.Subtype.ExtraValue.EMOJI_CAPABLE)
-        val emojiSubtype: RichInputMethodSubtype = RichInputMethodSubtype(
-            InputMethodSubtypeBuilder()
-                .setSubtypeNameResId(R.string.subtype_emoji)
-                .setSubtypeIconResId(R.drawable.sym_keyboard_language_switch_lxx)
-                .setSubtypeLocale(SubtypeLocaleUtils.NO_LANGUAGE)
-                .setSubtypeMode(Constants.Subtype.KEYBOARD_MODE)
-                .setSubtypeExtraValue(EXTRA_VALUE_OF_DUMMY_EMOJI_SUBTYPE)
-                .setIsAuxiliary(false)
-                .setOverridesImplicitlyEnabledSubtype(false)
-                .setSubtypeId(SUBTYPE_ID_OF_DUMMY_EMOJI_SUBTYPE)
-                .build()
-        )
         private var sNoLanguageSubtype: RichInputMethodSubtype? = null
 
         val noLanguageSubtype: RichInputMethodSubtype get() {

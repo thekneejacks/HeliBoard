@@ -135,6 +135,5 @@ object SubtypeLocaleUtils {
     // Special language code to represent "no language".
     const val NO_LANGUAGE = "zz"
     const val QWERTY = "qwerty"
-    const val EMOJI = "emoji"
     val UNKNOWN_KEYBOARD_LAYOUT  = R.string.subtype_generic
 }

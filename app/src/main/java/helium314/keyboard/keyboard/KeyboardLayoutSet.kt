@@ -15,7 +15,6 @@ import helium314.keyboard.keyboard.internal.UniqueKeysCache
 import helium314.keyboard.keyboard.internal.keyboard_parser.LayoutParser
 import helium314.keyboard.keyboard.internal.keyboard_parser.LocaleKeyboardInfos
 import helium314.keyboard.latin.RichInputMethodSubtype
-import helium314.keyboard.latin.RichInputMethodSubtype.Companion.emojiSubtype
 import helium314.keyboard.latin.RichInputMethodSubtype.Companion.noLanguageSubtype
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.utils.InputTypeUtils
@@ -241,14 +240,6 @@ class KeyboardLayoutSet internal constructor(private val mContext: Context, priv
             needsReload = true
         }
 
-        // used for testing keyboard layout files without actually creating a keyboard
-        fun getFakeKeyboardId(element: KeyboardElement): KeyboardId {
-            val params = Params()
-            params.editorInfo = EditorInfo()
-            params.subtype = emojiSubtype
-            params.subtype.mainLayoutName
-            return KeyboardId(element, params)
-        }
     }
 }
 

@@ -15,10 +15,6 @@ import java.util.Locale
 
 object SubtypeUtilsAdditional {
 
-    fun isAdditionalSubtype(subtype: InputMethodSubtype): Boolean {
-        return subtype.containsExtraValueKey(ExtraValue.IS_ADDITIONAL_SUBTYPE)
-    }
-
     fun createAdditionalSubtype(locale: Locale, extraValue: String, isAsciiCapable: Boolean,
                                         isEmojiCapable: Boolean): InputMethodSubtype {
         val mainLayoutName = LayoutType.getMainLayoutFromExtraValue(extraValue) ?: "qwerty"
@@ -35,8 +31,7 @@ object SubtypeUtilsAdditional {
             .setOverridesImplicitlyEnabledSubtype(false)
             .setSubtypeId(subtypeId)
             .setIsAsciiCapable(isAsciiCapable)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-            builder.setLanguageTag(locale.toLanguageTag())
+        builder.setLanguageTag(locale.toLanguageTag())
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE && LayoutUtilsCustom.isCustomLayout(mainLayoutName))
             builder.setSubtypeNameOverride(LayoutUtilsCustom.getDisplayName(mainLayoutName))
         return builder.build()

@@ -34,8 +34,6 @@ data class SettingsSubtype(val locale: Locale, val extraValues: String) {
 
     fun mainLayoutName() = LayoutType.getMainLayoutFromExtraValue(extraValues)
 
-    fun layoutName(type: LayoutType) = LayoutType.getLayoutMap(getExtraValueOf(KEYBOARD_LAYOUT_SET) ?: "")[type]
-
     fun with(extraValueKey: String, extraValue: String? = null): SettingsSubtype {
         val newList = extraValues.split(",")
             .filterNot { it.isBlank() || it.startsWith("$extraValueKey=") || it == extraValueKey }
@@ -59,18 +57,9 @@ data class SettingsSubtype(val locale: Locale, val extraValues: String) {
         return with(KEYBOARD_LAYOUT_SET, map.toExtraValue())
     }
 
-    fun withoutLayout(type: LayoutType): SettingsSubtype {
-        val map = LayoutType.getLayoutMap(getExtraValueOf(KEYBOARD_LAYOUT_SET) ?: "")
-        map.remove(type)
-        return if (map.isEmpty()) without(KEYBOARD_LAYOUT_SET)
-        else with(KEYBOARD_LAYOUT_SET, map.toExtraValue())
-    }
-
     fun isAdditionalSubtype(prefs: SharedPreferences) =
         prefs.getString(Settings.PREF_ADDITIONAL_SUBTYPES, Defaults.PREF_ADDITIONAL_SUBTYPES)!!
             .split(Separators.SETS).contains(toPref())
-
-    fun isSameAsDefault() = SubtypeSettings.getResourceSubtypesForLocale(locale).any { it.toSettingsSubtype() == this.toPref().toSettingsSubtype() }
 
     fun toEnabledSubtype(): InputMethodSubtype? =
         SubtypeSettings.getEnabledSubtypes().firstOrNull { it.toSettingsSubtype() == this }
