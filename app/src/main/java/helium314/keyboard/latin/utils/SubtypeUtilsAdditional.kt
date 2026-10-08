@@ -1,19 +1,13 @@
 package helium314.keyboard.latin.utils
 
-import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Build
 import android.view.inputmethod.InputMethodSubtype
 import android.view.inputmethod.InputMethodSubtype.InputMethodSubtypeBuilder
-import androidx.core.content.edit
 import helium314.keyboard.latin.R
 import helium314.keyboard.latin.common.Constants
 import helium314.keyboard.latin.common.Constants.Separators
 import helium314.keyboard.latin.common.Constants.Subtype.ExtraValue
-import helium314.keyboard.latin.settings.Defaults
 import helium314.keyboard.latin.settings.Defaults.default
-import helium314.keyboard.latin.settings.Settings
-import helium314.keyboard.latin.settings.SettingsSubtype
 import helium314.keyboard.latin.settings.SettingsSubtype.Companion.toSettingsSubtype
 import helium314.keyboard.latin.utils.LayoutType.Companion.toExtraValue
 import helium314.keyboard.latin.utils.ScriptUtils.script
@@ -54,53 +48,6 @@ object SubtypeUtilsAdditional {
         SubtypeSettings.getResourceSubtypesForLocale(locale).firstOrNull()?.mainLayoutName()?.let { layouts[LayoutType.MAIN] = it }
         val extra = ExtraValue.KEYBOARD_LAYOUT_SET + "=" + layouts.toExtraValue()
         return createAdditionalSubtype(locale, extra, locale.script() == ScriptUtils.SCRIPT_LATIN, true)
-    }
-
-    fun removeAdditionalSubtype(context: Context, subtype: InputMethodSubtype) {
-        val prefs = context.prefs()
-        SubtypeSettings.removeEnabledSubtype(context, subtype)
-        val oldAdditionalSubtypesString = prefs.getString(Settings.PREF_ADDITIONAL_SUBTYPES, Defaults.PREF_ADDITIONAL_SUBTYPES)!!
-        val oldAdditionalSubtypes = SubtypeSettings.createSettingsSubtypes(oldAdditionalSubtypesString)
-        val settingsSubtype = subtype.toSettingsSubtype()
-        val newAdditionalSubtypes = oldAdditionalSubtypes.filter { it != settingsSubtype }
-        val newAdditionalSubtypesString = SubtypeSettings.createPrefSubtypes(newAdditionalSubtypes)
-        prefs.edit { putString(Settings.PREF_ADDITIONAL_SUBTYPES, newAdditionalSubtypesString) }
-    }
-
-    // updates additional subtypes, enabled subtypes, and selected subtype
-    @SuppressLint("UseKtx") // easier to understand
-    fun changeAdditionalSubtype(from: SettingsSubtype, to: SettingsSubtype, context: Context) {
-        val prefs = context.prefs()
-        // read now because there may be an intermediate state where the subtype is invalid and thus removed
-        val isSelected = prefs.getString(Settings.PREF_SELECTED_SUBTYPE, Defaults.PREF_SELECTED_SUBTYPE)!!.toSettingsSubtype() == from
-        val isEnabled = prefs.getString(Settings.PREF_ENABLED_SUBTYPES, Defaults.PREF_ENABLED_SUBTYPES)!!.split(Separators.SETS)
-            .any { it.toSettingsSubtype() == from }
-        val additionalSubtypes = SubtypeSettings.createSettingsSubtypes(prefs.getString(Settings.PREF_ADDITIONAL_SUBTYPES, Defaults.PREF_ADDITIONAL_SUBTYPES)!!)
-            .toMutableList()
-        additionalSubtypes.remove(from)
-        if (!to.isSameAsDefault()) {
-            // We only add the "to" subtype if it's not equal to a resource subtype.
-            // This means we make additional subtype disappear as magically as it was added if all settings are default.
-            // If we don't do this, enabling the base subtype will result in the additional subtype being enabled,
-            // as both have the same settingsSubtype.
-            additionalSubtypes.add(to)
-        }
-        val editor = prefs.edit()
-        editor.putString(Settings.PREF_ADDITIONAL_SUBTYPES, SubtypeSettings.createPrefSubtypes(additionalSubtypes))
-        if (isSelected) {
-            editor.putString(Settings.PREF_SELECTED_SUBTYPE, to.toPref())
-        }
-        if (isEnabled) {
-            val enabled = SubtypeSettings.createSettingsSubtypes(prefs.getString(Settings.PREF_ENABLED_SUBTYPES, Defaults.PREF_ENABLED_SUBTYPES)!!)
-                .toMutableList()
-            enabled.remove(from)
-            enabled.add(to)
-            editor.putString(Settings.PREF_ENABLED_SUBTYPES, SubtypeSettings.createPrefSubtypes(enabled))
-        }
-        prefs.all.filterKeys { it.startsWith(Settings.PREF_SAVED_APP_SUBTYPE_PREFIX) }
-            .filterValues { it.toString().toSettingsSubtype() == from }.forEach { editor.putString(it.key, to.toPref()) }
-        editor.apply()
-        SubtypeSettings.reloadEnabledSubtypes(context)
     }
 
     fun createAdditionalSubtypes(prefSubtypes: String): List<InputMethodSubtype> =

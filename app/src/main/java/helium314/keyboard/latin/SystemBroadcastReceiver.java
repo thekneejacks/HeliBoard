@@ -10,10 +10,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Process;
-import android.view.inputmethod.InputMethodManager;
 
 import helium314.keyboard.keyboard.KeyboardLayoutSet;
-import helium314.keyboard.latin.utils.UncachedInputMethodManagerUtils;
 
 
 /**

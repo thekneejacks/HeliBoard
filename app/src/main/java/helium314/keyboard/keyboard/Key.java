@@ -1275,29 +1275,5 @@ public class Key implements Comparable<Key> {
             mHintIconName = null;
         }
 
-        public KeyParams(final KeyParams keyParams) {
-            xPos = keyParams.xPos;
-            yPos = keyParams.yPos;
-            mWidth = keyParams.mWidth;
-            mHeight = keyParams.mHeight;
-            isSpacer = keyParams.isSpacer;
-            mKeyboardParams = keyParams.mKeyboardParams;
-            mEnabled = keyParams.mEnabled;
-
-            mCode = keyParams.mCode;
-            mLabel = keyParams.mLabel;
-            mHintLabel = keyParams.mHintLabel;
-            mHintIconName = keyParams.mHintIconName;
-            mLabelFlags = keyParams.mLabelFlags;
-            mIconName = keyParams.mIconName;
-            mAbsoluteWidth = keyParams.mAbsoluteWidth;
-            mAbsoluteHeight = keyParams.mAbsoluteHeight;
-            mPopupKeys = keyParams.mPopupKeys;
-            mPopupKeysColumnAndFlags = keyParams.mPopupKeysColumnAndFlags;
-            mBackgroundType = keyParams.mBackgroundType;
-            mActionFlags = keyParams.mActionFlags;
-            mKeyVisualAttributes = keyParams.mKeyVisualAttributes;
-            mOptionalAttributes = keyParams.mOptionalAttributes;
-        }
     }
 }

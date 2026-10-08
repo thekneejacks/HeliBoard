@@ -77,10 +77,6 @@ public final class BogusMoveEventDetector {
         return dx >= dy && mAccumulatedDistanceFromDownKey >= mAccumulatedDistanceThreshold;
     }
 
-    public int getAccumulatedDistanceFromDownKey() {
-        return mAccumulatedDistanceFromDownKey;
-    }
-
     public int getDistanceFromDownEvent(final int x, final int y) {
         return getDistance(x, y, mActualDownX, mActualDownY);
     }

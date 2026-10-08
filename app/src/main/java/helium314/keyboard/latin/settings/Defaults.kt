@@ -57,7 +57,6 @@ object Defaults {
     val PREF_KEY_GAP_SCALE = Array(4) { DEFAULT_SIZE_SCALE }
     const val PREF_FONT_SCALE = DEFAULT_SIZE_SCALE
     const val PREF_HINT_FONT_SCALE = DEFAULT_SIZE_SCALE
-    const val PREF_EMOJI_FONT_SCALE = DEFAULT_SIZE_SCALE
 
     @JvmField
     val PREF_SPACE_HORIZONTAL_SWIPE = KeyboardActionListener.SwipeAction.MOVE_CURSOR.name
@@ -65,12 +64,9 @@ object Defaults {
     val PREF_SPACE_VERTICAL_SWIPE = KeyboardActionListener.SwipeAction.NONE.name
     const val PREF_DELETE_SWIPE = true
     const val PREF_AUTOSPACE_AFTER_PUNCTUATION = false
-    const val PREF_AUTOSPACE_BEFORE_GESTURE_TYPING = true
     const val PREF_SHIFT_REMOVES_AUTOSPACE = false
     const val PREF_KEY_LONGPRESS_TIMEOUT = 300
 
-    const val PREF_GESTURE_FAST_TYPING_COOLDOWN = 500
-    const val PREF_GESTURE_TRAIL_FADEOUT_DURATION = 800
     const val PREFS_LONG_PRESS_SYMBOLS_FOR_NUMPAD = false
 
     const val PREF_SHOW_NUMBER_ROW = false
@@ -86,8 +82,6 @@ object Defaults {
     const val PREF_MORE_POPUP_KEYS = "main"
     const val PREF_SPACE_TO_CHANGE_LANG = true
     const val PREF_LANGUAGE_SWIPE_DISTANCE = 5
-    const val PREF_TOUCHPAD_SENSITIVITY = 50
-    const val PREF_TOUCHPAD_EDGE_SCROLL = true
 
     @JvmField
     val PREF_NAVBAR_COLOR = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
@@ -95,13 +89,10 @@ object Defaults {
     const val PREF_SELECTED_SUBTYPE = ""
     const val PREF_TOOLBAR_MODE = "EXPANDABLE"
     const val PREF_TOOLBAR_HIDING_GLOBAL = true
-    const val PREF_QUICK_PIN_TOOLBAR_KEYS = false
-    const val PREF_AUTO_SHOW_TOOLBAR = false
     const val PREF_ABC_AFTER_SYMBOL_SPACE = true
     const val PREF_ABC_AFTER_NUMPAD_SPACE = false
     const val PREF_REMOVE_REDUNDANT_POPUPS = false
     const val PREF_TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss"
-    const val PREF_SHOW_SUGGESTION_INFOS = false
     const val PREF_SAVE_SUBTYPE_PER_APP = false
     const val PREF_SHOW_ONLY_TOOLBAR_WITH_HARDWARE_KEYBOARD = false
 }

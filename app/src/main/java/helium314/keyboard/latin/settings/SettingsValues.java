@@ -64,21 +64,15 @@ public class SettingsValues {
     public final KeyboardActionListener.SwipeAction mSpaceSwipeHorizontal;
     public final KeyboardActionListener.SwipeAction mSpaceSwipeVertical;
     public final int mLanguageSwipeDistance;
-    public final int mTouchpadSensitivity;
-    public final boolean mTouchpadEdgeScroll;
     public final boolean mDeleteSwipeEnabled;
     public final boolean mAutospaceAfterPunctuation;
-    public final boolean mAutospaceBeforeGestureTyping;
     public final boolean mShiftRemovesAutospace;
     public final float mKeyGapScale;
     public final String mShowMorePopupKeys;
     public final List<String> mPopupKeyOrder;
     public final List<String> mPopupKeyHintOrder;
     public final List<Locale> mSecondaryLocales;
-    public final int mGestureFastTypingCooldown;
-    public final int mGestureTrailFadeoutDuration;
     public final int mKeyLongpressTimeout;
-    public final boolean mQuickPinToolbarKeys;
     public final boolean mCustomNavBarColor;
     public final float mKeyboardHeightScale;
     public final float mBottomRowScale;
@@ -90,7 +84,6 @@ public class SettingsValues {
     public final boolean mRemoveRedundantPopups;
     public final float mFontSizeMultiplier;
     public final float mHintFontSizeMultiplier;
-    public final float mFontSizeMultiplierEmoji;
     public final boolean mLongPressSymbolsForNumpad;
 
     // From the input box
@@ -98,7 +91,6 @@ public class SettingsValues {
     public final InputAttributes mInputAttributes;
 
     // Deduced settings
-    public final boolean mSuggestionStripHiddenPerUserSettings;
     public final boolean mIsLocked;
 
     // User-defined colors
@@ -140,24 +132,15 @@ public class SettingsValues {
         mHasHardwareKeyboard = Settings.readHasHardwareKeyboard(res.getConfiguration());
         boolean isLandscape = mDisplayOrientation == Configuration.ORIENTATION_LANDSCAPE;
         boolean isFolded = false;
-        // determine spacerWidth from display width and scale setting
-        mQuickPinToolbarKeys = mToolbarMode == ToolbarMode.EXPANDABLE && prefs.getBoolean(Settings.PREF_QUICK_PIN_TOOLBAR_KEYS, Defaults.PREF_QUICK_PIN_TOOLBAR_KEYS);
 
         // Compute other readable settings
         mKeyLongpressTimeout = prefs.getInt(Settings.PREF_KEY_LONGPRESS_TIMEOUT, Defaults.PREF_KEY_LONGPRESS_TIMEOUT);
-        mGestureFastTypingCooldown = prefs.getInt(Settings.PREF_GESTURE_FAST_TYPING_COOLDOWN, Defaults.PREF_GESTURE_FAST_TYPING_COOLDOWN);
-        mGestureTrailFadeoutDuration = prefs.getInt(Settings.PREF_GESTURE_TRAIL_FADEOUT_DURATION, Defaults.PREF_GESTURE_TRAIL_FADEOUT_DURATION);
-        mSuggestionStripHiddenPerUserSettings = mToolbarMode == ToolbarMode.HIDDEN || mToolbarMode == ToolbarMode.TOOLBAR_KEYS;
         mBottomRowScale = Settings.readBottomRowScale(prefs, isLandscape, isFolded);
         mSpaceSwipeHorizontal = Settings.readHorizontalSpaceSwipe(prefs);
         mSpaceSwipeVertical = Settings.readVerticalSpaceSwipe(prefs);
         mLanguageSwipeDistance = prefs.getInt(Settings.PREF_LANGUAGE_SWIPE_DISTANCE, Defaults.PREF_LANGUAGE_SWIPE_DISTANCE);
-        mTouchpadSensitivity = prefs.getInt(Settings.PREF_TOUCHPAD_SENSITIVITY,
-            Defaults.PREF_TOUCHPAD_SENSITIVITY);
-        mTouchpadEdgeScroll = prefs.getBoolean(Settings.PREF_TOUCHPAD_EDGE_SCROLL, Defaults.PREF_TOUCHPAD_EDGE_SCROLL);
         mDeleteSwipeEnabled = prefs.getBoolean(Settings.PREF_DELETE_SWIPE, Defaults.PREF_DELETE_SWIPE);
         mAutospaceAfterPunctuation = prefs.getBoolean(Settings.PREF_AUTOSPACE_AFTER_PUNCTUATION, Defaults.PREF_AUTOSPACE_AFTER_PUNCTUATION);
-        mAutospaceBeforeGestureTyping = prefs.getBoolean(Settings.PREF_AUTOSPACE_BEFORE_GESTURE_TYPING, Defaults.PREF_AUTOSPACE_BEFORE_GESTURE_TYPING);
         mShiftRemovesAutospace = prefs.getBoolean(Settings.PREF_SHIFT_REMOVES_AUTOSPACE, Defaults.PREF_SHIFT_REMOVES_AUTOSPACE);
 
         mKeyboardHeightScale = Settings.readHeightScale(prefs, isLandscape, isFolded);
@@ -185,7 +168,6 @@ public class SettingsValues {
         mRemoveRedundantPopups = prefs.getBoolean(Settings.PREF_REMOVE_REDUNDANT_POPUPS, Defaults.PREF_REMOVE_REDUNDANT_POPUPS);
         mFontSizeMultiplier = prefs.getFloat(Settings.PREF_FONT_SCALE, Defaults.PREF_FONT_SCALE);
         mHintFontSizeMultiplier = mShowsHints ? prefs.getFloat(Settings.PREF_HINT_FONT_SCALE, Defaults.PREF_HINT_FONT_SCALE) : 1;
-        mFontSizeMultiplierEmoji = prefs.getFloat(Settings.PREF_EMOJI_FONT_SCALE, Defaults.PREF_EMOJI_FONT_SCALE);
     }
 
     public boolean isWordSeparator(final int code) {

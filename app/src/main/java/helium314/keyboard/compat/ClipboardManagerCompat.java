@@ -21,13 +21,4 @@ public class ClipboardManagerCompat {
         }
     }
 
-    public static Long getClipTimestamp(ClipData cd) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            final long timestamp = cd.getDescription().getTimestamp();
-            if (timestamp > 0) // timestamp is 0 if not set
-                return timestamp;
-        }
-        return System.currentTimeMillis();
-    }
-
 }

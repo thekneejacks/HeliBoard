@@ -2,7 +2,6 @@
 
 package helium314.keyboard.latin.utils
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Resources
@@ -31,9 +30,6 @@ object SubtypeSettings {
     }
 
     fun isEnabled(subtype: InputMethodSubtype?): Boolean = subtype in enabledSubtypes || subtype in getDefaultEnabledSubtypes()
-
-    fun getAllAvailableSubtypes(): List<InputMethodSubtype> =
-        resourceSubtypesByLocale.values.flatten() + additionalSubtypes
 
     /** @return whether subtype was actually removed */
     fun removeEnabledSubtype(context: Context, subtype: InputMethodSubtype): Boolean {
@@ -106,45 +102,6 @@ object SubtypeSettings {
     }
 
     fun getResourceSubtypesForLocale(locale: Locale): List<InputMethodSubtype> = resourceSubtypesByLocale[locale].orEmpty()
-
-    /**
-     * Update subtypes that contain the layout. If new name is null (layout deleted) and the
-     * subtype is now identical to a resource subtype, remove the subtype from additional subtypes.
-     */
-    @SuppressLint("UseKtx") // easier to read
-    fun onRenameLayout(type: LayoutType, from: String, to: String?, context: Context) {
-        val prefs = context.prefs()
-        val editor = prefs.edit() // calling apply for each separate setting would result in an invalid intermediate state
-        listOf(
-            Settings.PREF_ADDITIONAL_SUBTYPES to Defaults.PREF_ADDITIONAL_SUBTYPES,
-            Settings.PREF_ENABLED_SUBTYPES to Defaults.PREF_ENABLED_SUBTYPES,
-            Settings.PREF_SELECTED_SUBTYPE to Defaults.PREF_SELECTED_SUBTYPE
-        ).forEach { (key, default) ->
-            val new = prefs.getString(key, default)!!.split(Separators.SETS).mapNotNullTo(mutableSetOf()) {
-                if (it.isEmpty()) return@mapNotNullTo null
-                val subtype = it.toSettingsSubtype()
-                if (subtype.layoutName(type) == from) {
-                    if (to == null) {
-                        val defaultLayout = if (type !== LayoutType.MAIN) null
-                            // if we just delete a main layout, we may end up with something like Hindi (QWERTY)
-                            // so better replace it with a default layout for that locale
-                            else resourceSubtypesByLocale[subtype.locale]?.first()?.mainLayoutName()
-                        val newSubtype = if (defaultLayout == null) subtype.withoutLayout(type)
-                            else subtype.withLayout(type, defaultLayout)
-                        if (newSubtype.isSameAsDefault() && key == Settings.PREF_ADDITIONAL_SUBTYPES) null
-                        else newSubtype.toPref()
-                    }
-                    else subtype.withLayout(type, to).toPref()
-                }
-                else subtype.toPref()
-            }.joinToString(Separators.SETS)
-            editor.putString(key, new)
-        }
-        editor.apply()
-        if (Settings.readDefaultLayoutName(type, prefs) == from)
-            Settings.writeDefaultLayoutName(to, type, prefs)
-        reloadEnabledSubtypes(context)
-    }
 
     fun reloadEnabledSubtypes(context: Context) {
         enabledSubtypes.clear()

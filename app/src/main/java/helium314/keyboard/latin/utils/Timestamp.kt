@@ -15,4 +15,3 @@ fun getTimestampFormatter(context: Context): SimpleDateFormat {
         ?: SimpleDateFormat(Defaults.PREF_TIMESTAMP_FORMAT, Settings.getValues().mLocale)
 }
 
-fun checkTimestampFormat(format: String) = runCatching { SimpleDateFormat(format, Settings.getValues().mLocale) }.isSuccess
