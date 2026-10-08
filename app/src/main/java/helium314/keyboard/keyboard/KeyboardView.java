@@ -43,8 +43,6 @@ public class KeyboardView extends View {
     // Currently only "alignHintLabelToBottom" is supported.
     private final int mDefaultKeyLabelFlags;
     private final float mKeyHintLetterPadding;
-    private final String mKeyPopupHintLetter;
-    private final float mKeyPopupHintLetterPadding;
     private final float mKeyShiftedLetterHintPadding;
     private final float mKeyTextShadowRadius;
     private final float mVerticalCorrection;
@@ -104,11 +102,6 @@ public class KeyboardView extends View {
                 R.styleable.KeyboardView_spacebarIconWidthRatio, 1.0f);
         mKeyHintLetterPadding = keyboardViewAttr.getDimension(
                 R.styleable.KeyboardView_keyHintLetterPadding, 0.0f);
-        mKeyPopupHintLetter = Settings.getValues().mShowsPopupHints
-                ? keyboardViewAttr.getString(R.styleable.KeyboardView_keyPopupHintLetter)
-                : "";
-        mKeyPopupHintLetterPadding = keyboardViewAttr.getDimension(
-                R.styleable.KeyboardView_keyPopupHintLetterPadding, 0.0f);
         mKeyShiftedLetterHintPadding = keyboardViewAttr.getDimension(
                 R.styleable.KeyboardView_keyShiftedLetterHintPadding, 0.0f);
         mKeyTextShadowRadius = keyboardViewAttr.getFloat(
@@ -431,20 +424,6 @@ public class KeyboardView extends View {
     // Draw popup hint "..." at the center or bottom right corner of the key, depending on style.
     protected void drawKeyPopupHint(@NonNull final Key key, @NonNull final Canvas canvas,
             @NonNull final Paint paint, @NonNull final KeyDrawParams params) {
-        if (TextUtils.isEmpty(mKeyPopupHintLetter)) {
-            return;
-        }
-        final int keyWidth = key.getDrawWidth();
-        final int keyHeight = key.getHeight();
-        final float hintX;
-        paint.setTypeface(params.mTypeface);
-        paint.setTextSize(params.mHintLetterSize);
-        paint.setColor(params.mHintLabelColor);
-        paint.setTextAlign(Align.CENTER);
-        hintX = keyWidth - mKeyHintLetterPadding - TypefaceUtils.getReferenceCharWidth(paint) / 2.0f;
-
-        final float hintY = keyHeight - mKeyPopupHintLetterPadding;
-        canvas.drawText(mKeyPopupHintLetter, hintX, hintY, paint);
     }
 
     protected static void drawIcon(@NonNull final Canvas canvas,@NonNull final Drawable icon,

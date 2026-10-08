@@ -270,10 +270,6 @@ public final class KeyboardSwitcher {
         toast.show();
     }
 
-    private static int getSecondaryStripVisibility() {
-        return Settings.getValues().isSecondaryStripVisible()? View.VISIBLE : View.GONE;
-    }
-
     /**
      * Updates state machine to figure out when to automatically switch back to the previous mode.
      */
