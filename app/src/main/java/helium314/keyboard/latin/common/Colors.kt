@@ -3,7 +3,6 @@
 package helium314.keyboard.latin.common
 
 import android.content.res.ColorStateList
-import android.content.res.TypedArray
 import android.graphics.Color
 import android.graphics.ColorFilter
 import android.graphics.PorterDuff
@@ -15,8 +14,6 @@ import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.DrawableCompat
-import helium314.keyboard.latin.R
-import helium314.keyboard.latin.common.ColorType.ACTION_KEY_BACKGROUND
 import helium314.keyboard.latin.common.ColorType.ACTION_KEY_ICON
 import helium314.keyboard.latin.common.ColorType.ACTION_KEY_POPUP_KEYS_BACKGROUND
 import helium314.keyboard.latin.common.ColorType.AUTOFILL_BACKGROUND_CHIP
@@ -28,11 +25,9 @@ import helium314.keyboard.latin.common.ColorType.EMOJI_CATEGORY_SELECTED
 import helium314.keyboard.latin.common.ColorType.EMOJI_KEY_TEXT
 import helium314.keyboard.latin.common.ColorType.EMOJI_SEARCH_BACKGROUND
 import helium314.keyboard.latin.common.ColorType.EMOJI_SEARCH_TEXT
-import helium314.keyboard.latin.common.ColorType.FUNCTIONAL_KEY_BACKGROUND
 import helium314.keyboard.latin.common.ColorType.FUNCTIONAL_KEY_TEXT
 import helium314.keyboard.latin.common.ColorType.GESTURE_PREVIEW
 import helium314.keyboard.latin.common.ColorType.GESTURE_TRAIL
-import helium314.keyboard.latin.common.ColorType.KEY_BACKGROUND
 import helium314.keyboard.latin.common.ColorType.KEY_HINT_TEXT
 import helium314.keyboard.latin.common.ColorType.KEY_ICON
 import helium314.keyboard.latin.common.ColorType.KEY_PREVIEW_BACKGROUND
@@ -81,22 +76,6 @@ interface Colors {
 
     /** set a background to the [view], may replace or adjust existing background */
     fun setBackground(view: View, color: ColorType)
-
-    /** returns a colored drawable selected from [attr], which must contain using R.styleable.KeyboardView_* */
-    fun selectAndColorDrawable(attr: TypedArray, color: ColorType): Drawable {
-        val drawable = when (color) {
-            KEY_BACKGROUND, MORE_SUGGESTIONS_WORD_BACKGROUND, ACTION_KEY_POPUP_KEYS_BACKGROUND, POPUP_KEYS_BACKGROUND ->
-                attr.getDrawable(R.styleable.KeyboardView_keyBackground)
-            FUNCTIONAL_KEY_BACKGROUND -> attr.getDrawable(R.styleable.KeyboardView_functionalKeyBackground)
-            ACTION_KEY_BACKGROUND -> {
-                attr.getDrawable(R.styleable.KeyboardView_keyBackground)
-            }
-            else -> null // keyBackground
-        }?.mutate() ?: attr.getDrawable(R.styleable.KeyboardView_keyBackground)?.mutate()!! // keyBackground always exists
-
-        setColor(drawable, color)
-        return drawable
-    }
 
 }
 
@@ -184,7 +163,7 @@ class DefaultColors (
     }
 
     override fun get(color: ColorType): Int = when (color) {
-        TOOL_BAR_KEY_ENABLED_BACKGROUND, EMOJI_CATEGORY_SELECTED, ACTION_KEY_BACKGROUND,
+        TOOL_BAR_KEY_ENABLED_BACKGROUND, EMOJI_CATEGORY_SELECTED,
             CLIPBOARD_PIN, SHIFT_KEY_ICON -> accent
         AUTOFILL_BACKGROUND_CHIP -> if (!hasKeyBorders) background else adjustedBackground
         GESTURE_PREVIEW, POPUP_KEYS_BACKGROUND, MORE_SUGGESTIONS_BACKGROUND, KEY_PREVIEW_BACKGROUND -> adjustedBackground
@@ -194,9 +173,8 @@ class DefaultColors (
             POPUP_KEY_TEXT, POPUP_KEY_ICON, KEY_PREVIEW_TEXT, EMOJI_SEARCH_TEXT, CLIPBOARD_SUGGESTION_ICON -> keyText
         KEY_HINT_TEXT -> keyHintText
         SPACE_BAR_TEXT -> spaceBarText
-        FUNCTIONAL_KEY_BACKGROUND, EMOJI_SEARCH_BACKGROUND -> functionalKey
+        EMOJI_SEARCH_BACKGROUND -> functionalKey
         MORE_SUGGESTIONS_WORD_BACKGROUND, MAIN_BACKGROUND -> background
-        KEY_BACKGROUND -> keyBackground
         ACTION_KEY_POPUP_KEYS_BACKGROUND -> accent
         STRIP_BACKGROUND -> if (!hasKeyBorders) adjustedBackground else background
         NAVIGATION_BAR -> navBar
@@ -207,11 +185,6 @@ class DefaultColors (
 
     override fun setColor(drawable: Drawable, color: ColorType) {
         val colorStateList = when (color) {
-            MORE_SUGGESTIONS_WORD_BACKGROUND -> backgroundStateList
-            KEY_BACKGROUND -> keyStateList
-            FUNCTIONAL_KEY_BACKGROUND -> functionalKeyStateList
-            ACTION_KEY_BACKGROUND -> actionKeyStateList
-            POPUP_KEYS_BACKGROUND -> adjustedBackgroundStateList
             STRIP_BACKGROUND -> stripBackgroundList
             ACTION_KEY_POPUP_KEYS_BACKGROUND -> actionKeyStateList
             TOOL_BAR_KEY -> toolbarKeyStateList
@@ -238,9 +211,7 @@ class DefaultColors (
             view.setBackgroundColor(Color.WHITE) // set white to make the color filters work
         when (color) {
             KEY_PREVIEW_BACKGROUND, POPUP_KEYS_BACKGROUND -> view.background.colorFilter = adjustedBackgroundFilter
-            FUNCTIONAL_KEY_BACKGROUND, KEY_BACKGROUND, MORE_SUGGESTIONS_WORD_BACKGROUND, STRIP_BACKGROUND, CLIPBOARD_SUGGESTION_BACKGROUND -> setColor(view.background, color)
-            ONE_HANDED_MODE_BUTTON -> setColor(view.background, MAIN_BACKGROUND)
-            MORE_SUGGESTIONS_BACKGROUND -> view.background.colorFilter = backgroundFilter
+            STRIP_BACKGROUND  -> setColor(view.background, color)
             MAIN_BACKGROUND -> {
                 view.background.colorFilter = backgroundFilter
 
@@ -276,7 +247,6 @@ private fun activatedStateList(activated: Int, normal: Int): ColorStateList {
 
 enum class ColorType {
     ACTION_KEY_ICON,
-    ACTION_KEY_BACKGROUND,
     ACTION_KEY_POPUP_KEYS_BACKGROUND,
     AUTOFILL_BACKGROUND_CHIP,
     CLIPBOARD_PIN,
@@ -286,10 +256,8 @@ enum class ColorType {
     EMOJI_SEARCH_TEXT,
     EMOJI_SEARCH_BACKGROUND,
     FUNCTIONAL_KEY_TEXT,
-    FUNCTIONAL_KEY_BACKGROUND,
     GESTURE_TRAIL,
     GESTURE_PREVIEW,
-    KEY_BACKGROUND,
     KEY_ICON,
     KEY_TEXT,
     KEY_HINT_TEXT,

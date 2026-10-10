@@ -26,8 +26,6 @@
         parent="KeyboardView.LXX"
         >
         <item name="android:background">@color/keyboard_background_lxx_base</item>
-        <item name="keyBackground">@drawable/btn_keyboard_key_lxx_base</item>
-        <item name="functionalKeyBackground">@drawable/btn_keyboard_key_lxx_base</item>
         <item name="keyTextInactivatedColor">@color/key_text_inactive_color_lxx_light</item>
         <item name="keyShiftedLetterHintInactivatedColor">@color/key_text_inactive_color_lxx_light</item>
         <item name="keyShiftedLetterHintActivatedColor">@color/key_text_color_lxx_light</item>
@@ -62,7 +60,6 @@
         parent="KeyboardView.LXX_Base"
         >
         <item name="android:background">@drawable/keyboard_popup_panel_background_lxx_base</item>
-        <item name="keyBackground">@drawable/btn_keyboard_key_popup_lxx_base</item>
         <item name="divider">@drawable/popup_keys_divider</item>
         <item name="keyTypeface">normal</item>
         <item name="verticalCorrection">@dimen/config_popup_keys_keyboard_vertical_correction_holo</item>
@@ -72,7 +69,6 @@
         parent="PopupKeysKeyboardView.LXX_Base"
         >
         <item name="android:background">@android:color/transparent</item>
-        <item name="keyBackground">@drawable/btn_keyboard_key_popup_action_lxx_base</item>
         <item name="divider">@null</item>
         <item name="keyLabelFlags">keepBackgroundAspectRatio</item>
     </style>

@@ -45,9 +45,6 @@ public class KeyboardView extends View {
     private final float mKeyShiftedLetterHintPadding;
     private final float mKeyTextShadowRadius;
     private final float mVerticalCorrection;
-    private final Drawable mKeyBackground;
-    private final Drawable mFunctionalKeyBackground;
-    private final Drawable mActionKeyBackground;
     private final float mSpacebarIconWidthRatio;
     private final Rect mKeyBackgroundPadding = new Rect();
     private static final float KET_TEXT_SHADOW_RADIUS_DISABLED = -1.0f;
@@ -84,16 +81,6 @@ public class KeyboardView extends View {
 
         final TypedArray keyboardViewAttr = context.obtainStyledAttributes(attrs,
                 R.styleable.KeyboardView, defStyle, R.style.KeyboardView);
-        if (this instanceof PopupKeysKeyboardView)
-            mKeyBackground = mColors.selectAndColorDrawable(keyboardViewAttr, ColorType.POPUP_KEYS_BACKGROUND);
-        else
-            mKeyBackground = mColors.selectAndColorDrawable(keyboardViewAttr, ColorType.KEY_BACKGROUND);
-        mKeyBackground.getPadding(mKeyBackgroundPadding);
-        mFunctionalKeyBackground = mColors.selectAndColorDrawable(keyboardViewAttr, ColorType.FUNCTIONAL_KEY_BACKGROUND);
-        if (this instanceof PopupKeysKeyboardView)
-            mActionKeyBackground = mColors.selectAndColorDrawable(keyboardViewAttr, ColorType.ACTION_KEY_POPUP_KEYS_BACKGROUND);
-        else
-            mActionKeyBackground = mColors.selectAndColorDrawable(keyboardViewAttr, ColorType.ACTION_KEY_BACKGROUND);
 
         mSpacebarIconWidthRatio = keyboardViewAttr.getFloat(
                 R.styleable.KeyboardView_spacebarIconWidthRatio, 1.0f);
@@ -214,11 +201,11 @@ public class KeyboardView extends View {
         // don't use the raw key height, linear font scaling with height is too extreme
         final KeyDrawParams params = mKeyDrawParams.mayCloneAndUpdateParams((int) (key.getHeight() * mKeyScaleForText), attr);
 
-        if (!key.isSpacer()) {
+        /*if (!key.isSpacer()) {
             final Drawable background = key.selectBackgroundDrawable(
                     mKeyBackground, mFunctionalKeyBackground, mActionKeyBackground);
             onDrawKeyBackground(key, canvas, background);
-        }
+        }*/
         onDrawKeyTopVisuals(key, canvas, paint, params);
 
         canvas.translate(-keyDrawX, -keyDrawY);
@@ -287,11 +274,11 @@ public class KeyboardView extends View {
             }
             if (key.needsAutoXScale()) {
                 final int width;
-                if (key.needsToKeepBackgroundAspectRatio(mDefaultKeyLabelFlags)) {
+                /*if (key.needsToKeepBackgroundAspectRatio(mDefaultKeyLabelFlags)) {
                     // make sure the text stays inside bounds of background drawable
                     Drawable bg = key.selectBackgroundDrawable(mKeyBackground, mFunctionalKeyBackground, mActionKeyBackground);
                     width = Math.min(bg.getBounds().bottom, bg.getBounds().right);
-                } else width = keyWidth;
+                } else*/ width = keyWidth;
                 final float ratio = Math.min(1.0f, (width * MAX_LABEL_RATIO) / TypefaceUtils.getStringWidth(label, paint));
                 if (key.needsAutoScale()) {
                     final float autoSize = paint.getTextSize() * ratio;
