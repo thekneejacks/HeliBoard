@@ -17,14 +17,6 @@ import androidx.core.graphics.drawable.DrawableCompat
 import helium314.keyboard.latin.common.ColorType.ACTION_KEY_ICON
 import helium314.keyboard.latin.common.ColorType.ACTION_KEY_POPUP_KEYS_BACKGROUND
 import helium314.keyboard.latin.common.ColorType.AUTOFILL_BACKGROUND_CHIP
-import helium314.keyboard.latin.common.ColorType.CLIPBOARD_PIN
-import helium314.keyboard.latin.common.ColorType.CLIPBOARD_SUGGESTION_BACKGROUND
-import helium314.keyboard.latin.common.ColorType.CLIPBOARD_SUGGESTION_ICON
-import helium314.keyboard.latin.common.ColorType.EMOJI_CATEGORY
-import helium314.keyboard.latin.common.ColorType.EMOJI_CATEGORY_SELECTED
-import helium314.keyboard.latin.common.ColorType.EMOJI_KEY_TEXT
-import helium314.keyboard.latin.common.ColorType.EMOJI_SEARCH_BACKGROUND
-import helium314.keyboard.latin.common.ColorType.EMOJI_SEARCH_TEXT
 import helium314.keyboard.latin.common.ColorType.FUNCTIONAL_KEY_TEXT
 import helium314.keyboard.latin.common.ColorType.GESTURE_PREVIEW
 import helium314.keyboard.latin.common.ColorType.GESTURE_TRAIL
@@ -34,22 +26,11 @@ import helium314.keyboard.latin.common.ColorType.KEY_PREVIEW_BACKGROUND
 import helium314.keyboard.latin.common.ColorType.KEY_PREVIEW_TEXT
 import helium314.keyboard.latin.common.ColorType.KEY_TEXT
 import helium314.keyboard.latin.common.ColorType.MAIN_BACKGROUND
-import helium314.keyboard.latin.common.ColorType.MORE_SUGGESTIONS_BACKGROUND
-import helium314.keyboard.latin.common.ColorType.MORE_SUGGESTIONS_HINT
-import helium314.keyboard.latin.common.ColorType.MORE_SUGGESTIONS_WORD_BACKGROUND
 import helium314.keyboard.latin.common.ColorType.NAVIGATION_BAR
-import helium314.keyboard.latin.common.ColorType.ONE_HANDED_MODE_BUTTON
 import helium314.keyboard.latin.common.ColorType.POPUP_KEYS_BACKGROUND
-import helium314.keyboard.latin.common.ColorType.POPUP_KEY_ICON
 import helium314.keyboard.latin.common.ColorType.POPUP_KEY_TEXT
 import helium314.keyboard.latin.common.ColorType.REMOVE_SUGGESTION_ICON
-import helium314.keyboard.latin.common.ColorType.SHIFT_KEY_ICON
-import helium314.keyboard.latin.common.ColorType.SPACE_BAR_TEXT
 import helium314.keyboard.latin.common.ColorType.STRIP_BACKGROUND
-import helium314.keyboard.latin.common.ColorType.SUGGESTED_WORD
-import helium314.keyboard.latin.common.ColorType.SUGGESTION_AUTO_CORRECT
-import helium314.keyboard.latin.common.ColorType.SUGGESTION_TYPED_WORD
-import helium314.keyboard.latin.common.ColorType.SUGGESTION_VALID_WORD
 import helium314.keyboard.latin.common.ColorType.TOOL_BAR_EXPAND_KEY
 import helium314.keyboard.latin.common.ColorType.TOOL_BAR_EXPAND_KEY_BACKGROUND
 import helium314.keyboard.latin.common.ColorType.TOOL_BAR_KEY
@@ -98,13 +79,11 @@ class DefaultColors (
     private val adjustedBackground: Int
     /** further brightened or darkened variant of [adjustedBackground] */
     private val doubleAdjustedBackground: Int
-    private val adjustedSuggestionText = brightenOrDarken(suggestionText, true)
 
     private val backgroundFilter = colorFilter(background)
     private val adjustedBackgroundFilter: ColorFilter
     private val keyTextFilter: ColorFilter
     private val suggestionTextFilter = colorFilter(suggestionText)
-    private val accentColorFilter = colorFilter(accent)
 
     /** color filter for the white action key icons in material theme, switches to gray if necessary for contrast */
     private val actionKeyIconColorFilter: ColorFilter?
@@ -163,23 +142,19 @@ class DefaultColors (
     }
 
     override fun get(color: ColorType): Int = when (color) {
-        TOOL_BAR_KEY_ENABLED_BACKGROUND, EMOJI_CATEGORY_SELECTED,
-            CLIPBOARD_PIN, SHIFT_KEY_ICON -> accent
+        TOOL_BAR_KEY_ENABLED_BACKGROUND -> accent
         AUTOFILL_BACKGROUND_CHIP -> if (!hasKeyBorders) background else adjustedBackground
-        GESTURE_PREVIEW, POPUP_KEYS_BACKGROUND, MORE_SUGGESTIONS_BACKGROUND, KEY_PREVIEW_BACKGROUND -> adjustedBackground
-        TOOL_BAR_EXPAND_KEY_BACKGROUND, CLIPBOARD_SUGGESTION_BACKGROUND -> doubleAdjustedBackground
+        GESTURE_PREVIEW, POPUP_KEYS_BACKGROUND, KEY_PREVIEW_BACKGROUND -> adjustedBackground
+        TOOL_BAR_EXPAND_KEY_BACKGROUND -> doubleAdjustedBackground
         GESTURE_TRAIL -> gesture
-        KEY_TEXT, REMOVE_SUGGESTION_ICON, FUNCTIONAL_KEY_TEXT, KEY_ICON, EMOJI_KEY_TEXT,
-            POPUP_KEY_TEXT, POPUP_KEY_ICON, KEY_PREVIEW_TEXT, EMOJI_SEARCH_TEXT, CLIPBOARD_SUGGESTION_ICON -> keyText
+        KEY_TEXT, REMOVE_SUGGESTION_ICON, FUNCTIONAL_KEY_TEXT, KEY_ICON,
+            POPUP_KEY_TEXT, KEY_PREVIEW_TEXT, -> keyText
         KEY_HINT_TEXT -> keyHintText
-        SPACE_BAR_TEXT -> spaceBarText
-        EMOJI_SEARCH_BACKGROUND -> functionalKey
-        MORE_SUGGESTIONS_WORD_BACKGROUND, MAIN_BACKGROUND -> background
+        MAIN_BACKGROUND -> background
         ACTION_KEY_POPUP_KEYS_BACKGROUND -> accent
         STRIP_BACKGROUND -> if (!hasKeyBorders) adjustedBackground else background
         NAVIGATION_BAR -> navBar
-        SUGGESTION_AUTO_CORRECT, EMOJI_CATEGORY, TOOL_BAR_KEY, TOOL_BAR_EXPAND_KEY, ONE_HANDED_MODE_BUTTON -> suggestionText
-        MORE_SUGGESTIONS_HINT, SUGGESTED_WORD, SUGGESTION_TYPED_WORD, SUGGESTION_VALID_WORD -> adjustedSuggestionText
+        TOOL_BAR_KEY, TOOL_BAR_EXPAND_KEY -> suggestionText
         ACTION_KEY_ICON -> Color.WHITE
     }
 
@@ -221,9 +196,8 @@ class DefaultColors (
     }
 
     private fun getColorFilter(color: ColorType): ColorFilter? = when (color) {
-        EMOJI_CATEGORY_SELECTED, CLIPBOARD_PIN, SHIFT_KEY_ICON -> accentColorFilter
         KEY_TEXT, KEY_ICON -> keyTextFilter
-        REMOVE_SUGGESTION_ICON, EMOJI_CATEGORY, ONE_HANDED_MODE_BUTTON, TOOL_BAR_KEY, TOOL_BAR_EXPAND_KEY -> suggestionTextFilter
+        REMOVE_SUGGESTION_ICON, TOOL_BAR_KEY, TOOL_BAR_EXPAND_KEY -> suggestionTextFilter
         KEY_PREVIEW_BACKGROUND -> adjustedBackgroundFilter
         ACTION_KEY_ICON -> actionKeyIconColorFilter
         else -> colorFilter(get(color)) // create color filter (not great for performance, so the frequently used filters should be stored)
@@ -249,12 +223,6 @@ enum class ColorType {
     ACTION_KEY_ICON,
     ACTION_KEY_POPUP_KEYS_BACKGROUND,
     AUTOFILL_BACKGROUND_CHIP,
-    CLIPBOARD_PIN,
-    EMOJI_CATEGORY,
-    EMOJI_CATEGORY_SELECTED,
-    EMOJI_KEY_TEXT,
-    EMOJI_SEARCH_TEXT,
-    EMOJI_SEARCH_BACKGROUND,
     FUNCTIONAL_KEY_TEXT,
     GESTURE_TRAIL,
     GESTURE_PREVIEW,
@@ -263,24 +231,11 @@ enum class ColorType {
     KEY_HINT_TEXT,
     KEY_PREVIEW_BACKGROUND,
     KEY_PREVIEW_TEXT,
-    MORE_SUGGESTIONS_HINT,
-    MORE_SUGGESTIONS_BACKGROUND,
-    MORE_SUGGESTIONS_WORD_BACKGROUND,
     POPUP_KEYS_BACKGROUND,
     POPUP_KEY_TEXT,
-    POPUP_KEY_ICON,
     NAVIGATION_BAR,
-    SHIFT_KEY_ICON,
-    SPACE_BAR_TEXT,
-    ONE_HANDED_MODE_BUTTON,
     REMOVE_SUGGESTION_ICON,
     STRIP_BACKGROUND,
-    CLIPBOARD_SUGGESTION_BACKGROUND,
-    CLIPBOARD_SUGGESTION_ICON,
-    SUGGESTED_WORD,
-    SUGGESTION_AUTO_CORRECT,
-    SUGGESTION_TYPED_WORD,
-    SUGGESTION_VALID_WORD,
     TOOL_BAR_EXPAND_KEY,
     TOOL_BAR_EXPAND_KEY_BACKGROUND,
     TOOL_BAR_KEY,

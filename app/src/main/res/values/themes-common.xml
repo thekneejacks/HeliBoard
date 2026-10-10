@@ -24,7 +24,6 @@
     <style name="KeyboardView">
         <item name="keyTypeface">normal</item>
         <!-- A negative value to disable key text shadow layer. -->
-        <item name="keyTextShadowRadius">-1.0</item>
         <item name="keyHintLetterPadding">@dimen/config_key_hint_letter_padding</item>
         <item name="keyPopupHintLetterPadding">@dimen/config_key_popup_hint_letter_padding</item>
         <item name="keyShiftedLetterHintPadding">@dimen/config_key_shifted_letter_hint_padding</item>

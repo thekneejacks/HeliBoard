@@ -13,10 +13,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.PorterDuff;
-import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.NinePatchDrawable;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -25,11 +23,9 @@ import androidx.annotation.Nullable;
 
 import helium314.keyboard.keyboard.internal.KeyDrawParams;
 import helium314.keyboard.keyboard.internal.KeyVisualAttributes;
-import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
 import helium314.keyboard.latin.R;
 import helium314.keyboard.latin.common.ColorType;
 import helium314.keyboard.latin.common.Colors;
-import helium314.keyboard.latin.common.Constants;
 import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.utils.TypefaceUtils;
 
@@ -43,11 +39,7 @@ public class KeyboardView extends View {
     private final int mDefaultKeyLabelFlags;
     private final float mKeyHintLetterPadding;
     private final float mKeyShiftedLetterHintPadding;
-    private final float mKeyTextShadowRadius;
     private final float mVerticalCorrection;
-    private final float mSpacebarIconWidthRatio;
-    private final Rect mKeyBackgroundPadding = new Rect();
-    private static final float KET_TEXT_SHADOW_RADIUS_DISABLED = -1.0f;
     private final Colors mColors;
     private float mKeyScaleForText;
     protected float mFontSizeMultiplier;
@@ -82,14 +74,10 @@ public class KeyboardView extends View {
         final TypedArray keyboardViewAttr = context.obtainStyledAttributes(attrs,
                 R.styleable.KeyboardView, defStyle, R.style.KeyboardView);
 
-        mSpacebarIconWidthRatio = keyboardViewAttr.getFloat(
-                R.styleable.KeyboardView_spacebarIconWidthRatio, 1.0f);
         mKeyHintLetterPadding = keyboardViewAttr.getDimension(
                 R.styleable.KeyboardView_keyHintLetterPadding, 0.0f);
         mKeyShiftedLetterHintPadding = keyboardViewAttr.getDimension(
                 R.styleable.KeyboardView_keyShiftedLetterHintPadding, 0.0f);
-        mKeyTextShadowRadius = keyboardViewAttr.getFloat(
-                R.styleable.KeyboardView_keyTextShadowRadius, KET_TEXT_SHADOW_RADIUS_DISABLED);
         mVerticalCorrection = keyboardViewAttr.getDimension(
                 R.styleable.KeyboardView_verticalCorrection, 0.0f);
         keyboardViewAttr.recycle();
@@ -211,32 +199,6 @@ public class KeyboardView extends View {
         canvas.translate(-keyDrawX, -keyDrawY);
     }
 
-    // Draw key background.
-    protected void onDrawKeyBackground(@NonNull final Key key, @NonNull final Canvas canvas,
-            @NonNull final Drawable background) {
-        final int keyWidth = key.getDrawWidth();
-        final int keyHeight = key.getHeight();
-        final int bgWidth, bgHeight, bgX, bgY;
-        if (key.needsToKeepBackgroundAspectRatio(mDefaultKeyLabelFlags)
-                // HACK: To disable expanding normal/functional key background.
-                && !key.hasCustomActionLabel()) {
-            bgWidth = (int) (background.getIntrinsicWidth() * mIconScaleFactor);
-            bgHeight = (int) (background.getIntrinsicHeight() * mIconScaleFactor);
-            bgX = (keyWidth - bgWidth) / 2;
-            bgY = (keyHeight - bgHeight) / 2;
-        } else {
-            final Rect padding = mKeyBackgroundPadding;
-            bgWidth = keyWidth + padding.left + padding.right;
-            bgHeight = keyHeight + padding.top + padding.bottom;
-            bgY = -padding.top;
-            bgX = -padding.left;
-        }
-        background.setBounds(0, 0, bgWidth, bgHeight);
-        canvas.translate(bgX, bgY);
-        background.draw(canvas);
-        canvas.translate(-bgX, -bgY);
-    }
-
     // Draw key top visuals.
     protected void onDrawKeyTopVisuals(@NonNull final Key key, @NonNull final Canvas canvas,
             @NonNull final Paint paint, @NonNull final KeyDrawParams params) {
@@ -296,11 +258,8 @@ public class KeyboardView extends View {
                 else
                     paint.setColor(key.selectTextColor(params));
                 // Set a drop shadow for the text if the shadow radius is positive value.
-                if (mKeyTextShadowRadius > 0.0f) {
-                    paint.setShadowLayer(mKeyTextShadowRadius, 0.0f, 0.0f, params.mTextShadowColor);
-                } else {
-                    paint.clearShadowLayer();
-                }
+                paint.clearShadowLayer();
+
             } else {
                 // Make label invisible
                 paint.setColor(Color.TRANSPARENT);
@@ -392,15 +351,13 @@ public class KeyboardView extends View {
 
         // Draw key icon.
         if (label == null && icon != null) {
-            int iconWidth = key.getCode() == Constants.CODE_SPACE && icon instanceof NinePatchDrawable
-                ? (int) (keyWidth * mSpacebarIconWidthRatio * mIconScaleFactor)
-                : (int) (Math.min(icon.getIntrinsicWidth(), keyWidth) * mIconScaleFactor);
+            int iconWidth = (int) (Math.min(icon.getIntrinsicWidth(), keyWidth) * mIconScaleFactor);
             int iconHeight = (int) (icon.getIntrinsicHeight() * mIconScaleFactor);
             int iconY = key.isAlignIconToBottom()
                 ? keyHeight - iconHeight
                 : (keyHeight - iconHeight) / 2; // Align vertically center.
             int iconX = (keyWidth - iconWidth) / 2; // Align horizontally center.
-            setKeyIconColor(key, icon, keyboard);
+            setKeyIconColor(icon);
             drawIcon(canvas, icon, iconX, iconY, iconWidth, iconHeight);
         }
     }
@@ -436,7 +393,6 @@ public class KeyboardView extends View {
      * Requests a redraw of the entire keyboard. Calling {@link #invalidate} is not sufficient
      * because the keyboard renders the keys to an off-screen buffer and an invalidate() only
      * draws the cached buffer.
-     * @see #invalidateKey(Key)
      */
     public void invalidateAllKeys() {
         invalidate();
@@ -450,8 +406,8 @@ public class KeyboardView extends View {
     public void deallocateMemory() {
     }
 
-    private void setKeyIconColor(Key key, Drawable icon, Keyboard keyboard) {
-        if (key.hasActionKeyBackground()) {
+    private void setKeyIconColor(Drawable icon) {
+        /*if (key.hasActionKeyBackground()) {
             mColors.setColor(icon, ColorType.ACTION_KEY_ICON);
         } else if (key.isShift() && keyboard != null) {
             if (keyboard.mId.getElement().isAlphabetShifted())
@@ -465,9 +421,9 @@ public class KeyboardView extends View {
         } else if (key.getCode() == Constants.CODE_SPACE || key.getCode() == KeyCode.ZWNJ) {
             // set color of default number pad space bar icon for Holo style, or for zero-width non-joiner (zwnj) on some layouts like nepal
             mColors.setColor(icon, ColorType.KEY_ICON);
-        } else {
+        } else {*/
             mColors.setColor(icon, ColorType.KEY_TEXT);
-        }
+        //}
     }
 
 }

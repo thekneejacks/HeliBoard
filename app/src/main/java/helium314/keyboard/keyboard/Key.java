@@ -883,63 +883,10 @@ public class Key implements Comparable<Key> {
         return dx * dx + dy * dy;
     }
 
-    static class KeyBackgroundState {
-        private final int[] mReleasedState;
-        private final int[] mPressedState;
-
-        private KeyBackgroundState(final int ... attrs) {
-            mReleasedState = attrs;
-            mPressedState = Arrays.copyOf(attrs, attrs.length + 1);
-            mPressedState[attrs.length] = android.R.attr.state_pressed;
-        }
-
-        public int[] getState(final boolean pressed) {
-            return pressed ? mPressedState : mReleasedState;
-        }
-
-        public static final KeyBackgroundState[] STATES = {
-            // 0: BACKGROUND_TYPE_EMPTY
-            new KeyBackgroundState(android.R.attr.state_empty),
-            // 1: BACKGROUND_TYPE_NORMAL
-            new KeyBackgroundState(),
-            // 2: BACKGROUND_TYPE_FUNCTIONAL
-            new KeyBackgroundState(),
-            // 3: BACKGROUND_TYPE_ACTION
-            new KeyBackgroundState(android.R.attr.state_active),
-            // 4: BACKGROUND_TYPE_SPACEBAR
-            new KeyBackgroundState(),
-        };
-    }
-
-    /**
-     * Returns the background drawable for the key, based on the current state and type of the key.
-     * @return the background drawable of the key.
-     * @see android.graphics.drawable.StateListDrawable#setState(int[])
-     */
-    @NonNull
-    public final Drawable selectBackgroundDrawable(@NonNull final Drawable keyBackground,
-            @NonNull final Drawable functionalKeyBackground, @NonNull final Drawable actionKeyBackground) {
-        final Drawable background;
-        if (hasActionKeyBackground()) {
-            background = actionKeyBackground;
-        } else if (hasFunctionalBackground()) {
-            background = functionalKeyBackground;
-        } else {
-            background = keyBackground;
-        }
-        final int[] state = KeyBackgroundState.STATES[mBackgroundType].getState(mPressed || mLocked);
-        background.setState(state);
-        return background;
-    }
-
     public final boolean hasActionKeyPopups() {
         if (!hasActionKeyBackground()) return false;
         // only use the special action key popups for action colored keys, and only for icon popups
         return ArraysKt.none(getPopupKeys(), (key) -> key.mIconName == null);
-    }
-
-    public boolean hasFunctionalBackground() {
-        return mBackgroundType == BACKGROUND_TYPE_FUNCTIONAL;
     }
 
     @Nullable private static String getDisabledIconName(@NonNull final String iconName) {
@@ -1207,48 +1154,6 @@ public class Key implements Comparable<Key> {
             // could be used e.g. for having a color gradient on key color
             mKeyVisualAttributes = null;
             mEnabled = true;
-        }
-
-        /** constructor for emoji parser */
-        public KeyParams(@Nullable final String label, final int code, @Nullable final String hintLabel,
-                   @Nullable final String popupKeySpecs, final int labelFlags, final KeyboardParams params) {
-            mKeyboardParams = params;
-            mHintLabel = hintLabel;
-            mLabelFlags = labelFlags;
-            mBackgroundType = BACKGROUND_TYPE_EMPTY;
-
-            if (popupKeySpecs != null) {
-                String[] popupKeys = PopupKeySpec.splitKeySpecs(popupKeySpecs);
-                mPopupKeysColumnAndFlags = getPopupKeysColumnAndFlagsAndSetNullInArray(params, popupKeys);
-
-                popupKeys = PopupKeySpec.insertAdditionalPopupKeys(popupKeys, null);
-                int actionFlags = 0;
-                if (popupKeys != null) {
-                    actionFlags |= ACTION_FLAGS_ENABLE_LONG_PRESS;
-                    mPopupKeys = new PopupKeySpec[popupKeys.length];
-                    for (int i = 0; i < popupKeys.length; i++) {
-                        mPopupKeys[i] = new PopupKeySpec(popupKeys[i], false, Locale.getDefault());
-                    }
-                } else {
-                    mPopupKeys = null;
-                }
-                mActionFlags = actionFlags;
-            } else {
-                // TODO: Pass keyActionFlags as an argument.
-                mActionFlags = ACTION_FLAGS_NO_KEY_PREVIEW;
-                mPopupKeys = null;
-                mPopupKeysColumnAndFlags = 0;
-            }
-
-            mLabel = label;
-            mOptionalAttributes = code == KeyCode.MULTIPLE_CODE_POINTS
-                    ? OptionalAttributes.newInstance(label, KeyCode.NOT_SPECIFIED, null, 0, 0)
-                    : null;
-            mCode = code;
-            mEnabled = (code != KeyCode.NOT_SPECIFIED);
-            mIconName = null;
-            mKeyVisualAttributes = null;
-            mHintIconName = null;
         }
 
         /** constructor for a spacer whose size MUST be determined using setDimensionsFromRelativeSize */
