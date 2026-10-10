@@ -21,7 +21,7 @@
         android:supportsSwitchingToNextInputMethod="true"
         android:supportsInlineSuggestions="true"
         tools:targetApi="r">
-    <subtype android:icon="@drawable/sym_keyboard_language_switch_lxx"
+    <subtype
         android:label="@string/subtype_en_US"
         android:subtypeId="0xc9194f98"
         android:imeSubtypeLocale="en_US"
@@ -30,7 +30,7 @@
         android:imeSubtypeExtraValue="TrySuppressingImeSwitcher,AsciiCapable,SupportTouchPositionCorrection,EmojiCapable"
         android:isAsciiCapable="true"
         />
-    <subtype android:icon="@drawable/sym_keyboard_language_switch_lxx"
+    <subtype
         android:label="@string/subtype_generic"
         android:subtypeId="0x456d04f2"
         android:imeSubtypeLocale="ko"
@@ -39,7 +39,7 @@
         android:imeSubtypeExtraValue="KeyboardLayoutSet=MAIN:korean,CombiningRules=hangul,SupportTouchPositionCorrection,EmojiCapable"
         android:isAsciiCapable="false"
     />
-	<subtype android:icon="@drawable/sym_keyboard_language_switch_lxx"
+	<subtype
         android:label="@string/subtype_generic_phonetic"
         android:subtypeId="0x3f5a9c12"
         android:imeSubtypeLocale="ko"
@@ -48,7 +48,7 @@
         android:imeSubtypeExtraValue="KeyboardLayoutSet=MAIN:korean_phonetic,CombiningRules=hangul,SupportTouchPositionCorrection,EmojiCapable"
         android:isAsciiCapable="false"
     />
-    <subtype android:icon="@drawable/sym_keyboard_language_switch_lxx"
+    <subtype
         android:label="@string/subtype_generic_sebeolsik_390"
         android:subtypeId="0xb0bbe261"
         android:imeSubtypeLocale="ko"
@@ -57,7 +57,7 @@
         android:imeSubtypeExtraValue="KeyboardLayoutSet=MAIN:korean_sebeolsik_390,CombiningRules=hangul,SupportTouchPositionCorrection,EmojiCapable"
         android:isAsciiCapable="false"
     />
-    <subtype android:icon="@drawable/sym_keyboard_language_switch_lxx"
+    <subtype
         android:label="@string/subtype_generic_sebeolsik_final"
         android:subtypeId="0xb6774038"
         android:imeSubtypeLocale="ko"

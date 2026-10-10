@@ -83,12 +83,6 @@ sealed interface KeyData : AbstractKeyData {
          */
         const val GROUP_NO_DEFAULT_POPUP: Int = -1
 
-        /**
-         * Constant for the enter modifier key group. Any key belonging to this group will get the
-         * popups specified for "~kana" in the popup mapping.
-         */
-        const val GROUP_KANA: Int = 97
-
         // todo: emoji and language switch popups should actually disappear depending on current layout (including functional keys)
         //  keys could be replaced with toolbar keys, but parsing needs to be adjusted (should happen anyway...)
         private fun getCommaPopupKeys(params: KeyboardParams): List<String> {
@@ -196,12 +190,10 @@ sealed interface KeyData : AbstractKeyData {
                 }
                 val iconName = iconPrefixRemoved.substringBefore("|")
                 val replacementText = iconName.replaceIconWithLabelIfNoDrawable(params)
-                if (replacementText == iconName) { // i.e. we have the drawable
-                    popupKeys.add(popupKey)
-                } else {
-                    popupKeys.add(Key.POPUP_KEYS_HAS_LABELS)
-                    popupKeys.add("$replacementText|${iconPrefixRemoved.substringAfter("|")}")
-                }
+
+                popupKeys.add(Key.POPUP_KEYS_HAS_LABELS)
+                popupKeys.add("$replacementText|${iconPrefixRemoved.substringAfter("|")}")
+
             }
             // remove emoji shortcut on enter in tablet mode (like original, because bottom row always has an emoji key)
             // (probably not necessary, but whatever) and in emoji mode
@@ -218,14 +210,6 @@ sealed interface KeyData : AbstractKeyData {
         }
 
         fun String.replaceIconWithLabelIfNoDrawable(params: KeyboardParams): String {
-            if (params.mIconsSet.getIconDrawable(this) != null) return this
-            if (params.mId.width == 480
-                && params.mId.height == 301
-                && !params.mId.subtype.hasExtraValue(Constants.Subtype.ExtraValue.EMOJI_CAPABLE)
-            )
-            // fake keyboard that is used by spell checker (for key coordinates), but not shown to the user
-            // often this doesn't have any icons loaded, and there is no need to bother with this
-                return this
             val id = Settings.getInstance().getStringResIdByName("label_$this")
             if (id == 0) {
                 //Log.w("TextKeyData", "no resource for label $this in ${params.mId}")
@@ -402,7 +386,7 @@ sealed interface KeyData : AbstractKeyData {
         when (label) { // or use code?
             KeyLabel.SYMBOL_ALPHA, KeyLabel.SYMBOL, KeyLabel.ALPHA, KeyLabel.COMMA, KeyLabel.PERIOD, KeyLabel.DELETE,
             KeyLabel.COM, KeyLabel.LANGUAGE_SWITCH, KeyLabel.NUMPAD, KeyLabel.CTRL, KeyLabel.ALT,
-            KeyLabel.FN, KeyLabel.META, KeyLabel.EMOJI_SEARCH -> return Key.BACKGROUND_TYPE_FUNCTIONAL
+            KeyLabel.FN, KeyLabel.META -> return Key.BACKGROUND_TYPE_FUNCTIONAL
             KeyLabel.SPACE, KeyLabel.ZWNJ -> return Key.BACKGROUND_TYPE_SPACEBAR
             KeyLabel.ACTION -> return Key.BACKGROUND_TYPE_ACTION
             KeyLabel.SHIFT -> return Key.BACKGROUND_TYPE_FUNCTIONAL

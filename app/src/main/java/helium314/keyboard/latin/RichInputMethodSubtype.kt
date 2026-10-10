@@ -66,7 +66,6 @@ class RichInputMethodSubtype private constructor(val rawSubtype: InputMethodSubt
         private val DUMMY_NO_LANGUAGE_SUBTYPE = RichInputMethodSubtype(
             InputMethodSubtypeBuilder()
                 .setSubtypeNameResId(R.string.subtype_no_language)
-                .setSubtypeIconResId(R.drawable.sym_keyboard_language_switch_lxx)
                 .setSubtypeLocale(SubtypeLocaleUtils.NO_LANGUAGE)
                 .setSubtypeMode(Constants.Subtype.KEYBOARD_MODE)
                 .setSubtypeExtraValue(EXTRA_VALUE_OF_DUMMY_NO_LANGUAGE_SUBTYPE)

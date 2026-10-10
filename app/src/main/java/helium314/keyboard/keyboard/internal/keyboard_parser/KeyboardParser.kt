@@ -228,13 +228,6 @@ class KeyboardParser(private val params: KeyboardParams, private val context: Co
             )
             baseKeys.removeAt(baseKeys.lastIndex)
         }
-        // add zwnj key next to space if necessary
-        val spaceIndex = functionalKeysBottom.indexOfFirst { it.label == KeyLabel.SPACE && it.width <= 0 } // width could be 0 or -1
-        if (spaceIndex >= 0) {
-            if (params.mLocaleKeyboardInfos.hasZwnjKey && params.mId.element.isAlphabet) {
-                functionalKeysBottom.add(spaceIndex + 1, TextKeyData(label = KeyLabel.ZWNJ))
-            }
-        }
         baseKeys.add(mutableListOf())
     }
 

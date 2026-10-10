@@ -21,7 +21,7 @@ the system picker crashes on some devices for unknown reasons.
         android:supportsSwitchingToNextInputMethod="true"
         android:supportsInlineSuggestions="true"
         tools:targetApi="r">
-    <subtype android:icon="@drawable/sym_keyboard_language_switch_lxx"
+    <subtype
             android:imeSubtypeExtraValue="dummy"
             android:imeSubtypeMode="keyboard"
             android:subtypeId="0x7000000f"

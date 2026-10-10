@@ -34,17 +34,9 @@ class LocaleKeyboardInfos(dataStream: InputStream?, locale: Locale) {
     val currencyKey = getCurrencyKey(locale)
     var localizedNumberKeys: List<String>? = null
         private set
-    val hasZwnjKey = when (locale.language) { // todo: move to the info file
-        "fa", "ne", "kn", "te" -> true
-        else -> false
-    }
-    val labelFlags = when (locale.language) { // todo: move to the info file
-        "hy", "ar", "be", "fa", "hi", "lo", "mr", "ne", "th", "ur" -> Key.LABEL_FLAGS_FONT_NORMAL
-        "km", "ml", "si", "ta", "te" -> Key.LABEL_FLAGS_FONT_NORMAL or Key.LABEL_FLAGS_AUTO_X_SCALE
-        "kn" -> Key.LABEL_FLAGS_FONT_NORMAL or Key.LABEL_FLAGS_AUTO_X_SCALE or Key.LABEL_FLAGS_FOLLOW_KEY_LETTER_RATIO
-        "mns" -> Key.LABEL_FLAGS_FOLLOW_KEY_LETTER_RATIO
-        else -> 0
-    }
+
+    val labelFlags = 0
+
     val tlds = mutableListOf(Key.POPUP_KEYS_HAS_LABELS)
 
     init {

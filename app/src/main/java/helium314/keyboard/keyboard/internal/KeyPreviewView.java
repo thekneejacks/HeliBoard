@@ -44,11 +44,11 @@ public class KeyPreviewView extends TextView {
 
     public void setPreviewVisual(final Key key, final KeyboardIconsSet iconsSet, final KeyDrawParams drawParams) {
         // What we show as preview should match what we show on a key top in onDraw().
-        if (key.getIconName() != null) {
+        /*if (key.getIconName() != null) {
             setCompoundDrawables(key.getPreviewIcon(iconsSet), null, null, null);
             setText(null);
             return;
-        }
+        }*/
 
         setCompoundDrawables(null, null, null, null);
         setTextColor(drawParams.mPreviewTextColor);

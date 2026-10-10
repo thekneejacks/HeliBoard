@@ -31,10 +31,6 @@ class KeyboardIconsSet private constructor() {
         needsReload = false
     }
 
-    fun getIconDrawable(name: String?): Drawable? = name?.lowercase(Locale.US)?.let {
-        iconsByName[it] ?: iconsByName[alternativeNames[it]]
-    }
-
     /** gets drawable from resources, with mutate (might be necessary to avoid coloring issues...) */
     fun getNewDrawable(name: String?, context: Context): Drawable? = name?.lowercase(Locale.US)?.let { name ->
         (iconIds[name] ?: iconIds[alternativeNames[name]])?.let { ContextCompat.getDrawable(context, it)?.mutate() }
@@ -44,20 +40,15 @@ class KeyboardIconsSet private constructor() {
         private val TAG = KeyboardIconsSet::class.simpleName
         const val PREFIX_ICON = "!icon/"
 
-        const val NAME_SHIFT_KEY = "shift_key"
-        const val NAME_SHIFT_KEY_SHIFTED = "shift_key_shifted"
-        const val NAME_SHIFT_KEY_LOCKED = "shift_key_locked"
+
         const val NAME_DELETE_KEY = "delete_key"
-        const val NAME_SPACE_KEY_FOR_NUMBER_LAYOUT = "space_key_for_number_layout"
         const val NAME_ENTER_KEY = "enter_key"
-        const val NAME_GO_KEY = "go_key"
-        const val NAME_SEARCH_KEY = "search_key"
-        const val NAME_SEND_KEY = "send_key"
+
         const val NAME_NEXT_KEY = "next_key"
-        const val NAME_DONE_KEY = "done_key"
+
         const val NAME_PREVIOUS_KEY = "previous_key"
         const val NAME_TAB_KEY = "tab_key"
-        const val NAME_LANGUAGE_SWITCH_KEY = "language_switch_key"
+
         const val NAME_TOOLBAR_KEY = "toolbar_key"
 
         // names used in the past, and we can't just delete them because they might still be in use in some layouts
@@ -68,22 +59,12 @@ class KeyboardIconsSet private constructor() {
         )
 
         private val keyboardIconsMaterial by lazy { hashMapOf(
-            NAME_SHIFT_KEY to                   R.drawable.sym_keyboard_shift_lxx,
-            NAME_SHIFT_KEY_SHIFTED to           R.drawable.sym_keyboard_shift_lxx,
-            NAME_SHIFT_KEY_LOCKED to            R.drawable.sym_keyboard_shift_lock_lxx,
             NAME_DELETE_KEY to                  R.drawable.sym_keyboard_delete_lxx,
 //            NAME_SPACE_KEY to                   null,
             NAME_ENTER_KEY to                   R.drawable.sym_keyboard_return_lxx,
-            NAME_GO_KEY to                      R.drawable.sym_keyboard_go_lxx,
-            NAME_SEARCH_KEY to                  R.drawable.sym_keyboard_search_lxx,
-            NAME_SEND_KEY to                    R.drawable.sym_keyboard_send_lxx,
-            NAME_DONE_KEY to                    R.drawable.sym_keyboard_done_lxx,
             NAME_NEXT_KEY to                    R.drawable.ic_arrow_right,
             NAME_PREVIOUS_KEY to                R.drawable.ic_arrow_left,
             NAME_TAB_KEY to                     R.drawable.sym_keyboard_tab_lxx,
-            NAME_SPACE_KEY_FOR_NUMBER_LAYOUT to R.drawable.sym_keyboard_space_lxx,
-            //NAME_SHORTCUT_KEY_DISABLED to       R.drawable.sym_keyboard_voice_off_lxx,
-            NAME_LANGUAGE_SWITCH_KEY to         R.drawable.sym_keyboard_language_switch_lxx,
             NAME_TOOLBAR_KEY to                 R.drawable.ic_arrow_right,
             //NAME_BIN to                         R.drawable.ic_bin,
         ).apply {

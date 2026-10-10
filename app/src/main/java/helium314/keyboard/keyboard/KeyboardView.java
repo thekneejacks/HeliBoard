@@ -209,8 +209,6 @@ public class KeyboardView extends View {
 
         // Draw key label.
         final Keyboard keyboard = getKeyboard();
-        final Drawable icon = (keyboard == null) ? null
-                : key.getIcon(keyboard.mIconsSet);
         float labelX = centerX;
         float labelBaseline = centerY;
         final String label = key.getLabel();
@@ -273,8 +271,7 @@ public class KeyboardView extends View {
 
         // Draw hint label.
         String hintLabel = key.getHintLabel();
-        Drawable hintIcon = (keyboard == null || hintLabel != null) ? null
-                                                                    : key.getHintIcon(keyboard.mIconsSet);
+
         if (hintLabel != null) {
             paint.setTextSize(key.selectHintTextSize(params) * mHintFontSizeMultiplier);
             paint.setColor(key.selectHintTextColor(params));
@@ -319,46 +316,9 @@ public class KeyboardView extends View {
                     ? hintBaseline * 0.5f
                     : params.mHintLabelVerticalAdjustment * labelCharHeight;
             canvas.drawText(hintLabel, 0, hintLabel.length(), hintX, hintBaseline + adjustmentY, paint);
-        } else if (hintIcon != null) {
-            int iconSize = (int) (key.selectHintTextSize(params) * mHintFontSizeMultiplier);
-            boolean isFunctionalKeyAndRoundedStyle = false;
-            float hintX, hintBaseline;
-            if (key.hasHintLabel()) {
-                // The hint icon is placed just right of the key label. Used mainly on "phone number" layout.
-                hintX = labelX + params.mHintLabelOffCenterRatio * iconSize;
-                hintBaseline = centerY + iconSize / 2.0f;
-            } else if (key.hasShiftedLetterHintIcon()) {
-                // The hint label is placed at top-right corner of the key. Used mainly on tablet.
-                hintX = keyWidth - mKeyShiftedLetterHintPadding - iconSize / 2.0f;
-                paint.getFontMetrics(mFontMetrics);
-                hintBaseline = -mFontMetrics.top;
-            } else { // key.hasHintLetter()
-                // The hint letter is placed at top-right corner of the key. Used mainly on phone.
-                hintBaseline = 0;
-                hintX = isFunctionalKeyAndRoundedStyle
-                        ? keyWidth - iconSize * 1.5f
-                        : keyWidth - mKeyHintLetterPadding - iconSize;
-            }
-            float adjustmentY = isFunctionalKeyAndRoundedStyle
-                                      ? iconSize * 0.5f
-                                      : params.mHintLabelVerticalAdjustment * iconSize;
-            hintIcon.setColorFilter(key.selectHintTextColor(params), PorterDuff.Mode.MULTIPLY);
-            drawIcon(canvas, hintIcon, (int)hintX, (int)(hintBaseline + adjustmentY), iconSize, iconSize);
         } else if (key.getPopupKeys() != null && ! key.hasNoPanelAutoPopupKey()
                         && (key.hasActionKeyBackground() || key.getBackgroundType() == Key.BACKGROUND_TYPE_FUNCTIONAL)) {
             drawKeyPopupHint(key, canvas, paint, params);
-        }
-
-        // Draw key icon.
-        if (label == null && icon != null) {
-            int iconWidth = (int) (Math.min(icon.getIntrinsicWidth(), keyWidth) * mIconScaleFactor);
-            int iconHeight = (int) (icon.getIntrinsicHeight() * mIconScaleFactor);
-            int iconY = key.isAlignIconToBottom()
-                ? keyHeight - iconHeight
-                : (keyHeight - iconHeight) / 2; // Align vertically center.
-            int iconX = (keyWidth - iconWidth) / 2; // Align horizontally center.
-            setKeyIconColor(icon);
-            drawIcon(canvas, icon, iconX, iconY, iconWidth, iconHeight);
         }
     }
 
