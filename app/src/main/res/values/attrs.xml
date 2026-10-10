@@ -42,8 +42,6 @@
         <!-- Background image for the spacebar.  This image needs to be a
              {@link android.graphics.drawable.StateListDrawable}, with the following possible
              states: normal, pressed. -->
-        <attr name="spacebarBackground" format="reference" />
-        <attr name="spacebarNoBorderBackground" format="reference" />
         <attr name="spacebarIconWidthRatio" format="float" />
         <!-- Right padding of hint letter to the edge of the key.-->
         <attr name="keyHintLetterPadding" format="dimension" />

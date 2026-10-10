@@ -51,8 +51,6 @@
         <item name="altCodeKeyWhileTypingFadeinAnimator">@anim/alt_code_key_while_typing_fadein</item>
         -->
         <!-- Common attributes of MainKeyboardView for gesture typing detection and recognition -->
-
-        <item name="spacebarNoBorderBackground">@drawable/btn_keyboard_spacebar_base</item>
     </style>
     <style
         name="MainKeyboardView"

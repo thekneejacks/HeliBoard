@@ -49,7 +49,6 @@ import helium314.keyboard.latin.common.ColorType.POPUP_KEY_ICON
 import helium314.keyboard.latin.common.ColorType.POPUP_KEY_TEXT
 import helium314.keyboard.latin.common.ColorType.REMOVE_SUGGESTION_ICON
 import helium314.keyboard.latin.common.ColorType.SHIFT_KEY_ICON
-import helium314.keyboard.latin.common.ColorType.SPACE_BAR_BACKGROUND
 import helium314.keyboard.latin.common.ColorType.SPACE_BAR_TEXT
 import helium314.keyboard.latin.common.ColorType.STRIP_BACKGROUND
 import helium314.keyboard.latin.common.ColorType.SUGGESTED_WORD
@@ -89,10 +88,6 @@ interface Colors {
             KEY_BACKGROUND, MORE_SUGGESTIONS_WORD_BACKGROUND, ACTION_KEY_POPUP_KEYS_BACKGROUND, POPUP_KEYS_BACKGROUND ->
                 attr.getDrawable(R.styleable.KeyboardView_keyBackground)
             FUNCTIONAL_KEY_BACKGROUND -> attr.getDrawable(R.styleable.KeyboardView_functionalKeyBackground)
-            SPACE_BAR_BACKGROUND -> {
-                if (hasKeyBorders) attr.getDrawable(R.styleable.KeyboardView_spacebarBackground)
-                else attr.getDrawable(R.styleable.KeyboardView_spacebarNoBorderBackground)
-            }
             ACTION_KEY_BACKGROUND -> {
                 attr.getDrawable(R.styleable.KeyboardView_keyBackground)
             }
@@ -200,7 +195,6 @@ class DefaultColors (
         KEY_HINT_TEXT -> keyHintText
         SPACE_BAR_TEXT -> spaceBarText
         FUNCTIONAL_KEY_BACKGROUND, EMOJI_SEARCH_BACKGROUND -> functionalKey
-        SPACE_BAR_BACKGROUND -> spaceBar
         MORE_SUGGESTIONS_WORD_BACKGROUND, MAIN_BACKGROUND -> background
         KEY_BACKGROUND -> keyBackground
         ACTION_KEY_POPUP_KEYS_BACKGROUND -> accent
@@ -217,7 +211,6 @@ class DefaultColors (
             KEY_BACKGROUND -> keyStateList
             FUNCTIONAL_KEY_BACKGROUND -> functionalKeyStateList
             ACTION_KEY_BACKGROUND -> actionKeyStateList
-            SPACE_BAR_BACKGROUND -> spaceBarStateList
             POPUP_KEYS_BACKGROUND -> adjustedBackgroundStateList
             STRIP_BACKGROUND -> stripBackgroundList
             ACTION_KEY_POPUP_KEYS_BACKGROUND -> actionKeyStateList
@@ -245,7 +238,7 @@ class DefaultColors (
             view.setBackgroundColor(Color.WHITE) // set white to make the color filters work
         when (color) {
             KEY_PREVIEW_BACKGROUND, POPUP_KEYS_BACKGROUND -> view.background.colorFilter = adjustedBackgroundFilter
-            FUNCTIONAL_KEY_BACKGROUND, KEY_BACKGROUND, MORE_SUGGESTIONS_WORD_BACKGROUND, SPACE_BAR_BACKGROUND, STRIP_BACKGROUND, CLIPBOARD_SUGGESTION_BACKGROUND -> setColor(view.background, color)
+            FUNCTIONAL_KEY_BACKGROUND, KEY_BACKGROUND, MORE_SUGGESTIONS_WORD_BACKGROUND, STRIP_BACKGROUND, CLIPBOARD_SUGGESTION_BACKGROUND -> setColor(view.background, color)
             ONE_HANDED_MODE_BUTTON -> setColor(view.background, MAIN_BACKGROUND)
             MORE_SUGGESTIONS_BACKGROUND -> view.background.colorFilter = backgroundFilter
             MAIN_BACKGROUND -> {
@@ -310,7 +303,6 @@ enum class ColorType {
     POPUP_KEY_ICON,
     NAVIGATION_BAR,
     SHIFT_KEY_ICON,
-    SPACE_BAR_BACKGROUND,
     SPACE_BAR_TEXT,
     ONE_HANDED_MODE_BUTTON,
     REMOVE_SUGGESTION_ICON,
