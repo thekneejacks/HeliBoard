@@ -32,8 +32,6 @@ import helium314.keyboard.latin.common.CoordinateUtils;
  */
 public class PopupKeysKeyboardView extends KeyboardView implements PopupKeysPanel {
     private final int[] mCoordinates = CoordinateUtils.newInstance();
-
-    private final Drawable mDivider;
     protected final KeyDetector mKeyDetector;
     private Controller mController = EMPTY_CONTROLLER;
     protected KeyboardActionListener mListener;
@@ -52,7 +50,6 @@ public class PopupKeysKeyboardView extends KeyboardView implements PopupKeysPane
         super(context, attrs, defStyle);
         final TypedArray popupKeysKeyboardViewAttr = context.obtainStyledAttributes(attrs,
                 R.styleable.PopupKeysKeyboardView, defStyle, R.style.PopupKeysKeyboardView);
-        mDivider = popupKeysKeyboardViewAttr.getDrawable(R.styleable.PopupKeysKeyboardView_divider);
         popupKeysKeyboardViewAttr.recycle();
         mKeyDetector = new PopupKeysDetector(getResources().getDimension(
                 R.dimen.config_popup_keys_keyboard_slide_allowance));
@@ -73,18 +70,7 @@ public class PopupKeysKeyboardView extends KeyboardView implements PopupKeysPane
     @Override
     protected void onDrawKeyTopVisuals(@NonNull final Key key, @NonNull final Canvas canvas,
             @NonNull final Paint paint, @NonNull final KeyDrawParams params) {
-        if (!key.isSpacer() || !(key instanceof PopupKeysKeyboard.PopupKeyDivider)
-                || mDivider == null) {
-            super.onDrawKeyTopVisuals(key, canvas, paint, params);
-            return;
-        }
-        final int keyWidth = key.getDrawWidth();
-        final int keyHeight = key.getHeight();
-        final int iconWidth = Math.min(mDivider.getIntrinsicWidth(), keyWidth);
-        final int iconHeight = mDivider.getIntrinsicHeight();
-        final int iconX = (keyWidth - iconWidth) / 2; // Align horizontally center
-        final int iconY = (keyHeight - iconHeight) / 2; // Align vertically center
-        drawIcon(canvas, mDivider, iconX, iconY, iconWidth, iconHeight);
+        super.onDrawKeyTopVisuals(key, canvas, paint, params);
     }
 
     @Override

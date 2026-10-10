@@ -60,7 +60,6 @@
         parent="KeyboardView.LXX_Base"
         >
         <item name="android:background">@drawable/keyboard_popup_panel_background_lxx_base</item>
-        <item name="divider">@drawable/popup_keys_divider</item>
         <item name="keyTypeface">normal</item>
         <item name="verticalCorrection">@dimen/config_popup_keys_keyboard_vertical_correction_holo</item>
     </style>
@@ -77,7 +76,6 @@
         parent="KeyboardView.LXX_Base"
         >
         <item name="android:background">@drawable/keyboard_background_lxx_base</item>
-        <item name="android:src">@drawable/suggestions_strip_divider</item>
         <item name="alphaObsoleted">70%</item>
     </style>
 </resources>
