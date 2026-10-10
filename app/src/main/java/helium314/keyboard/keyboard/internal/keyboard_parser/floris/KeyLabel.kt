@@ -103,7 +103,7 @@ object KeyLabel {
             CURRENCY3 -> params.mLocaleKeyboardInfos.currencyKey.second[2]
             CURRENCY4 -> params.mLocaleKeyboardInfos.currencyKey.second[3]
             CURRENCY5 -> params.mLocaleKeyboardInfos.currencyKey.second[4]
-            LANGUAGE_SWITCH -> "${"\uD83C\uDF10"}|!code/key_language_switch"
+            LANGUAGE_SWITCH -> "${"⇄"}|!code/key_language_switch"
             CTRL, ALT, FN, META, ESCAPE -> label.uppercase(Locale.US)
             TAB -> "!icon/tab_key|!code/${KeyCode.TAB}"
             else -> if (label in toolbarKeyStrings.values)
@@ -136,7 +136,7 @@ object KeyLabel {
         else -> "⇧"
     }
 
-    private val getDeleteLabel : String = "←"
+    private val getDeleteLabel : String = "⌫"
 
     // todo (later): try avoiding this weirdness
     //  maybe just remove it and if users want it they can use custom functional layouts?
