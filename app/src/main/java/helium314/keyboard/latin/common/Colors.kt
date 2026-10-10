@@ -18,8 +18,6 @@ import helium314.keyboard.latin.common.ColorType.ACTION_KEY_ICON
 import helium314.keyboard.latin.common.ColorType.ACTION_KEY_POPUP_KEYS_BACKGROUND
 import helium314.keyboard.latin.common.ColorType.AUTOFILL_BACKGROUND_CHIP
 import helium314.keyboard.latin.common.ColorType.FUNCTIONAL_KEY_TEXT
-import helium314.keyboard.latin.common.ColorType.GESTURE_PREVIEW
-import helium314.keyboard.latin.common.ColorType.GESTURE_TRAIL
 import helium314.keyboard.latin.common.ColorType.KEY_HINT_TEXT
 import helium314.keyboard.latin.common.ColorType.KEY_ICON
 import helium314.keyboard.latin.common.ColorType.KEY_PREVIEW_BACKGROUND
@@ -29,12 +27,8 @@ import helium314.keyboard.latin.common.ColorType.MAIN_BACKGROUND
 import helium314.keyboard.latin.common.ColorType.NAVIGATION_BAR
 import helium314.keyboard.latin.common.ColorType.POPUP_KEYS_BACKGROUND
 import helium314.keyboard.latin.common.ColorType.POPUP_KEY_TEXT
-import helium314.keyboard.latin.common.ColorType.REMOVE_SUGGESTION_ICON
 import helium314.keyboard.latin.common.ColorType.STRIP_BACKGROUND
-import helium314.keyboard.latin.common.ColorType.TOOL_BAR_EXPAND_KEY
-import helium314.keyboard.latin.common.ColorType.TOOL_BAR_EXPAND_KEY_BACKGROUND
 import helium314.keyboard.latin.common.ColorType.TOOL_BAR_KEY
-import helium314.keyboard.latin.common.ColorType.TOOL_BAR_KEY_ENABLED_BACKGROUND
 import helium314.keyboard.latin.utils.brighten
 import helium314.keyboard.latin.utils.brightenOrDarken
 import helium314.keyboard.latin.utils.isBrightColor
@@ -70,8 +64,6 @@ class DefaultColors (
     private val keyText: Int,
     private val keyHintText: Int,
     private val suggestionText: Int = keyText,
-    private val spaceBarText: Int = keyHintText,
-    private val gesture: Int = accent,
 ) : Colors {
     private val navBar: Int
     /** brightened or darkened variant of [background], to be used if exact background color would be
@@ -142,19 +134,16 @@ class DefaultColors (
     }
 
     override fun get(color: ColorType): Int = when (color) {
-        TOOL_BAR_KEY_ENABLED_BACKGROUND -> accent
         AUTOFILL_BACKGROUND_CHIP -> if (!hasKeyBorders) background else adjustedBackground
-        GESTURE_PREVIEW, POPUP_KEYS_BACKGROUND, KEY_PREVIEW_BACKGROUND -> adjustedBackground
-        TOOL_BAR_EXPAND_KEY_BACKGROUND -> doubleAdjustedBackground
-        GESTURE_TRAIL -> gesture
-        KEY_TEXT, REMOVE_SUGGESTION_ICON, FUNCTIONAL_KEY_TEXT, KEY_ICON,
+        POPUP_KEYS_BACKGROUND, KEY_PREVIEW_BACKGROUND -> adjustedBackground
+        KEY_TEXT, FUNCTIONAL_KEY_TEXT, KEY_ICON,
             POPUP_KEY_TEXT, KEY_PREVIEW_TEXT, -> keyText
         KEY_HINT_TEXT -> keyHintText
         MAIN_BACKGROUND -> background
         ACTION_KEY_POPUP_KEYS_BACKGROUND -> accent
         STRIP_BACKGROUND -> if (!hasKeyBorders) adjustedBackground else background
         NAVIGATION_BAR -> navBar
-        TOOL_BAR_KEY, TOOL_BAR_EXPAND_KEY -> suggestionText
+        TOOL_BAR_KEY -> suggestionText
         ACTION_KEY_ICON -> Color.WHITE
     }
 
@@ -197,7 +186,7 @@ class DefaultColors (
 
     private fun getColorFilter(color: ColorType): ColorFilter? = when (color) {
         KEY_TEXT, KEY_ICON -> keyTextFilter
-        REMOVE_SUGGESTION_ICON, TOOL_BAR_KEY, TOOL_BAR_EXPAND_KEY -> suggestionTextFilter
+        TOOL_BAR_KEY -> suggestionTextFilter
         KEY_PREVIEW_BACKGROUND -> adjustedBackgroundFilter
         ACTION_KEY_ICON -> actionKeyIconColorFilter
         else -> colorFilter(get(color)) // create color filter (not great for performance, so the frequently used filters should be stored)
@@ -224,8 +213,6 @@ enum class ColorType {
     ACTION_KEY_POPUP_KEYS_BACKGROUND,
     AUTOFILL_BACKGROUND_CHIP,
     FUNCTIONAL_KEY_TEXT,
-    GESTURE_TRAIL,
-    GESTURE_PREVIEW,
     KEY_ICON,
     KEY_TEXT,
     KEY_HINT_TEXT,
@@ -234,12 +221,8 @@ enum class ColorType {
     POPUP_KEYS_BACKGROUND,
     POPUP_KEY_TEXT,
     NAVIGATION_BAR,
-    REMOVE_SUGGESTION_ICON,
     STRIP_BACKGROUND,
-    TOOL_BAR_EXPAND_KEY,
-    TOOL_BAR_EXPAND_KEY_BACKGROUND,
     TOOL_BAR_KEY,
-    TOOL_BAR_KEY_ENABLED_BACKGROUND,
     MAIN_BACKGROUND,
 }
 

@@ -57,10 +57,7 @@ class KeyboardIconsSet private constructor() {
         const val NAME_DONE_KEY = "done_key"
         const val NAME_PREVIOUS_KEY = "previous_key"
         const val NAME_TAB_KEY = "tab_key"
-        const val NAME_SHORTCUT_KEY_DISABLED = "shortcut_key_disabled"
         const val NAME_LANGUAGE_SWITCH_KEY = "language_switch_key"
-        const val NAME_ZWNJ_KEY = "zwnj_key"
-        const val NAME_ZWJ_KEY = "zwj_key"
         const val NAME_TOOLBAR_KEY = "toolbar_key"
 
         // names used in the past, and we can't just delete them because they might still be in use in some layouts
