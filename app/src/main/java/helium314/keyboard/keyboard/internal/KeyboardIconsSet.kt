@@ -40,14 +40,9 @@ class KeyboardIconsSet private constructor() {
         private val TAG = KeyboardIconsSet::class.simpleName
         const val PREFIX_ICON = "!icon/"
 
-
-        const val NAME_DELETE_KEY = "delete_key"
-        const val NAME_ENTER_KEY = "enter_key"
-
         const val NAME_NEXT_KEY = "next_key"
 
         const val NAME_PREVIOUS_KEY = "previous_key"
-        const val NAME_TAB_KEY = "tab_key"
 
         const val NAME_TOOLBAR_KEY = "toolbar_key"
 
@@ -59,12 +54,9 @@ class KeyboardIconsSet private constructor() {
         )
 
         private val keyboardIconsMaterial by lazy { hashMapOf(
-            NAME_DELETE_KEY to                  R.drawable.sym_keyboard_delete_lxx,
 //            NAME_SPACE_KEY to                   null,
-            NAME_ENTER_KEY to                   R.drawable.sym_keyboard_return_lxx,
             NAME_NEXT_KEY to                    R.drawable.ic_arrow_right,
             NAME_PREVIOUS_KEY to                R.drawable.ic_arrow_left,
-            NAME_TAB_KEY to                     R.drawable.sym_keyboard_tab_lxx,
             NAME_TOOLBAR_KEY to                 R.drawable.ic_arrow_right,
             //NAME_BIN to                         R.drawable.ic_bin,
         ).apply {
