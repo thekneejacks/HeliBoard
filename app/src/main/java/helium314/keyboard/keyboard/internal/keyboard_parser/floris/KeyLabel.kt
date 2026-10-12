@@ -57,28 +57,7 @@ object KeyLabel {
     }
 
     fun String.rtlLabel(params: KeyboardParams): String {
-        if (!params.mId.subtype.isRtlSubtype || params.mId.element.isNumberLayout) return this
-        return when (this) {
-            "{" -> "{|}"
-            "}" -> "}|{"
-            "(" -> "(|)"
-            ")" -> ")|("
-            "[" -> "[|]"
-            "]" -> "]|["
-            "<" -> "<|>"
-            ">" -> ">|<"
-            "≤" -> "≤|≥"
-            "≥" -> "≥|≤"
-            "«" -> "«|»"
-            "»" -> "»|«"
-            "‹" -> "‹|›"
-            "›" -> "›|‹"
-            "﴾" -> "﴾|﴿"
-            "﴿" -> "﴿|﴾"
-            "⁽" -> "⁽|⁾"
-            "⁾" -> "⁾|⁽"
-            else -> this
-        }
+        return this
     }
 
     fun keyLabelToActualLabel(label: String, params: KeyboardParams): String {

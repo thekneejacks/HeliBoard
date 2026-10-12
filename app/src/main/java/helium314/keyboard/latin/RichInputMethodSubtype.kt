@@ -12,8 +12,6 @@ import helium314.keyboard.latin.common.Constants.Subtype.ExtraValue.KEYBOARD_LAY
 import helium314.keyboard.latin.common.LocaleUtils.constructLocale
 import helium314.keyboard.latin.utils.LayoutType
 import helium314.keyboard.latin.utils.LayoutUtilsCustom
-import helium314.keyboard.latin.utils.ScriptUtils
-import helium314.keyboard.latin.utils.ScriptUtils.script
 import helium314.keyboard.latin.utils.SubtypeLocaleUtils
 import helium314.keyboard.latin.utils.SubtypeSettings
 import helium314.keyboard.latin.utils.locale
@@ -25,9 +23,6 @@ import java.util.Locale
  */
 class RichInputMethodSubtype private constructor(val rawSubtype: InputMethodSubtype) {
     val locale: Locale = rawSubtype.locale()
-
-    // The subtype is considered RTL if the language of the main subtype is RTL.
-    val isRtlSubtype: Boolean = ScriptUtils.isScriptRtl(locale.script())
 
     fun getExtraValueOf(key: String): String? = rawSubtype.getExtraValueOf(key)
 

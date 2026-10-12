@@ -107,10 +107,6 @@ sealed interface KeyData : AbstractKeyData {
             if (params.mId.element.isNumberLayout)
                 return listOf(":", "…", ";", "∞", "π", "√", "°", "^")
             val popupKeys = params.mLocaleKeyboardInfos.getPopupKeys("punctuation")!!.toMutableList()
-            if (params.mId.subtype.isRtlSubtype) {
-                for (i in popupKeys.indices)
-                    popupKeys[i] = popupKeys[i].rtlLabel(params) // for parentheses
-            }
             if (params.setTabletExtraKeys && popupKeys.contains("!") && popupKeys.contains("?")) {
                 // remove ! and ? keys and reduce number in autoColumnOrder
                 // this makes use of removal of empty popupKeys in PopupKeySpec.insertAdditionalPopupKeys

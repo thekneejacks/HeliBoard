@@ -91,13 +91,13 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
         listener = newListener
     }
 
-    fun setRtl(isRtlLanguage: Boolean) {
+    fun setRtl() {
         val newLayoutDirection: Int
         if (!Settings.getValues().mVarToolbarDirection)
             newLayoutDirection = LAYOUT_DIRECTION_LOCALE
         else {
-            newLayoutDirection = if (isRtlLanguage) LAYOUT_DIRECTION_RTL else LAYOUT_DIRECTION_LTR
-            direction = if (isRtlLanguage) -1 else 1
+            newLayoutDirection = LAYOUT_DIRECTION_LTR
+            direction = 1
         }
         layoutDirection = newLayoutDirection
         suggestionsStrip.layoutDirection = newLayoutDirection

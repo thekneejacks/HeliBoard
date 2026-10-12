@@ -70,8 +70,4 @@ object ScriptUtils {
         else return SCRIPT_LATIN
     }
 
-    @JvmStatic
-    fun isScriptRtl(script: String): Boolean {
-        return false
-    }
 }

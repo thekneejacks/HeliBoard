@@ -239,9 +239,7 @@ class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inp
 
     private fun onMoveCursorHorizontally(rawSteps: Int): Boolean {
         if (rawSteps == 0) return false
-        // for RTL languages we want to invert pointer movement
-        val rtl = RichInputMethodManager.getInstance().currentSubtype.isRtlSubtype
-        val steps = if (rtl) -rawSteps else rawSteps
+        val steps = rawSteps
         val moveSteps: Int
         if (steps < 0) {
             val text = connection.getTextBeforeCursor(-steps * 4, 0) ?: return false
@@ -250,7 +248,7 @@ class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inp
                 // some apps don't return any text via input connection, and the cursor can't be moved
                 // we fall back to virtually pressing the left/right key one or more times instead
                 repeat(-steps) {
-                    onCodeInput(if (rtl) KeyCode.ARROW_RIGHT else KeyCode.ARROW_LEFT, Constants.NOT_A_COORDINATE,
+                    onCodeInput( KeyCode.ARROW_LEFT, Constants.NOT_A_COORDINATE,
                         Constants.NOT_A_COORDINATE, false)
                 }
                 if (text.isNotEmpty()) {
@@ -266,7 +264,7 @@ class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inp
                 // some apps don't return any text via input connection, and the cursor can't be moved
                 // we fall back to virtually pressing the left/right key one or more times instead
                 repeat(steps) {
-                    onCodeInput(if (rtl) KeyCode.ARROW_LEFT else KeyCode.ARROW_RIGHT, Constants.NOT_A_COORDINATE,
+                    onCodeInput( KeyCode.ARROW_RIGHT, Constants.NOT_A_COORDINATE,
                         Constants.NOT_A_COORDINATE, false)
                 }
                 if (text.isNotEmpty()) {

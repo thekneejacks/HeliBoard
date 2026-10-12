@@ -414,15 +414,6 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
     protected void onDrawKeyTopVisuals(@NonNull final Key key, @NonNull final Canvas canvas,
             @NonNull final Paint paint, @NonNull final KeyDrawParams params) {
         super.onDrawKeyTopVisuals(key, canvas, paint, params);
-        final int code = key.getCode();
-        if (code == Constants.CODE_SPACE) {
-            // Whether space key needs to show the "..." popup hint for special purposes
-            if (key.isLongPressEnabled() && mHasMultipleEnabledIMEsOrSubtypes && Settings.getValues().mSpaceForLangChange) {
-                drawKeyPopupHint(key, canvas, paint, params);
-            }
-        } else if (code == KeyCode.LANGUAGE_SWITCH) {
-            drawKeyPopupHint(key, canvas, paint, params);
-        }
     }
 
     @Override

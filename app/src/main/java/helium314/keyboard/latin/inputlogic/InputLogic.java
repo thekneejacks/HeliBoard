@@ -484,10 +484,10 @@ public final class InputLogic {
                 }
                 break;
             case KeyCode.WORD_LEFT:
-                sendDownUpKeyEventWithMetaState(ScriptUtils.isScriptRtl(currentKeyboardScript) ? KeyEvent.KEYCODE_DPAD_RIGHT : KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.META_CTRL_ON | event.getMetaState());
+                sendDownUpKeyEventWithMetaState(KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.META_CTRL_ON | event.getMetaState());
                 break;
             case KeyCode.WORD_RIGHT:
-                sendDownUpKeyEventWithMetaState(ScriptUtils.isScriptRtl(currentKeyboardScript) ? KeyEvent.KEYCODE_DPAD_LEFT : KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.META_CTRL_ON | event.getMetaState());
+                sendDownUpKeyEventWithMetaState(KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.META_CTRL_ON | event.getMetaState());
                 break;
             case KeyCode.MOVE_START_OF_PAGE:
                 final int selectionEnd1 = mConnection.getExpectedSelectionEnd();

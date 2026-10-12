@@ -374,7 +374,7 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
         mSuggestionStripView = mSettings.getCurrent().mToolbarMode == ToolbarMode.HIDDEN ?
                                null : view.findViewById(R.id.suggestion_strip_view);
         if (hasSuggestionStripView()) {
-            mSuggestionStripView.setRtl(mRichImm.getCurrentSubtype().isRtlSubtype());
+            mSuggestionStripView.setRtl();
             mSuggestionStripView.setListener(this);
         }
     }
@@ -481,7 +481,7 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
                 mSettings.getCurrent());
         loadKeyboard();
         if (hasSuggestionStripView()) {
-            mSuggestionStripView.setRtl(mRichImm.getCurrentSubtype().isRtlSubtype());
+            mSuggestionStripView.setRtl();
         }
         mSettings.saveSubtypeForApp(mRichImm.getCurrentSubtype(), getCurrentInputEditorInfo().packageName);
     }

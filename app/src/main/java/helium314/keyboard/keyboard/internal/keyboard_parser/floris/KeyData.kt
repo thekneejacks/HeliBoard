@@ -256,10 +256,9 @@ class KeyboardStateSelector(
 @SerialName("layout_direction_selector")
 class LayoutDirectionSelector(
     val ltr: AbstractKeyData,
-    val rtl: AbstractKeyData,
 ) : AbstractKeyData {
     override fun compute(params: KeyboardParams, isPopup: Boolean): KeyData? {
-        return (if (params.mId.subtype.isRtlSubtype) { rtl } else { ltr }).compute(params)
+        return ltr.compute(params)
     }
 
     override fun asString(isForDisplay: Boolean): String {
