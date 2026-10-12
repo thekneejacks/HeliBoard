@@ -15,7 +15,6 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.inputmethodservice.InputMethodService;
 import android.os.Build;
-import android.os.Debug;
 import android.os.Message;
 import android.util.PrintWriterPrinter;
 import android.util.Printer;
@@ -68,7 +67,6 @@ import kotlin.Unit;
  */
 public class LatinIME extends InputMethodService implements SuggestionStripView.Listener{
     static final String TAG = LatinIME.class.getSimpleName();
-    private static final boolean TRACE = false;
 
     private static final int EXTENDED_TOUCHABLE_REGION_HEIGHT = 100;
     private static final int PENDING_IMS_CALLBACK_DURATION_MILLIS = 800;
@@ -621,7 +619,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
         }
 
         mainKeyboardView.setKeyPreviewPopupEnabled(currentSettingsValues.mKeyPreviewPopupOn);
-        if (TRACE) Debug.startMethodTracing("/data/trace/latinime");
     }
 
     @Override
@@ -731,7 +728,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
             mSuggestionStripView.setToolbarVisibility(false);
         mKeyboardSwitcher.onHideWindow();
 
-        if (TRACE) Debug.stopMethodTracing();
         if (isShowingOptionDialog()) {
             mOptionsDialog.dismiss();
             mOptionsDialog = null;
@@ -1044,13 +1040,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
         }*/
 
         return super.onStartCommand(intent, flags, startId);
-    }
-
-    public void debugDumpStateAndCrashWithException(final String context) {
-        final SettingsValues settingsValues = mSettings.getCurrent();
-        String s = settingsValues.toString() + "\nAttributes : " + settingsValues.mInputAttributes +
-                "\nContext : " + context;
-        throw new RuntimeException(s);
     }
 
     @Override

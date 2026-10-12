@@ -173,7 +173,6 @@ class RichInputMethodManager private constructor() {
 
     companion object {
         private val TAG = RichInputMethodManager::class.java.simpleName
-        private const val DEBUG = false
 
         private val instance = RichInputMethodManager()
 

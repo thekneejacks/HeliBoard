@@ -19,7 +19,6 @@ import java.util.Locale;
 import helium314.keyboard.keyboard.internal.KeyDrawParams;
 import helium314.keyboard.keyboard.internal.KeySpecParser;
 import helium314.keyboard.keyboard.internal.KeyVisualAttributes;
-import helium314.keyboard.keyboard.internal.KeyboardIconsSet;
 import helium314.keyboard.keyboard.internal.KeyboardParams;
 import helium314.keyboard.keyboard.internal.PopupKeySpec;
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
@@ -451,26 +450,6 @@ public class Key implements Comparable<Key> {
         return Constants.printableCode(code);
     }
 
-    public String toLongString() {
-        final String iconName = getIconName();
-        final String topVisual = (iconName != null)
-                ? KeyboardIconsSet.PREFIX_ICON + iconName : getLabel();
-        final String hintLabel = getHintLabel();
-        final String visual = (hintLabel == null) ? topVisual : topVisual + "^" + hintLabel;
-        return toString() + " " + visual + "/" + backgroundName(mBackgroundType);
-    }
-
-    private static String backgroundName(final int backgroundType) {
-        return switch (backgroundType) {
-            case BACKGROUND_TYPE_EMPTY -> "empty";
-            case BACKGROUND_TYPE_NORMAL -> "normal";
-            case BACKGROUND_TYPE_FUNCTIONAL -> "functional";
-            case BACKGROUND_TYPE_ACTION -> "action";
-            case BACKGROUND_TYPE_SPACEBAR -> "spacebar";
-            default -> null;
-        };
-    }
-
     public int getCode() {
         return mCode;
     }
@@ -516,6 +495,12 @@ public class Key implements Comparable<Key> {
 
     public final boolean isShift() {
         return mCode == KeyCode.SHIFT;
+    }
+
+    public final boolean customDimKey() {
+        return mCode == Constants.CODE_SPACE || mCode == KeyCode.CJK_SPACE || mCode == KeyCode.ZWNJ || mCode == KeyCode.KESHIDA
+            || mCode == KeyCode.LANGUAGE_SWITCH || mCode == KeyCode.SHIFT_ENTER || mCode == Constants.CODE_COMMA || mCode == Constants.CODE_PERIOD
+            || mCode == KeyCode.SYMBOL_ALPHA || isShift();
     }
 
     public final boolean isModifier() {
@@ -599,10 +584,6 @@ public class Key implements Comparable<Key> {
         return params.mHintLetterColor;
     }
 
-    public final int selectPopupKeyTextSize(final KeyDrawParams params) {
-        return hasLabelsInPopupKeys() ? params.mLabelSize : params.mLetterSize;
-    }
-
     public final String getPreviewLabel() {
         return isShiftedLetterActivated() ? mHintLabel : mLabel;
     }
@@ -631,10 +612,6 @@ public class Key implements Comparable<Key> {
         return ((mLabelFlags | defaultFlags) & LABEL_FLAGS_ALIGN_HINT_LABEL_TO_BOTTOM) != 0;
     }
 
-    public final boolean isAlignIconToBottom() {
-        return (mLabelFlags & LABEL_FLAGS_ALIGN_ICON_TO_BOTTOM) != 0;
-    }
-
     public final boolean isAlignLabelOffCenter() {
         return (mLabelFlags & LABEL_FLAGS_ALIGN_LABEL_OFF_CENTER) != 0;
     }
@@ -642,11 +619,6 @@ public class Key implements Comparable<Key> {
     public final boolean hasShiftedLetterHint() {
         return (mLabelFlags & LABEL_FLAGS_HAS_SHIFTED_LETTER_HINT) != 0
                 && !TextUtils.isEmpty(mHintLabel);
-    }
-
-    public final boolean hasShiftedLetterHintIcon() {
-        return (mLabelFlags & LABEL_FLAGS_HAS_SHIFTED_LETTER_HINT) != 0
-            && !TextUtils.isEmpty(mHintIconName);
     }
 
     public final boolean hasHintLabel() {
@@ -659,14 +631,6 @@ public class Key implements Comparable<Key> {
 
     public final boolean needsAutoScale() {
         return (mLabelFlags & LABEL_FLAGS_AUTO_SCALE) == LABEL_FLAGS_AUTO_SCALE;
-    }
-
-    public final boolean needsToKeepBackgroundAspectRatio(final int defaultFlags) {
-        return ((mLabelFlags | defaultFlags) & LABEL_FLAGS_KEEP_BACKGROUND_ASPECT_RATIO) != 0;
-    }
-
-    public final boolean hasCustomActionLabel() {
-        return (mLabelFlags & LABEL_FLAGS_FROM_CUSTOM_ACTION_LABEL) != 0;
     }
 
     private boolean isShiftedLetterActivated() {
@@ -716,11 +680,6 @@ public class Key implements Comparable<Key> {
         return (attrs != null) ? attrs.mAltCode : KeyCode.NOT_SPECIFIED;
     }
 
-    @Nullable
-    public String getIconName() {
-        return mIconName;
-    }
-
     /**
      * Gets the background type of this key.
      * @return Background type.
@@ -748,15 +707,6 @@ public class Key implements Comparable<Key> {
      */
     public int getHeight() {
         return mHeight;
-    }
-
-    /**
-     * The combined width in pixels of the horizontal gaps belonging to this key, both above and
-     * below. I.e., getWidth() + getHorizontalGap() = total width belonging to the key.
-     * @return Horizontal gap belonging to this key.
-     */
-    public int getHorizontalGap() {
-        return mHorizontalGap;
     }
 
     /**

@@ -50,14 +50,6 @@ namespace latinime {
         const int pushTouchPointStartIndex, std::vector<int> *sampledInputXs,
         std::vector<int> *sampledInputYs, std::vector<int> *sampledInputTimes,
         std::vector<int> *sampledLengthCache, std::vector<int> *sampledInputIndice) {
-    if (DEBUG_SAMPLING_POINTS) {
-        if (times) {
-            for (int i = 0; i < inputSize; ++i) {
-                AKLOGI("(%d) x %d, y %d, time %d",
-                        i, inputXCoordinates[i], inputYCoordinates[i], times[i]);
-            }
-        }
-    }
 #ifdef DO_ASSERT_TEST
     if (times) {
         for (int i = 0; i < inputSize; ++i) {
@@ -79,9 +71,6 @@ namespace latinime {
             lastInputIndex = i;
         }
     }
-    if (DEBUG_GEO_FULL) {
-        AKLOGI("Init ProximityInfoState: last input index = %d", lastInputIndex);
-    }
     // Working space to save near keys distances for current, prev and prevprev input point.
     NearKeysDistanceMap nearKeysDistances[3];
     // These pointers are swapped for each inputs points.
@@ -96,9 +85,6 @@ namespace latinime {
     for (int i = pushTouchPointStartIndex; i <= lastInputIndex; ++i) {
         // Assuming pointerId == 0 if pointerIds is null.
         const int pid = pointerIds ? pointerIds[i] : 0;
-        if (DEBUG_GEO_FULL) {
-            AKLOGI("Init ProximityInfoState: (%d)PID = %d", i, pid);
-        }
         if (pointerId == pid) {
             const int c = isGeometric ?
                     NOT_A_COORDINATE : getPrimaryCodePointAt(inputProximities, i);
@@ -280,9 +266,6 @@ namespace latinime {
         const std::vector<int> *const sampledInputXs,
         const std::vector<int> *const sampledInputYs, const std::vector<int> *const inputIndice,
         std::vector<int> *beelineSpeedPercentiles) {
-    if (DEBUG_SAMPLING_POINTS) {
-        AKLOGI("--- refresh beeline speed rates");
-    }
     beelineSpeedPercentiles->resize(sampledInputSize);
     for (int i = 0; i < sampledInputSize; ++i) {
         (*beelineSpeedPercentiles)[i] = static_cast<int>(calculateBeelineSpeedRate(
@@ -432,14 +415,6 @@ namespace latinime {
             if (GeometryUtils::getDistanceInt(x, y, sampledInputXs->back(), sampledInputYs->back())
                     * ProximityInfoParams::LAST_POINT_SKIP_DISTANCE_SCALE < mostCommonKeyWidth) {
                 // This point is not used because it's too close to the previous point.
-                if (DEBUG_GEO_FULL) {
-                    AKLOGI("p0: size = %zd, x = %d, y = %d, lx = %d, ly = %d, dist = %d, "
-                           "width = %d", size, x, y, sampledInputXs->back(),
-                           sampledInputYs->back(), GeometryUtils::getDistanceInt(
-                                   x, y, sampledInputXs->back(), sampledInputYs->back()),
-                           mostCommonKeyWidth
-                                   / ProximityInfoParams::LAST_POINT_SKIP_DISTANCE_SCALE);
-                }
                 return popped;
             }
         }
@@ -465,10 +440,7 @@ namespace latinime {
     sampledInputYs->push_back(y);
     sampledInputTimes->push_back(time);
     sampledInputIndice->push_back(inputIndex);
-    if (DEBUG_GEO_FULL) {
-        AKLOGI("pushTouchPoint: x = %03d, y = %03d, time = %d, index = %d, popped ? %01d",
-                x, y, time, inputIndex, popped);
-    }
+
     return popped;
 }
 
@@ -479,10 +451,6 @@ namespace latinime {
         const std::vector<int> *const sampledInputYs,
         const std::vector<int> *const sampledInputIndices) {
     if (sampledInputSize <= 0 || averageSpeed < 0.001f) {
-        if (DEBUG_SAMPLING_POINTS) {
-            AKLOGI("--- invalid state: cancel. size = %d, ave = %f",
-                    sampledInputSize, averageSpeed);
-        }
         return 1.0f;
     }
     const int lookupRadius = mostCommonKeyWidth
@@ -520,9 +488,6 @@ namespace latinime {
     }
 
     if (start >= end) {
-        if (DEBUG_DOUBLE_LETTER) {
-            AKLOGI("--- double letter: start == end %d", start);
-        }
         return 1.0f;
     }
 
@@ -546,14 +511,6 @@ namespace latinime {
 
     if (time >= ProximityInfoParams::STRONG_DOUBLE_LETTER_TIME_MILLIS){
         return 0.0f;
-    }
-    if (DEBUG_DOUBLE_LETTER) {
-        AKLOGI("--- (%d, %d) double letter: start = %d, end = %d, dist = %d, time = %d,"
-                " speed = %f, ave = %f, val = %f, start time = %d, end time = %d",
-                id, (*sampledInputIndices)[id], start, end, beelineDistance, time,
-                (static_cast<float>(beelineDistance) / static_cast<float>(time)), averageSpeed,
-                ((static_cast<float>(beelineDistance) / static_cast<float>(time))
-                        / averageSpeed), adjustedStartTime, adjustedEndTime);
     }
     // Offset 1%
     // TODO: Detect double letter more smartly
@@ -755,34 +712,6 @@ namespace latinime {
         }
     }
 
-    if (DEBUG_POINTS_PROBABILITY) {
-        for (int i = 0; i < sampledInputSize; ++i) {
-            std::stringstream sstream;
-            sstream << i << ", ";
-            sstream << "(" << (*sampledInputXs)[i] << ", " << (*sampledInputYs)[i] << "), ";
-            sstream << "Speed: "<< (*sampledSpeedRates)[i] << ", ";
-            sstream << "Angle: "<< getPointAngle(sampledInputXs, sampledInputYs, i) << ", \n";
-
-            for (std::unordered_map<int, float>::iterator it = (*charProbabilities)[i].begin();
-                    it != (*charProbabilities)[i].end(); ++it) {
-                if (it->first == NOT_AN_INDEX) {
-                    sstream << it->first
-                            << "(skip):"
-                            << it->second
-                            << "\n";
-                } else {
-                    sstream << it->first
-                            << "("
-                            //<< static_cast<char>(mProximityInfo->getCodePointOf(it->first))
-                            << "):"
-                            << it->second
-                            << "\n";
-                }
-            }
-            AKLOGI("%s", sstream.str().c_str());
-        }
-    }
-
     // Decrease key probabilities of points which don't have the highest probability of that key
     // among nearby points. Probabilities of the first point and the last point are not suppressed.
     for (int i = std::max(start, 1); i < sampledInputSize; ++i) {
@@ -978,12 +907,6 @@ namespace latinime {
         const std::vector<int> *const sampledTimes,
         const std::vector<float> *const sampledSpeedRates,
         const std::vector<int> *const sampledBeelineSpeedPercentiles) {
-    if (DEBUG_GEO_FULL) {
-        for (int i = 0; i < sampledInputSize; ++i) {
-            AKLOGI("Sampled(%d): x = %d, y = %d, time = %d", i, (*sampledInputXs)[i],
-                    (*sampledInputYs)[i], sampledTimes ? (*sampledTimes)[i] : -1);
-        }
-    }
 
     std::stringstream originalX, originalY, sampledX, sampledY;
     for (int i = 0; i < inputSize; ++i) {

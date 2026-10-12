@@ -12,9 +12,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
-import android.graphics.PorterDuff;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -56,8 +54,6 @@ public class KeyboardView extends View {
     private final KeyDrawParams mKeyDrawParams = new KeyDrawParams();
 
     // Drawing
-    /** Scale for downscaling icons and fixed size backgrounds if keyboard height is set below 80% */
-    private float mIconScaleFactor;
     /** The canvas for the above mutable keyboard bitmap */
     @NonNull
     private final Paint mPaint = new Paint();
@@ -169,10 +165,7 @@ public class KeyboardView extends View {
             return;
         }
 
-        final float scale = Settings.getValues().mKeyboardHeightScale;
-        mIconScaleFactor = scale < 0.8f ? scale + 0.2f : 1f;
         final Paint paint = mPaint;
-
         // Draw all keys.
         for (final Key key : keyboard.getSortedKeys()) {
             onDrawKey(key, canvas, paint);
@@ -208,7 +201,6 @@ public class KeyboardView extends View {
         final float centerY = keyHeight * 0.5f;
 
         // Draw key label.
-        final Keyboard keyboard = getKeyboard();
         float labelX = centerX;
         float labelBaseline = centerY;
         final String label = key.getLabel();
@@ -249,12 +241,10 @@ public class KeyboardView extends View {
             }
 
             if (key.isEnabled()) {
-                if (key.hasActionKeyBackground())
-                    paint.setColor(mColors.get(ColorType.ACTION_KEY_ICON));
-                else if (this instanceof PopupKeysKeyboardView)
-                    paint.setColor(mColors.get(ColorType.POPUP_KEY_TEXT));
-                else
-                    paint.setColor(key.selectTextColor(params));
+                if (key.customDimKey()){
+                    paint.setColor(params.mHintLetterColor);
+                }
+                else paint.setColor(key.selectTextColor(params));
                 // Set a drop shadow for the text if the shadow radius is positive value.
                 paint.clearShadowLayer();
 
@@ -327,14 +317,6 @@ public class KeyboardView extends View {
             @NonNull final Paint paint, @NonNull final KeyDrawParams params) {
     }
 
-    protected static void drawIcon(@NonNull final Canvas canvas,@NonNull final Drawable icon,
-            final int x, final int y, final int width, final int height) {
-        canvas.translate(x, y);
-        icon.setBounds(0, 0, width, height);
-        icon.draw(canvas);
-        canvas.translate(-x, -y);
-    }
-
     public Paint newLabelPaint(@Nullable final Key key) {
         final Paint paint = new Paint();
         paint.setAntiAlias(true);
@@ -364,26 +346,6 @@ public class KeyboardView extends View {
     }
 
     public void deallocateMemory() {
-    }
-
-    private void setKeyIconColor(Drawable icon) {
-        /*if (key.hasActionKeyBackground()) {
-            mColors.setColor(icon, ColorType.ACTION_KEY_ICON);
-        } else if (key.isShift() && keyboard != null) {
-            if (keyboard.mId.getElement().isAlphabetShifted())
-                mColors.setColor(icon, ColorType.SHIFT_KEY_ICON);
-            else
-                mColors.setColor(icon, ColorType.KEY_ICON); // normal key if not shifted
-        } else if (key.getBackgroundType() != Key.BACKGROUND_TYPE_NORMAL) {
-            mColors.setColor(icon, ColorType.KEY_ICON);
-        } else if (this instanceof PopupKeysKeyboardView) {
-            mColors.setColor(icon, ColorType.POPUP_KEY_ICON);
-        } else if (key.getCode() == Constants.CODE_SPACE || key.getCode() == KeyCode.ZWNJ) {
-            // set color of default number pad space bar icon for Holo style, or for zero-width non-joiner (zwnj) on some layouts like nepal
-            mColors.setColor(icon, ColorType.KEY_ICON);
-        } else {*/
-            mColors.setColor(icon, ColorType.KEY_TEXT);
-        //}
     }
 
 }

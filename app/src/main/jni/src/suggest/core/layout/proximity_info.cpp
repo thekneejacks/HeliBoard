@@ -79,9 +79,6 @@ ProximityInfo::ProximityInfo(JNIEnv *env, const int keyboardWidth, const int key
         ASSERT(false);
         return;
     }
-    if (DEBUG_PROXIMITY_INFO) {
-        AKLOGI("Create proximity info array %d", proximityCharsLength);
-    }
     safeGetOrFillZeroIntArrayRegion(env, proximityChars, proximityCharsLength,
             mProximityCharsArray);
     safeGetOrFillZeroIntArrayRegion(env, keyXCoordinates, KEY_COUNT, mKeyXCoordinates);
@@ -101,24 +98,13 @@ ProximityInfo::~ProximityInfo() {
 
 bool ProximityInfo::hasSpaceProximity(const int x, const int y) const {
     if (x < 0 || y < 0) {
-        if (DEBUG_DICT) {
-            AKLOGI("HasSpaceProximity: Illegal coordinates (%d, %d)", x, y);
-            // TODO: Enable this assertion.
-            //ASSERT(false);
-        }
         return false;
     }
 
     const int startIndex = ProximityInfoUtils::getStartIndexFromCoordinates(x, y,
             CELL_HEIGHT, CELL_WIDTH, GRID_WIDTH);
-    if (DEBUG_PROXIMITY_INFO) {
-        AKLOGI("hasSpaceProximity: index %d, %d, %d", startIndex, x, y);
-    }
     int *proximityCharsArray = mProximityCharsArray;
     for (int i = 0; i < MAX_PROXIMITY_CHARS_SIZE; ++i) {
-        if (DEBUG_PROXIMITY_INFO) {
-            AKLOGI("Index: %d", mProximityCharsArray[startIndex + i]);
-        }
         if (proximityCharsArray[startIndex + i] == KEYCODE_SPACE) {
             return true;
         }

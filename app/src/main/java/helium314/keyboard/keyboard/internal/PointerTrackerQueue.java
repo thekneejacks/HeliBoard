@@ -12,7 +12,6 @@ import java.util.ArrayList;
 
 public final class PointerTrackerQueue {
     private static final String TAG = PointerTrackerQueue.class.getSimpleName();
-    private static final boolean DEBUG = false;
 
     public interface Element {
         boolean isModifier();
@@ -35,9 +34,6 @@ public final class PointerTrackerQueue {
 
     public void add(final Element pointer) {
         synchronized (mExpandableArrayOfActivePointers) {
-            if (DEBUG) {
-                ////Log.(TAG, "add: " + pointer + " " + this);
-            }
             final ArrayList<Element> expandableArray = mExpandableArrayOfActivePointers;
             final int arraySize = mArraySize;
             if (arraySize < expandableArray.size()) {
@@ -51,9 +47,6 @@ public final class PointerTrackerQueue {
 
     public void remove(final Element pointer) {
         synchronized (mExpandableArrayOfActivePointers) {
-            if (DEBUG) {
-                ////Log.(TAG, "remove: " + pointer + " " + this);
-            }
             final ArrayList<Element> expandableArray = mExpandableArrayOfActivePointers;
             final int arraySize = mArraySize;
             int newIndex = 0;
@@ -118,13 +111,6 @@ public final class PointerTrackerQueue {
 
     public void releaseAllPointersExcept(final Element pointer, final long eventTime) {
         synchronized (mExpandableArrayOfActivePointers) {
-            if (DEBUG) {
-                if (pointer == null) {
-                    ////Log.(TAG, "releaseAllPointers: " + this);
-                } else {
-                    ////Log.(TAG, "releaseAllPointerExcept: " + pointer + " " + this);
-                }
-            }
             final ArrayList<Element> expandableArray = mExpandableArrayOfActivePointers;
             final int arraySize = mArraySize;
             int newIndex = 0, count = 0;
@@ -164,9 +150,6 @@ public final class PointerTrackerQueue {
 
     public void cancelAllPointerTrackers() {
         synchronized (mExpandableArrayOfActivePointers) {
-            if (DEBUG) {
-                ////Log.(TAG, "cancelAllPointerTracker: " + this);
-            }
             final int arraySize = mArraySize;
             for (int index = 0; index < arraySize; index++) {
                 final Element element = mExpandableArrayOfActivePointers.get(index);

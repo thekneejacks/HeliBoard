@@ -48,10 +48,6 @@ void ProximityInfoState::initInputParams(const int pointerId, const float maxPoi
             false : ProximityInfoStateUtils::checkAndReturnIsContinuousSuggestionPossible(
                     inputSize, xCoordinates, yCoordinates, times, mSampledInputSize,
                     &mSampledInputXs, &mSampledInputYs, &mSampledTimes, &mSampledInputIndice);
-    if (DEBUG_DICT) {
-        AKLOGI("isContinuousSuggestionPossible = %s",
-                (mIsContinuousSuggestionPossible ? "true" : "false"));
-    }
 
     mProximityInfo = proximityInfo;
     mHasTouchPositionCorrectionData = proximityInfo->hasTouchPositionCorrectionData();
@@ -99,10 +95,6 @@ void ProximityInfoState::initInputParams(const int pointerId, const float maxPoi
         mDirections.clear();
     }
 
-    if (DEBUG_GEO_FULL) {
-        AKLOGI("Init ProximityInfoState: reused points =  %d, last input size = %d",
-                pushTouchPointStartIndex, lastSavedInputSize);
-    }
 
     if (xCoordinates && yCoordinates) {
         mSampledInputSize = ProximityInfoStateUtils::updateTouchPoints(mProximityInfo,
@@ -144,11 +136,6 @@ void ProximityInfoState::initInputParams(const int pointerId, const float maxPoi
         }
     }
 
-    if (DEBUG_SAMPLING_POINTS) {
-        ProximityInfoStateUtils::dump(isGeometric, inputSize, xCoordinates, yCoordinates,
-                mSampledInputSize, &mSampledInputXs, &mSampledInputYs, &mSampledTimes, &mSpeedRates,
-                &mBeelineSpeedPercentiles);
-    }
     // end
     ///////////////////////
 
@@ -157,9 +144,6 @@ void ProximityInfoState::initInputParams(const int pointerId, const float maxPoi
     if (!isGeometric && pointerId == 0) {
         ProximityInfoStateUtils::initPrimaryInputWord(
                 inputSize, mInputProximities, mPrimaryInputWord);
-    }
-    if (DEBUG_GEO_FULL) {
-        AKLOGI("ProximityState init finished: %d points out of %d", mSampledInputSize, inputSize);
     }
     mHasBeenUpdatedByGeometricInput = isGeometric;
 }

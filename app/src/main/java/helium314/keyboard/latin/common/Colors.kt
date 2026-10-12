@@ -14,7 +14,6 @@ import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.DrawableCompat
-import helium314.keyboard.latin.common.ColorType.ACTION_KEY_ICON
 import helium314.keyboard.latin.common.ColorType.ACTION_KEY_POPUP_KEYS_BACKGROUND
 import helium314.keyboard.latin.common.ColorType.AUTOFILL_BACKGROUND_CHIP
 import helium314.keyboard.latin.common.ColorType.FUNCTIONAL_KEY_TEXT
@@ -26,7 +25,6 @@ import helium314.keyboard.latin.common.ColorType.KEY_TEXT
 import helium314.keyboard.latin.common.ColorType.MAIN_BACKGROUND
 import helium314.keyboard.latin.common.ColorType.NAVIGATION_BAR
 import helium314.keyboard.latin.common.ColorType.POPUP_KEYS_BACKGROUND
-import helium314.keyboard.latin.common.ColorType.POPUP_KEY_TEXT
 import helium314.keyboard.latin.common.ColorType.STRIP_BACKGROUND
 import helium314.keyboard.latin.common.ColorType.TOOL_BAR_KEY
 import helium314.keyboard.latin.utils.brighten
@@ -137,14 +135,13 @@ class DefaultColors (
         AUTOFILL_BACKGROUND_CHIP -> if (!hasKeyBorders) background else adjustedBackground
         POPUP_KEYS_BACKGROUND, KEY_PREVIEW_BACKGROUND -> adjustedBackground
         KEY_TEXT, FUNCTIONAL_KEY_TEXT, KEY_ICON,
-            POPUP_KEY_TEXT, KEY_PREVIEW_TEXT, -> keyText
+             KEY_PREVIEW_TEXT, -> keyText
         KEY_HINT_TEXT -> keyHintText
         MAIN_BACKGROUND -> background
         ACTION_KEY_POPUP_KEYS_BACKGROUND -> accent
         STRIP_BACKGROUND -> if (!hasKeyBorders) adjustedBackground else background
         NAVIGATION_BAR -> navBar
         TOOL_BAR_KEY -> suggestionText
-        ACTION_KEY_ICON -> Color.WHITE
     }
 
     override fun setColor(drawable: Drawable, color: ColorType) {
@@ -188,7 +185,6 @@ class DefaultColors (
         KEY_TEXT, KEY_ICON -> keyTextFilter
         TOOL_BAR_KEY -> suggestionTextFilter
         KEY_PREVIEW_BACKGROUND -> adjustedBackgroundFilter
-        ACTION_KEY_ICON -> actionKeyIconColorFilter
         else -> colorFilter(get(color)) // create color filter (not great for performance, so the frequently used filters should be stored)
     }
 }
@@ -209,7 +205,6 @@ private fun activatedStateList(activated: Int, normal: Int): ColorStateList {
 }
 
 enum class ColorType {
-    ACTION_KEY_ICON,
     ACTION_KEY_POPUP_KEYS_BACKGROUND,
     AUTOFILL_BACKGROUND_CHIP,
     FUNCTIONAL_KEY_TEXT,
@@ -219,7 +214,6 @@ enum class ColorType {
     KEY_PREVIEW_BACKGROUND,
     KEY_PREVIEW_TEXT,
     POPUP_KEYS_BACKGROUND,
-    POPUP_KEY_TEXT,
     NAVIGATION_BAR,
     STRIP_BACKGROUND,
     TOOL_BAR_KEY,

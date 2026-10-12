@@ -174,51 +174,6 @@ static inline void showStackTrace() {
 #define INTS_TO_CHARS(input, length, output)
 #endif // defined(FLAG_DO_PROFILE) || defined(FLAG_DBG)
 
-#ifdef FLAG_DBG
-#define DEBUG_DICT true
-#define DEBUG_DICT_FULL false
-#define DEBUG_EDIT_DISTANCE false
-#define DEBUG_NODE DEBUG_DICT_FULL
-#define DEBUG_TRACE DEBUG_DICT_FULL
-#define DEBUG_PROXIMITY_INFO false
-#define DEBUG_PROXIMITY_CHARS false
-#define DEBUG_CORRECTION false
-#define DEBUG_CORRECTION_FREQ false
-#define DEBUG_SAMPLING_POINTS false
-#define DEBUG_POINTS_PROBABILITY false
-#define DEBUG_DOUBLE_LETTER false
-#define DEBUG_CACHE false
-#define DEBUG_DUMP_ERROR false
-#define DEBUG_EVALUATE_MOST_PROBABLE_STRING false
-
-#ifdef FLAG_FULL_DBG
-#define DEBUG_GEO_FULL true
-#else
-#define DEBUG_GEO_FULL false
-#endif
-
-#else // FLAG_DBG
-
-#define DEBUG_DICT false
-#define DEBUG_DICT_FULL false
-#define DEBUG_EDIT_DISTANCE false
-#define DEBUG_NODE false
-#define DEBUG_TRACE false
-#define DEBUG_PROXIMITY_INFO false
-#define DEBUG_PROXIMITY_CHARS false
-#define DEBUG_CORRECTION false
-#define DEBUG_CORRECTION_FREQ false
-#define DEBUG_SAMPLING_POINTS false
-#define DEBUG_POINTS_PROBABILITY false
-#define DEBUG_DOUBLE_LETTER false
-#define DEBUG_CACHE false
-#define DEBUG_DUMP_ERROR false
-#define DEBUG_EVALUATE_MOST_PROBABLE_STRING false
-
-#define DEBUG_GEO_FULL false
-
-#endif // FLAG_DBG
-
 #ifndef S_INT_MAX
 #define S_INT_MAX 2147483647 // ((1 << 31) - 1)
 #endif

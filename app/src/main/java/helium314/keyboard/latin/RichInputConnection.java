@@ -140,38 +140,6 @@ public final class RichInputConnection {
         mLastSlowInputConnectionTime = -SLOW_INPUTCONNECTION_PERSIST_MS;
     }
 
-    private void checkConsistencyForDebug() {
-        final ExtractedTextRequest r = new ExtractedTextRequest();
-        r.hintMaxChars = 0;
-        r.hintMaxLines = 0;
-        r.token = 1;
-        r.flags = 0;
-        final ExtractedText et = mIC.getExtractedText(r, 0);
-        final CharSequence beforeCursor = getTextBeforeCursor(Constants.EDITOR_CONTENTS_CACHE_SIZE,
-                0);
-        final StringBuilder internal = new StringBuilder(mCommittedTextBeforeComposingText)
-                .append(mComposingText);
-        if (null == et || null == beforeCursor) return;
-        final int actualLength = Math.min(beforeCursor.length(), internal.length());
-        if (internal.length() > actualLength) {
-            internal.delete(0, internal.length() - actualLength);
-        }
-        final String reference = (beforeCursor.length() <= actualLength) ? beforeCursor.toString()
-                : beforeCursor.subSequence(beforeCursor.length() - actualLength,
-                        beforeCursor.length()).toString();
-        if (et.selectionStart != mExpectedSelStart
-                || !(reference.equals(internal.toString()))) {
-            final String context = "Expected selection start = " + mExpectedSelStart
-                    + "\nActual selection start = " + et.selectionStart
-                    + "\nExpected text = " + internal.length() + " " + internal
-                    + "\nActual text = " + reference.length() + " " + reference;
-            ((LatinIME)mParent).debugDumpStateAndCrashWithException(context);
-        } else {
-            //Log.e(TAG, DebugLogUtils.getStackTrace(2));
-            //Log.e(TAG, "Exp <> Actual : " + mExpectedSelStart + " <> " + et.selectionStart);
-        }
-    }
-
     public void beginBatchEdit() {
         if (++mNestLevel == 1) {
             mIC = mParent.getCurrentInputConnection();

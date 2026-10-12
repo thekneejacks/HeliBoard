@@ -20,7 +20,6 @@ import helium314.keyboard.latin.common.Constants;
 
 public class ProximityInfo {
     private static final String TAG = ProximityInfo.class.getSimpleName();
-    private static final boolean DEBUG = false;
 
     // Must be equal to MAX_PROXIMITY_CHARS_SIZE in native/jni/src/defines.h
     public static final int MAX_PROXIMITY_CHARS_SIZE = 16;
@@ -116,21 +115,6 @@ public class ProximityInfo {
                 infoIndex++;
             }
         }
-        if (DEBUG) {
-            final StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < mGridSize; i++) {
-                sb.setLength(0);
-                for (int j = 0; j < MAX_PROXIMITY_CHARS_SIZE; j++) {
-                    final int code = proximityCharsArray[i * MAX_PROXIMITY_CHARS_SIZE + j];
-                    if (code == Constants.NOT_A_CODE) {
-                        break;
-                    }
-                    if (sb.length() > 0) sb.append(" ");
-                    sb.append(Constants.printableCode(code));
-                }
-                //Log.(TAG, "proxmityChars["+i+"]: " + sb);
-            }
-        }
 
         final List<Key> sortedKeys = mSortedKeys;
         final int keyCount = getProximityInfoKeysCount(sortedKeys);
@@ -158,9 +142,6 @@ public class ProximityInfo {
         }
 
         if (touchPositionCorrection.isValid()) {
-            if (DEBUG) {
-                //Log.(TAG, "touchPositionCorrection: ON");
-            }
             sweetSpotCenterXs = new float[keyCount];
             sweetSpotCenterYs = new float[keyCount];
             sweetSpotRadii = new float[keyCount];

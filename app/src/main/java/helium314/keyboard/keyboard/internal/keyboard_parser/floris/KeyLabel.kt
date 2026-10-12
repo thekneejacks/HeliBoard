@@ -158,5 +158,5 @@ object KeyLabel {
 
     private val getActionKeyLabel : String = "GO"
 
-    private val getSpaceLabel : String = " "
+    private val getSpaceLabel : String = "s p a c e"
 }
