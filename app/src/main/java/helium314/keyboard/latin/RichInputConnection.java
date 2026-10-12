@@ -16,16 +16,12 @@ import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.style.CharacterStyle;
 import android.view.KeyEvent;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.ExtractedText;
 import android.view.inputmethod.ExtractedTextRequest;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.view.inputmethod.InputConnectionCompat;
-import androidx.core.view.inputmethod.InputContentInfoCompat;
 
 import java.util.concurrent.TimeUnit;
 
@@ -35,7 +31,6 @@ import helium314.keyboard.latin.common.ConstantsKt;
 import helium314.keyboard.latin.common.StringUtils;
 import helium314.keyboard.latin.common.StringUtilsKt;
 import helium314.keyboard.latin.common.UnicodeSurrogate;
-import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.settings.SpacingAndPunctuations;
 import helium314.keyboard.latin.utils.CapsModeUtils;
 import helium314.keyboard.latin.utils.StatsUtils;
@@ -52,8 +47,6 @@ import helium314.keyboard.latin.utils.TextRange;
 public final class RichInputConnection {
     private static final String TAG = "RichInputConnection";
     private static final boolean DBG = false;
-    private static final boolean DEBUG_PREVIOUS_TEXT = false;
-    private static final boolean DEBUG_BATCH_NESTING = false;
     private static final int NUM_CHARS_TO_GET_BEFORE_CURSOR = 40;
     private static final int NUM_CHARS_TO_GET_AFTER_CURSOR = 40;
     private static final int INVALID_CURSOR_POSITION = -1;
@@ -191,8 +184,6 @@ public final class RichInputConnection {
             }
             //Log.e(TAG, "Nest level too deep : " + mNestLevel);
         }
-        if (DEBUG_BATCH_NESTING) checkBatchEdit();
-        if (DEBUG_PREVIOUS_TEXT) checkConsistencyForDebug();
     }
 
     public void endBatchEdit() {
@@ -200,7 +191,6 @@ public final class RichInputConnection {
         if (--mNestLevel == 0 && isConnected()) {
             mIC.endBatchEdit();
         }
-        if (DEBUG_PREVIOUS_TEXT) checkConsistencyForDebug();
     }
 
     /**
@@ -290,8 +280,6 @@ public final class RichInputConnection {
     }
 
     public void finishComposingText() {
-        if (DEBUG_BATCH_NESTING) checkBatchEdit();
-        if (DEBUG_PREVIOUS_TEXT) checkConsistencyForDebug();
         // TODO: this is not correct! The cursor is not necessarily after the composing text.
         // In the practice right now this is only called when input ends so it will be reset so
         // it works, but it's wrong and should be fixed.
@@ -313,8 +301,6 @@ public final class RichInputConnection {
      * @param newCursorPosition The new cursor position around the text.
      */
     public void commitText(final CharSequence text, final int newCursorPosition) {
-        if (DEBUG_BATCH_NESTING) checkBatchEdit();
-        if (DEBUG_PREVIOUS_TEXT) checkConsistencyForDebug();
         mCommittedTextBeforeComposingText.append(text);
         // TODO: the following is exceedingly error-prone. Right now when the cursor is in the
         //  middle of the composing word mComposingText only holds the part of the composing text
@@ -532,7 +518,6 @@ public final class RichInputConnection {
     }
 
     public void deleteTextBeforeCursor(final int beforeLength) {
-        if (DEBUG_BATCH_NESTING) checkBatchEdit();
         // TODO: the following is incorrect if the cursor is not immediately after the composition.
         //  Right now we never come here in this case because we reset the composing state before we
         //  come here in this case, but we need to fix this.
@@ -559,7 +544,6 @@ public final class RichInputConnection {
         if (isConnected()) {
             mIC.deleteSurroundingText(beforeLength, 0);
         }
-        if (DEBUG_PREVIOUS_TEXT) checkConsistencyForDebug();
     }
 
     public void performEditorAction(final int actionId) {
@@ -570,9 +554,7 @@ public final class RichInputConnection {
     }
 
     public void sendKeyEvent(final KeyEvent keyEvent) {
-        if (DEBUG_BATCH_NESTING) checkBatchEdit();
         if (keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
-            if (DEBUG_PREVIOUS_TEXT) checkConsistencyForDebug();
             // This method is only called for enter or backspace when speaking to old applications
             // (target SDK <= 15 (Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1)), or for digits.
             // When talking to new applications we never use this method because it's inherently
@@ -627,8 +609,6 @@ public final class RichInputConnection {
     // return whether the text was (probably) set correctly
     // unfortunately this is necessary in some cases
     public boolean setComposingText(final CharSequence text, final int newCursorPosition) {
-        if (DEBUG_BATCH_NESTING) checkBatchEdit();
-        if (DEBUG_PREVIOUS_TEXT) checkConsistencyForDebug();
         mExpectedSelStart += text.length() - mComposingText.length();
         mExpectedSelEnd = mExpectedSelStart;
         mComposingText.setLength(0);
@@ -637,7 +617,7 @@ public final class RichInputConnection {
         //  newCursorPosition != 1.
         if (isConnected()) {
             mIC.setComposingText(text, newCursorPosition);
-            if (!Settings.getValues().mInputAttributes.mShouldShowSuggestions && text.length() > 0) {
+            if (text.length() > 0) {
                 // We have a field that disables suggestions, but still committed text is set.
                 // This might lead to weird bugs (e.g. https://github.com/HeliBorg/HeliBoard/issues/225), so better do
                 // a sanity check whether the wanted text has been set.
@@ -649,7 +629,6 @@ public final class RichInputConnection {
                 }
             }
         }
-        if (DEBUG_PREVIOUS_TEXT) checkConsistencyForDebug();
         return true;
     }
 
@@ -665,9 +644,6 @@ public final class RichInputConnection {
      * invalid arguments were passed.
      */
     public boolean setSelection(final int start, final int end) {
-        if (DEBUG_BATCH_NESTING) checkBatchEdit();
-        if (DEBUG_PREVIOUS_TEXT) checkConsistencyForDebug();
-
         if (start < 0 || end < 0) {
             return false;
         }
@@ -769,7 +745,6 @@ public final class RichInputConnection {
     }
 
     public void removeTrailingSpace() {
-        if (DEBUG_BATCH_NESTING) checkBatchEdit();
         final int codePointBeforeCursor = getCodePointBeforeCursor();
         if (Constants.CODE_SPACE == codePointBeforeCursor) {
             deleteTextBeforeCursor(1);
@@ -782,7 +757,6 @@ public final class RichInputConnection {
     }
 
     public boolean revertDoubleSpacePeriod(final SpacingAndPunctuations spacingAndPunctuations) {
-        if (DEBUG_BATCH_NESTING) checkBatchEdit();
         // Here we test whether we indeed have a period and a space before us. This should not
         // be needed, but it's there just in case something went wrong.
         final CharSequence textBeforeCursor = getTextBeforeCursor(2, 0);
@@ -802,7 +776,6 @@ public final class RichInputConnection {
     }
 
     public boolean revertSwapPunctuation() {
-        if (DEBUG_BATCH_NESTING) checkBatchEdit();
         // Here we test whether we indeed have a space and something else before us. This should not
         // be needed, but it's there just in case something went wrong.
         final CharSequence textBeforeCursor = getTextBeforeCursor(2, 0);
@@ -1007,10 +980,4 @@ public final class RichInputConnection {
         return mIC.requestCursorUpdates(cursorUpdateMode);
     }
 
-    // doesn't work in many apps that support normal clipboard pasting, possibly just because they don't have mime types in editorInfo
-    public void commitContent(InputContentInfoCompat contentInfo, @NonNull EditorInfo editorInfo) {
-        mIC = mParent.getCurrentInputConnection();
-        if (isConnected())
-            InputConnectionCompat.commitContent(mIC, editorInfo, contentInfo, InputConnectionCompat.INPUT_CONTENT_GRANT_READ_URI_PERMISSION, null);
-    }
 }

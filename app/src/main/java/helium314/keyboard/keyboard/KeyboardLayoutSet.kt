@@ -67,9 +67,6 @@ class KeyboardLayoutSet internal constructor(private val mContext: Context, priv
         val ref = keyboardCache[id]
         val cachedKeyboard = ref?.get()
         if (cachedKeyboard != null) {
-            if (DEBUG_CACHE) {
-                ////Log.(TAG, "keyboard cache size=${keyboardCache.size}: HIT  id=$id")
-            }
             return cachedKeyboard
         }
 
@@ -89,12 +86,6 @@ class KeyboardLayoutSet internal constructor(private val mContext: Context, priv
                 forcibleKeyboardCache[i] = forcibleKeyboardCache[i - 1]
             }
             forcibleKeyboardCache[0] = keyboard
-            if (DEBUG_CACHE) {
-                ////Log.(TAG, "forcing caching of keyboard with id=$id")
-            }
-        }
-        if (DEBUG_CACHE) {
-            ////Log.(TAG, ("keyboard cache size=${keyboardCache.size}: ${(if (ref == null) "LOAD" else "GCed")} id=$id"))
         }
         return keyboard
     }
@@ -197,7 +188,6 @@ class KeyboardLayoutSet internal constructor(private val mContext: Context, priv
 
     companion object {
         private val TAG = KeyboardLayoutSet::class.java.simpleName
-        private const val DEBUG_CACHE = false
 
         class KeyboardLayoutSetException(cause: Throwable) : RuntimeException(cause)
 

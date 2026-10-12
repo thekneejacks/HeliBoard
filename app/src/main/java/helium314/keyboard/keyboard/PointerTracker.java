@@ -35,9 +35,6 @@ import helium314.keyboard.latin.utils.KtxKt;
 
 public final class PointerTracker implements PointerTrackerQueue.Element{
     private static final String TAG = PointerTracker.class.getSimpleName();
-    private static final boolean DEBUG_EVENT = false;
-    private static final boolean DEBUG_MOVE_EVENT = false;
-    private static final boolean DEBUG_LISTENER = false;
 
     static final class PointerTrackerParams {
         public final boolean mKeySelectionByDraggingFinger;
@@ -262,10 +259,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element{
                 && keyCode != KeyCode.NUMPAD; // we allow these to be activated from sliding input
         final boolean altersCode = key.altCodeWhileTyping() && sTimerProxy.isTypingState() && !isClearlyInsideKey(key, x, y);
         final int code = altersCode ? key.getAltCode() : primaryCode;
-        if (DEBUG_LISTENER) {
-            final String output = code == KeyCode.MULTIPLE_CODE_POINTS
-                    ? key.getOutputText() : Constants.printableCode(code);
-        }
         if (ignoreModifierKey) {
             return;
         }
@@ -301,16 +294,10 @@ public final class PointerTracker implements PointerTrackerQueue.Element{
     }
 
     private void callListenerOnFinishSlidingInput() {
-        if (DEBUG_LISTENER) {
-            ////Log.(TAG, String.format(Locale.US, "[%d] onFinishSlidingInput", mPointerId));
-        }
         sListener.onFinishSlidingInput();
     }
 
     private void callListenerOnCancelInput() {
-        if (DEBUG_LISTENER) {
-            ////Log.(TAG, String.format(Locale.US, "[%d] onCancelInput", mPointerId));
-        }
         sListener.onCancelInput();
     }
 
@@ -494,9 +481,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element{
     private void onDownEvent(final int x, final int y, final long eventTime,
             final KeyDetector keyDetector) {
         setKeyDetectorInner(keyDetector);
-        if (DEBUG_EVENT) {
-            printTouchEvent("onDownEvent:", x, y, eventTime);
-        }
         // Naive up-to-down noise filter.
         final long deltaT = eventTime - mUpTime;
         if (deltaT < sParams.mTouchNoiseThresholdTime) {
@@ -595,9 +579,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element{
     }
 
     private void onMoveEvent(final int x, final int y, final long eventTime, final MotionEvent me) {
-        if (DEBUG_MOVE_EVENT) {
-            printTouchEvent("onMoveEvent:", x, y, eventTime);
-        }
         if (mIsTrackingForActionDisabled) {
             return;
         }
@@ -790,9 +771,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element{
     // "virtual" up event.
     @Override
     public void onPhantomUpEvent(final long eventTime) {
-        if (DEBUG_EVENT) {
-            printTouchEvent("onPhntEvent:", mLastX, mLastY, eventTime);
-        }
         onUpEventInternal(mLastX, mLastY, eventTime);
         cancelTrackingForAction();
     }
@@ -920,10 +898,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element{
     }
 
     private void onCancelEvent(final int x, final int y, final long eventTime) {
-        if (DEBUG_EVENT) {
-            printTouchEvent("onCancelEvt:", x, y, eventTime);
-        }
-
         cancelAllPointerTrackers();
         sPointerTrackerQueue.releaseAllPointers(eventTime);
         onCancelEventInternal();

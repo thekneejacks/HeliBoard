@@ -6,9 +6,6 @@
 
 package helium314.keyboard.latin;
 
-import static helium314.keyboard.latin.common.Constants.ImeOption.NO_MICROPHONE;
-
-import android.os.Build;
 import android.text.InputType;
 import android.view.inputmethod.EditorInfo;
 
@@ -18,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import helium314.keyboard.compat.AppWorkarounds;
-import helium314.keyboard.latin.common.StringUtilsKt;
 import helium314.keyboard.latin.utils.InputTypeUtils;
 
 
@@ -29,23 +25,15 @@ public final class InputAttributes {
     private final String TAG = InputAttributes.class.getSimpleName();
 
     final public String mTargetApplicationPackageName;
-    final public boolean mInputTypeShouldAutoCorrect;
     final public boolean mIsPasswordField;
-    final public boolean mShouldShowSuggestions;
-    final public boolean mMayOverrideShowingSuggestions;
     final public boolean mApplicationSpecifiedCompletionOn;
     final public boolean mShouldInsertSpacesAutomatically;
-    final public boolean mShouldShowVoiceInputKey;
-    final public boolean mNoLearning;
     final public boolean mIsGeneralTextInput;
     final public int mInputType;
     final private EditorInfo mEditorInfo;
-    final private String mPackageNameForPrivateImeOptions;
 
-    public InputAttributes(final EditorInfo editorInfo, final boolean isFullscreenMode,
-            final String packageNameForPrivateImeOptions) {
+    public InputAttributes(final EditorInfo editorInfo, final boolean isFullscreenMode) {
         mEditorInfo = editorInfo;
-        mPackageNameForPrivateImeOptions = packageNameForPrivateImeOptions;
         mTargetApplicationPackageName = null != editorInfo ? editorInfo.packageName : null;
         mInputType = AppWorkarounds.INSTANCE.adjustInputType(null != editorInfo ? editorInfo.inputType : 0, mTargetApplicationPackageName);
         final int inputClass = mInputType & InputType.TYPE_MASK_CLASS;
@@ -62,48 +50,17 @@ public final class InputAttributes {
                 // TODO: We should honor TYPE_NULL specification.
                 //Log.i(TAG, "InputType.TYPE_NULL is specified");
             }
-            mShouldShowSuggestions = false;
-            mMayOverrideShowingSuggestions = false;
-            mInputTypeShouldAutoCorrect = false;
             mApplicationSpecifiedCompletionOn = false;
             mShouldInsertSpacesAutomatically = false;
-            mShouldShowVoiceInputKey = false;
             mIsGeneralTextInput = false;
-            mNoLearning = false;
             return;
         }
 
         final int variation = mInputType & InputType.TYPE_MASK_VARIATION;
-        final boolean flagNoSuggestions = 0 != (mInputType & InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
-        final boolean flagMultiLine = 0 != (mInputType & InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-        final boolean flagAutoCorrect = 0 != (mInputType & InputType.TYPE_TEXT_FLAG_AUTO_CORRECT);
         final boolean flagAutoComplete = 0 != (mInputType & InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE);
 
-        // TODO: Have a helper method in InputTypeUtils
-        // Make sure that passwords are not displayed in {@link SuggestionStripView}.
-        mShouldShowSuggestions = !mIsPasswordField && !flagNoSuggestions;
-        mMayOverrideShowingSuggestions = !mIsPasswordField;
 
         mShouldInsertSpacesAutomatically = InputTypeUtils.isAutoSpaceFriendlyType(mInputType);
-
-        final boolean noMicrophone = mIsPasswordField
-                || InputTypeUtils.isEmailVariation(variation)
-                || hasNoMicrophoneKeyOption()
-                || !RichInputMethodManager.isInitialized() // avoid crash when only using spell checker
-                || !RichInputMethodManager.getInstance().isShortcutImeReady();
-        mShouldShowVoiceInputKey = !noMicrophone;
-
-
-        // autocorrect if explicitly wanted, but also for most multi-line input types (like AOSP keyboard)
-        // originally, URI and email were always excluded from autocorrect (in Suggest.java), but this is
-        //  and unexpected place, and if the input field explicitly requests autocorrect we should follow the flag
-        mInputTypeShouldAutoCorrect = flagAutoCorrect || (
-                flagMultiLine
-                && variation != InputType.TYPE_TEXT_VARIATION_WEB_EDIT_TEXT
-                && variation != InputType.TYPE_TEXT_VARIATION_URI
-                && !InputTypeUtils.isEmailVariation(variation)
-                && !flagNoSuggestions
-        );
 
         mApplicationSpecifiedCompletionOn = flagAutoComplete && isFullscreenMode;
 
@@ -116,8 +73,6 @@ public final class InputAttributes {
                 && InputType.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS != variation
                 && InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD != variation;
 
-
-        mNoLearning = (editorInfo.imeOptions & EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING) != 0;
     }
 
     public boolean isTypeNull() {
@@ -127,10 +82,6 @@ public final class InputAttributes {
     public boolean isSameInputType(final EditorInfo editorInfo) {
         return editorInfo.inputType == mInputType && mEditorInfo != null
                 && (mEditorInfo.imeOptions & EditorInfo.IME_FLAG_FORCE_ASCII) == (editorInfo.imeOptions & EditorInfo.IME_FLAG_FORCE_ASCII);
-    }
-
-    private boolean hasNoMicrophoneKeyOption() {
-        return InputAttributes.inPrivateImeOptions(mPackageNameForPrivateImeOptions, NO_MICROPHONE, mEditorInfo);
     }
 
     @SuppressWarnings("unused")
@@ -230,17 +181,10 @@ public final class InputAttributes {
         return String.format(
                 "%s: inputType=0x%08x%s%s%s%s%s targetApp=%s\n", getClass().getSimpleName(),
                 mInputType,
-                (mInputTypeShouldAutoCorrect ? " shouldAutoCorrect" : ""),
                 (mIsPasswordField ? " password" : ""),
-                (mShouldShowSuggestions ? " shouldShowSuggestions" : ""),
                 (mApplicationSpecifiedCompletionOn ? " appSpecified" : ""),
                 (mShouldInsertSpacesAutomatically ? " insertSpaces" : ""),
                 mTargetApplicationPackageName);
     }
 
-    public static boolean inPrivateImeOptions(final String packageName, final String key, final EditorInfo editorInfo) {
-        if (editorInfo == null) return false;
-        final String findingKey = (packageName != null) ? packageName + "." + key : key;
-        return StringUtilsKt.containsValueWhenSplit(editorInfo.privateImeOptions, findingKey, ",");
-    }
 }

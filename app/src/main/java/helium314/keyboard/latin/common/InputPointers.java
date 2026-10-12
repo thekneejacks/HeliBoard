@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 
 // TODO: This class is not thread-safe.
 public final class InputPointers {
-    private static final boolean DEBUG_TIME = false;
 
     private final int mDefaultCapacity;
     private final ResizableIntArray mXCoordinates;
@@ -26,29 +25,11 @@ public final class InputPointers {
         mTimes = new ResizableIntArray(defaultCapacity);
     }
 
-    private void fillWithLastTimeUntil(final int index) {
-        final int fromIndex = mTimes.getLength();
-        // Fill the gap with the latest time.
-        // See {@link #getTime(int)} and {@link #isValidTimeStamps()}.
-        if (fromIndex <= 0) {
-            return;
-        }
-        final int fillLength = index - fromIndex + 1;
-        if (fillLength <= 0) {
-            return;
-        }
-        final int lastTime = mTimes.get(fromIndex - 1);
-        mTimes.fill(lastTime, fromIndex, fillLength);
-    }
-
     public void addPointerAt(final int index, final int x, final int y, final int pointerId,
             final int time) {
         mXCoordinates.addAt(index, x);
         mYCoordinates.addAt(index, y);
         mPointerIds.addAt(index, pointerId);
-        if (DEBUG_TIME) {
-            fillWithLastTimeUntil(index);
-        }
         mTimes.addAt(index, time);
     }
 

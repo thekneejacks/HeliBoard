@@ -207,9 +207,6 @@ public final class KeyboardSwitcher {
     }
 
     public void onLongPressAlphaSymbolForNumpad() {
-        if (SwitchActions.DEBUG_ACTION) {
-            ////Log.(TAG, "onLongPressAlphaSymbol");
-        }
         mState.onLongPressAlphaSymbolForNumpad();
     }
 
@@ -239,9 +236,6 @@ public final class KeyboardSwitcher {
     }
 
     public void updateShiftState(final int autoCapsFlags, @Nullable final RecapitalizeMode recapitalizeMode) {
-        if (SwitchActions.DEBUG_ACTION) {
-            ////Log.(TAG, "updateShiftState: " + " autoCapsFlags=" + CapsModeUtils.flagsToString(autoCapsFlags) + " recapitalizeMode=" + recapitalizeMode);
-        }
         mState.onUpdateShiftState(autoCapsFlags, recapitalizeMode);
     }
 
@@ -386,41 +380,26 @@ public final class KeyboardSwitcher {
     private class SwitchActions implements KeyboardState.SwitchActions {
         @Override
         public void setAlphabetKeyboard(@NonNull ShiftMode shiftMode) {
-            if (DEBUG_ACTION) {
-                ////Log.(TAG, "setAlphabetKeyboard");
-            }
             setKeyboard(shiftMode.element, KeyboardSwitchState.OTHER);
         }
 
         @Override
         public void setSymbolsKeyboard() {
-            if (DEBUG_ACTION) {
-                ////Log.(TAG, "setSymbolsKeyboard");
-            }
             setKeyboard(KeyboardElement.SYMBOLS, KeyboardSwitchState.OTHER);
         }
 
         @Override
         public void setSymbolsShiftedKeyboard() {
-            if (DEBUG_ACTION) {
-                ////Log.(TAG, "setSymbolsShiftedKeyboard");
-            }
             setKeyboard(KeyboardElement.SYMBOLS_SHIFTED, KeyboardSwitchState.SYMBOLS_SHIFTED);
         }
 
         @Override
         public void setNumpadKeyboard() {
-            if (DEBUG_ACTION) {
-                ////Log.(TAG, "setNumpadKeyboard");
-            }
             setKeyboard(KeyboardElement.NUMPAD, KeyboardSwitchState.OTHER);
         }
 
         @Override
         public void startDoubleTapShiftKeyTimer() {
-            if (DEBUG_TIMER_ACTION) {
-                ////Log.(TAG, "startDoubleTapShiftKeyTimer");
-            }
             MainKeyboardView keyboardView = getMainKeyboardView();
             if (keyboardView != null) {
                 keyboardView.startDoubleTapShiftKeyTimer();
@@ -429,9 +408,6 @@ public final class KeyboardSwitcher {
 
         @Override
         public void cancelDoubleTapShiftKeyTimer() {
-            if (DEBUG_TIMER_ACTION) {
-                ////Log.(TAG, "cancelDoubleTapShiftKeyTimer");
-            }
             MainKeyboardView keyboardView = getMainKeyboardView();
             if (keyboardView != null) {
                 keyboardView.cancelDoubleTapShiftKeyTimer();
@@ -441,9 +417,6 @@ public final class KeyboardSwitcher {
 
         @Override
         public boolean popDoubleTapShiftKeyTimer() {
-            if (DEBUG_TIMER_ACTION) {
-                ////Log.(TAG, "isInDoubleTapShiftKeyTimeout");
-            }
             MainKeyboardView keyboardView = getMainKeyboardView();
             return keyboardView != null && keyboardView.popDoubleTapShiftKeyTimer();
         }

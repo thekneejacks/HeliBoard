@@ -345,7 +345,7 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
         final Locale locale = mRichImm.getCurrentSubtypeLocale();
         final EditorInfo editorInfo = getCurrentInputEditorInfo();
         final InputAttributes inputAttributes = new InputAttributes(
-                editorInfo, isFullscreenMode(), getPackageName());
+                editorInfo, isFullscreenMode());
         mSettings.loadSettings(this, locale, inputAttributes);
         // This method is called on startup and language switch, before the new layout has
         // been displayed. Opening dictionaries never affects responsivity as dictionaries are
