@@ -183,7 +183,6 @@ object LocaleUtils {
 
         val overrideResId = when (languageTag) {
             "en-US" -> R.string.subtype_en_US
-            "en-GB" -> R.string.subtype_en_GB
             else -> 0
         }
         if (overrideResId != 0) {

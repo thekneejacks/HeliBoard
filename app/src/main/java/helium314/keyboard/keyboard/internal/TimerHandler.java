@@ -78,11 +78,6 @@ public final class TimerHandler extends LeakGuardHandlerWrapper<DrawingProxy>
         removeMessages(MSG_REPEAT_KEY);
     }
 
-    // TODO: Suppress layout changes in key repeat mode
-    public boolean isInKeyRepeat() {
-        return hasMessages(MSG_REPEAT_KEY);
-    }
-
     @Override
     public void startLongPressTimerOf(@NonNull PointerTracker tracker, int delay) {
         Key key = tracker.getKey();

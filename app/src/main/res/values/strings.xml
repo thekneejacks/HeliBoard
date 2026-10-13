@@ -12,7 +12,6 @@
     <string name="show_popup_keys_main">Add very common variants (default)</string>
     <string name="show_popup_keys_more">Add common variants</string>
     <string name="show_popup_keys_all">Add all available variants</string>
-    <string name="subtype_en_GB">English (UK)</string>
     <string name="subtype_en_US">English (US)</string>
     <string name="subtype_with_layout_generic">%1$s (%2$s)</string>
     <string name="subtype_generic_phonetic">%s (Phonetic)</string>

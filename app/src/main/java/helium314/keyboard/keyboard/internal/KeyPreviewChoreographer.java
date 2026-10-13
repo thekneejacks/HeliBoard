@@ -55,10 +55,6 @@ public final class KeyPreviewChoreographer {
         return keyPreviewView;
     }
 
-    public boolean isShowingKeyPreview(final Key key) {
-        return mShowingKeyPreviewViews.containsKey(key);
-    }
-
     public void dismissKeyPreview(final Key key) {
         if (key == null) {
             return;

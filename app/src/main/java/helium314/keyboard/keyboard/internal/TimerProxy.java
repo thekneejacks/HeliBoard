@@ -79,29 +79,4 @@ public interface TimerProxy {
      */
     boolean popDoubleTapShiftKeyTimer();
 
-    class Adapter implements TimerProxy {
-        @Override
-        public void startTypingStateTimer(@NonNull Key typedKey) {}
-        @Override
-        public boolean isTypingState() { return false; }
-        @Override
-        public void startKeyRepeatTimerOf(@NonNull PointerTracker tracker, int repeatCount,
-                int delay) {}
-        @Override
-        public void startLongPressTimerOf(@NonNull PointerTracker tracker, int delay) {}
-        @Override
-        public void cancelLongPressTimersOf(@NonNull PointerTracker tracker) {}
-        @Override
-        public void cancelLongPressShiftKeyTimer() {}
-        @Override
-        public void cancelLongPressAlphaSymbolKeyTimer() {}
-        @Override
-        public void cancelKeyTimersOf(@NonNull PointerTracker tracker) {}
-        @Override
-        public void startDoubleTapShiftKeyTimer() {}
-        @Override
-        public void cancelDoubleTapShiftKeyTimer() {}
-        @Override
-        public boolean popDoubleTapShiftKeyTimer() { return false; }
-    }
 }

@@ -155,8 +155,6 @@ public final class PopupKeySpec {
     // Constants for parsing.
     private static final char COMMA = Constants.CODE_COMMA;
     private static final char BACKSLASH = Constants.CODE_BACKSLASH;
-    private static final String ADDITIONAL_POPUP_KEY_MARKER =
-            StringUtils.newSingleCodePointString(Constants.CODE_PERCENT);
 
     /**
      * Split the text containing multiple key specifications separated by commas into an array of
@@ -235,62 +233,6 @@ public final class PopupKeySpec {
             return array;
         }
         return out.toArray(new String[0]);
-    }
-
-    public static String[] insertAdditionalPopupKeys(@Nullable final String[] popupKeySpecs,
-            @Nullable final String[] additionalPopupKeySpecs) {
-        final String[] popupKeys = filterOutEmptyString(popupKeySpecs);
-        final String[] additionalPopupKeys = filterOutEmptyString(additionalPopupKeySpecs);
-        final int popupKeysCount = popupKeys.length;
-        final int additionalCount = additionalPopupKeys.length;
-        ArrayList<String> out = null;
-        int additionalIndex = 0;
-        for (int popupKeyIndex = 0; popupKeyIndex < popupKeysCount; popupKeyIndex++) {
-            final String popupKeySpec = popupKeys[popupKeyIndex];
-            if (popupKeySpec.equals(ADDITIONAL_POPUP_KEY_MARKER)) {
-                if (additionalIndex < additionalCount) {
-                    // Replace '%' marker with additional popup key specification.
-                    final String additionalPopupKey = additionalPopupKeys[additionalIndex];
-                    if (out != null) {
-                        out.add(additionalPopupKey);
-                    } else {
-                        popupKeys[popupKeyIndex] = additionalPopupKey;
-                    }
-                    additionalIndex++;
-                } else {
-                    // Filter out excessive '%' marker.
-                    if (out == null) {
-                        out = CollectionUtils.arrayAsList(popupKeys, 0, popupKeyIndex);
-                    }
-                }
-            } else {
-                if (out != null) {
-                    out.add(popupKeySpec);
-                }
-            }
-        }
-        if (additionalCount > 0 && additionalIndex == 0) {
-            // No '%' marker is found in popup keys.
-            // Insert all additional popup keys to the head of popup keys.
-            out = CollectionUtils.arrayAsList(additionalPopupKeys, additionalIndex, additionalCount);
-            for (int i = 0; i < popupKeysCount; i++) {
-                out.add(popupKeys[i]);
-            }
-        } else if (additionalIndex < additionalCount) {
-            // The number of '%' markers are less than additional popup keys.
-            // Append remained additional popup keys to the tail of popup keys.
-            out = CollectionUtils.arrayAsList(popupKeys, 0, popupKeysCount);
-            for (int i = additionalIndex; i < additionalCount; i++) {
-                out.add(additionalPopupKeys[i]);
-            }
-        }
-        if (out == null && popupKeysCount > 0) {
-            return popupKeys;
-        } else if (out != null && out.size() > 0) {
-            return out.toArray(new String[0]);
-        } else {
-            return null;
-        }
     }
 
     public static int getIntValue(@Nullable final String[] popupKeys, final String key,

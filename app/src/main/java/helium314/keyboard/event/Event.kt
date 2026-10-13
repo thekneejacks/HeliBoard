@@ -74,8 +74,6 @@ class Event private constructor(
 
     val isCombining: Boolean get() = 0 != FLAG_COMBINING and flags
 
-    val isGesture: Boolean get() = EVENT_TYPE_GESTURE == eventType
-
     // Returns whether this is a fake key press from the suggestion strip. This happens with
     // punctuation signs selected from the suggestion strip.
     val isSuggestionStripPress: Boolean get() = EVENT_TYPE_SUGGESTION_PICKED == eventType
@@ -196,30 +194,6 @@ class Event private constructor(
                 flags = FLAG_DEAD,
                 nextEvent = next
             )
-
-        /**
-         * Create an input event with nothing but a code point. This is the most basic possible input
-         * event; it contains no information on many things the IME requires to function correctly,
-         * so avoid using it unless really nothing is known about this input.
-         * @param codePoint the code point.
-         * @return an event for this code point.
-         */
-        @JvmStatic
-        // TODO: should we have a different type of event for this? After all, it's not a key press.
-        fun createEventForCodePointFromUnknownSource(codePoint: Int) = Event(eventType = EVENT_TYPE_INPUT_KEYPRESS, codePoint = codePoint)
-
-        /**
-         * Creates an input event with a code point and x, y coordinates. This is typically used when
-         * resuming a previously-typed word, when the coordinates are still known.
-         * @param codePoint the code point to input.
-         * @param x the X coordinate.
-         * @param y the Y coordinate.
-         * @return an event for this code point and coordinates.
-         */
-        @JvmStatic
-        // TODO: should we have a different type of event for this? After all, it's not a key press.
-        fun createEventForCodePointFromAlreadyTypedText(codePoint: Int, x: Int, y: Int) =
-            Event(eventType = EVENT_TYPE_INPUT_KEYPRESS, codePoint = codePoint, x = x, y = y)
 
         /**
          * Creates an input event with a CharSequence. This is used by some software processes whose
