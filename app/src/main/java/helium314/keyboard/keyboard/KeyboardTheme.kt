@@ -51,11 +51,7 @@ private constructor(val themeId: Int, @JvmField val mStyleId: Int) {
             //use black theme only
             return DefaultColors(
                     hasBorders,
-                    ContextCompat.getColor(context, R.color.gesture_trail_color_lxx_dark),
                     ContextCompat.getColor(context, R.color.background_amoled_black),
-                    ContextCompat.getColor(context, R.color.background_amoled_dark),
-                    ContextCompat.getColor(context, R.color.background_amoled_dark),
-                    ContextCompat.getColor(context, R.color.background_amoled_dark),
                     ContextCompat.getColor(context, R.color.key_text_color_lxx_dark),
                     ContextCompat.getColor(context, R.color.key_hint_letter_color_lxx_dark),
                 )

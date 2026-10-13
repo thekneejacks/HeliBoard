@@ -71,7 +71,6 @@ public class SettingsValues {
     public final List<String> mPopupKeyHintOrder;
     public final List<Locale> mSecondaryLocales;
     public final int mKeyLongpressTimeout;
-    public final boolean mCustomNavBarColor;
     public final float mKeyboardHeightScale;
     public final float mBottomRowScale;
     public final float mBottomPaddingScale;
@@ -145,7 +144,6 @@ public class SettingsValues {
 
         mPopupKeyOrder = SubtypeUtilsKt.getPopupKeyOrder(selectedSubtype, prefs);
         mPopupKeyHintOrder = SubtypeUtilsKt.getPopupKeyHintOrder(selectedSubtype, prefs);
-        mCustomNavBarColor = prefs.getBoolean(Settings.PREF_NAVBAR_COLOR, Defaults.PREF_NAVBAR_COLOR);
         mKeyGapScale = Settings.readKeyGapScale(prefs, isLandscape, isFolded);
 
         mSpacingAndPunctuations = new SpacingAndPunctuations(res, false);

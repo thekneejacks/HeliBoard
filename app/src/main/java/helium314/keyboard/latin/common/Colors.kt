@@ -14,13 +14,11 @@ import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.DrawableCompat
-import helium314.keyboard.latin.common.ColorType.FUNCTIONAL_KEY_TEXT
 import helium314.keyboard.latin.common.ColorType.KEY_HINT_TEXT
 import helium314.keyboard.latin.common.ColorType.KEY_PREVIEW_BACKGROUND
 import helium314.keyboard.latin.common.ColorType.KEY_PREVIEW_TEXT
 import helium314.keyboard.latin.common.ColorType.KEY_TEXT
 import helium314.keyboard.latin.common.ColorType.MAIN_BACKGROUND
-import helium314.keyboard.latin.common.ColorType.NAVIGATION_BAR
 import helium314.keyboard.latin.common.ColorType.POPUP_KEYS_BACKGROUND
 import helium314.keyboard.latin.common.ColorType.STRIP_BACKGROUND
 import helium314.keyboard.latin.common.ColorType.TOOL_BAR_KEY
@@ -51,11 +49,7 @@ interface Colors {
 
 class DefaultColors (
     override val hasKeyBorders: Boolean,
-    private val accent: Int,
     private val background: Int,
-    private val keyBackground: Int,
-    private val functionalKey: Int,
-    private val spaceBar: Int,
     private val keyText: Int,
     private val keyHintText: Int,
     private val suggestionText: Int = keyText,
@@ -66,32 +60,14 @@ class DefaultColors (
     private val adjustedBackground: Int
     /** further brightened or darkened variant of [adjustedBackground] */
     private val doubleAdjustedBackground: Int
-
     private val backgroundFilter = colorFilter(background)
     private val adjustedBackgroundFilter: ColorFilter
     private val keyTextFilter: ColorFilter
-    private val suggestionTextFilter = colorFilter(suggestionText)
-
-    /** color filter for the white action key icons in material theme, switches to gray if necessary for contrast */
-    private val actionKeyIconColorFilter: ColorFilter?
-
-    private val backgroundStateList: ColorStateList
-    private val keyStateList: ColorStateList
-    private val functionalKeyStateList: ColorStateList
-    private val actionKeyStateList: ColorStateList
-    private val spaceBarStateList: ColorStateList
-    private val adjustedBackgroundStateList: ColorStateList
-    private val stripBackgroundList: ColorStateList
-    private val toolbarKeyStateList = activatedStateList(
-        suggestionText,
-        brighten(brighten(suggestionText))
-    )
 
     init {
 
         adjustedBackground = brighten(background)
         doubleAdjustedBackground = brighten(adjustedBackground)
-        adjustedBackgroundStateList = pressedStateList(doubleAdjustedBackground, adjustedBackground)
 
         val stripBackground: Int
         val pressedStripElementBackground: Int
@@ -102,55 +78,25 @@ class DefaultColors (
             stripBackground = adjustedBackground
             pressedStripElementBackground = doubleAdjustedBackground
         }
-        stripBackgroundList = pressedStateList(pressedStripElementBackground, stripBackground)
         navBar = background
 
 
         adjustedBackgroundFilter = colorFilter(adjustedBackground)
-        if (hasKeyBorders) {
-            backgroundStateList = pressedStateList(brightenOrDarken(background, true), background)
-            keyStateList = pressedStateList(brightenOrDarken(keyBackground, true), keyBackground)
-            functionalKeyStateList = pressedStateList(brightenOrDarken(functionalKey, true), functionalKey)
-            actionKeyStateList = pressedStateList(brightenOrDarken(accent, true), accent)
-            spaceBarStateList = pressedStateList(brightenOrDarken(spaceBar, true), spaceBar)
-        } else {
-            // need to set color to background if key borders are disabled, or there will be ugly keys
-            backgroundStateList = pressedStateList(brightenOrDarken(background, true), background)
-            keyStateList = pressedStateList(keyBackground, Color.TRANSPARENT)
-            functionalKeyStateList = keyStateList
-            actionKeyStateList = pressedStateList(brightenOrDarken(accent, true), accent)
-            spaceBarStateList = pressedStateList(brightenOrDarken(spaceBar, true), spaceBar)
-        }
         keyTextFilter = colorFilter(keyText)
-        actionKeyIconColorFilter = when {
-            isBrightColor(accent) -> colorFilter(Color.DKGRAY)
-            else -> null
-        }
     }
 
     override fun get(color: ColorType): Int = when (color) {
         POPUP_KEYS_BACKGROUND, KEY_PREVIEW_BACKGROUND -> adjustedBackground
-        KEY_TEXT, FUNCTIONAL_KEY_TEXT,
-             KEY_PREVIEW_TEXT, -> keyText
+        KEY_TEXT, KEY_PREVIEW_TEXT -> keyText
         KEY_HINT_TEXT -> keyHintText
         MAIN_BACKGROUND -> background
         STRIP_BACKGROUND -> if (!hasKeyBorders) adjustedBackground else background
-        NAVIGATION_BAR -> navBar
         TOOL_BAR_KEY -> suggestionText
     }
 
     override fun setColor(drawable: Drawable, color: ColorType) {
-        val colorStateList = when (color) {
-            STRIP_BACKGROUND -> stripBackgroundList
-            TOOL_BAR_KEY -> toolbarKeyStateList
-            else -> null // use color filter
-        }
-        if (colorStateList == null) {
-            drawable.colorFilter = getColorFilter(color)
-            return
-        }
-        DrawableCompat.setTintMode(drawable, PorterDuff.Mode.MULTIPLY)
-        DrawableCompat.setTintList(drawable, colorStateList)
+        drawable.colorFilter = getColorFilter(color)
+        return
     }
 
     override fun setColor(view: ImageView, color: ColorType) {
@@ -177,7 +123,6 @@ class DefaultColors (
 
     private fun getColorFilter(color: ColorType): ColorFilter? = when (color) {
         KEY_TEXT -> keyTextFilter
-        TOOL_BAR_KEY -> suggestionTextFilter
         KEY_PREVIEW_BACKGROUND -> adjustedBackgroundFilter
         else -> colorFilter(get(color)) // create color filter (not great for performance, so the frequently used filters should be stored)
     }
@@ -188,24 +133,12 @@ private fun colorFilter(color: Int, mode: BlendModeCompat = BlendModeCompat.MODU
     return BlendModeColorFilterCompat.createBlendModeColorFilterCompat(color, mode)!!
 }
 
-private fun pressedStateList(pressed: Int, normal: Int): ColorStateList {
-    val states = arrayOf(intArrayOf(android.R.attr.state_pressed), intArrayOf(-android.R.attr.state_pressed))
-    return ColorStateList(states, intArrayOf(pressed, normal))
-}
-
-private fun activatedStateList(activated: Int, normal: Int): ColorStateList {
-    val states = arrayOf(intArrayOf(android.R.attr.state_activated), intArrayOf(-android.R.attr.state_activated))
-    return ColorStateList(states, intArrayOf(activated, normal))
-}
-
 enum class ColorType {
-    FUNCTIONAL_KEY_TEXT,
     KEY_TEXT,
     KEY_HINT_TEXT,
     KEY_PREVIEW_BACKGROUND,
     KEY_PREVIEW_TEXT,
     POPUP_KEYS_BACKGROUND,
-    NAVIGATION_BAR,
     STRIP_BACKGROUND,
     TOOL_BAR_KEY,
     MAIN_BACKGROUND,

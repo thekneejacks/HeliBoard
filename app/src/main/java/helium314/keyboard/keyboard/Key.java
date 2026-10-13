@@ -557,9 +557,6 @@ public class Key implements Comparable<Key> {
     }
 
     public final int selectTextColor(final KeyDrawParams params) {
-        if ((mLabelFlags & LABEL_FLAGS_FOLLOW_FUNCTIONAL_TEXT_COLOR) != 0) {
-            return params.mFunctionalTextColor;
-        }
         return isShiftedLetterActivated() ? params.mTextInactivatedColor : params.mTextColor;
     }
 

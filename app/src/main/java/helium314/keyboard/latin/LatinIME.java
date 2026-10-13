@@ -12,15 +12,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.inputmethodservice.InputMethodService;
-import android.os.Build;
 import android.os.Message;
 import android.util.PrintWriterPrinter;
 import android.util.Printer;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.Window;
 import android.view.inputmethod.CompletionInfo;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodSubtype;
@@ -45,7 +42,6 @@ import helium314.keyboard.keyboard.KeyboardSwitcher;
 import helium314.keyboard.keyboard.MainKeyboardView;
 import helium314.keyboard.keyboard.internal.KeyboardIconsSet;
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
-import helium314.keyboard.latin.common.ColorType;
 import helium314.keyboard.latin.common.InsetsOutlineProvider;
 import helium314.keyboard.latin.common.ViewOutlineProviderUtilsKt;
 import helium314.keyboard.latin.inputlogic.InputLogic;
@@ -626,7 +622,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
         super.onWindowShown();
         if (isInputViewShown()) {
             setNavigationBarColor();
-            workaroundForHuaweiStatusBarIssue();
         }
     }
 
@@ -1060,47 +1055,10 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
     // slightly modified from Simple Keyboard: https://github.com/rkkr/simple-keyboard/blob/master/app/src/main/java/rkr/simplekeyboard/inputmethod/latin/LatinIME.java
     @SuppressWarnings("deprecation")
     private void setNavigationBarColor() {
-        final SettingsValues settingsValues = mSettings.getCurrent();
-        if (!settingsValues.mCustomNavBarColor)
-            return;
-        final int color = settingsValues.mColors.get(ColorType.NAVIGATION_BAR);
-        final Window window = getWindow().getWindow();
-        if (window == null)
-            return;
-        mOriginalNavBarColor = window.getNavigationBarColor();
-        window.setNavigationBarColor(color);
-
-        final View view = window.getDecorView();
-        mOriginalNavBarFlags = view.getSystemUiVisibility();
-        view.setSystemUiVisibility(mOriginalNavBarFlags & ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
-
     }
 
     @SuppressWarnings("deprecation")
     private void clearNavigationBarColor() {
-        final SettingsValues settingsValues = mSettings.getCurrent();
-        if (!settingsValues.mCustomNavBarColor)
-            return;
-        final Window window = getWindow().getWindow();
-        if (window == null) {
-            return;
-        }
-        window.setNavigationBarColor(mOriginalNavBarColor);
-
-        final View view = window.getDecorView();
-        view.setSystemUiVisibility(mOriginalNavBarFlags);
-    }
-
-    // On HUAWEI devices with Android 12: a white bar may appear in landscape mode (issue #231)
-    // We therefore need to make the color of the status bar transparent
-    private void workaroundForHuaweiStatusBarIssue() {
-        final Window window = getWindow().getWindow();
-        if (window == null) {
-            return;
-        }
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.S && Build.MANUFACTURER.equals("HUAWEI")) {
-            window.setStatusBarColor(Color.TRANSPARENT);
-        }
     }
 
     @SuppressLint("SwitchIntDef")
