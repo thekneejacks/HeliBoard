@@ -2,20 +2,17 @@
   [
     { "label": "(", "type": "numeric" },
     { "label": "/", "type": "numeric" },
-    { "label": ")", "type": "numeric" },
-    { "label": "-", "type": "function", "labelFlags": 1073742400, "popup": { "main": { "label": "+" } } }
+    { "label": ")", "type": "numeric" }
   ],
   [
     { "label": "N", "type": "numeric" },
     { "label": "!string/label_pause_key", "code": 44, "type": "numeric" },
-    { "label": ",", "type": "numeric" },
-    { "label": "space", "type": "function" }
+    { "label": ",", "type": "numeric" }
   ],
   [
     { "label": "＊|*", "type": "numeric" },
     { "label": "!string/label_wait_key", "code": 59, "type": "numeric" },
-    { "label": "\\#", "type": "numeric" },
-    { "label": "delete" }
+    { "label": "\\#", "type": "numeric" }
   ],
   [
     { "label": "123|!code/key_switch_alpha_symbol", "type": "numeric", "labelFlags": 524432 },

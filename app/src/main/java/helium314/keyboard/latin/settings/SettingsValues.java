@@ -61,8 +61,6 @@ public class SettingsValues {
     public final boolean mUseDoubleSpacePeriod;
     public final KeyboardActionListener.SwipeAction mSpaceSwipeHorizontal;
     public final KeyboardActionListener.SwipeAction mSpaceSwipeVertical;
-    public final int mLanguageSwipeDistance;
-    public final boolean mDeleteSwipeEnabled;
     public final boolean mAutospaceAfterPunctuation;
     public final boolean mShiftRemovesAutospace;
     public final float mKeyGapScale;
@@ -131,8 +129,6 @@ public class SettingsValues {
         mBottomRowScale = Settings.readBottomRowScale(prefs, isLandscape, isFolded);
         mSpaceSwipeHorizontal = Settings.readHorizontalSpaceSwipe(prefs);
         mSpaceSwipeVertical = Settings.readVerticalSpaceSwipe(prefs);
-        mLanguageSwipeDistance = prefs.getInt(Settings.PREF_LANGUAGE_SWIPE_DISTANCE, Defaults.PREF_LANGUAGE_SWIPE_DISTANCE);
-        mDeleteSwipeEnabled = prefs.getBoolean(Settings.PREF_DELETE_SWIPE, Defaults.PREF_DELETE_SWIPE);
         mAutospaceAfterPunctuation = prefs.getBoolean(Settings.PREF_AUTOSPACE_AFTER_PUNCTUATION, Defaults.PREF_AUTOSPACE_AFTER_PUNCTUATION);
         mShiftRemovesAutospace = prefs.getBoolean(Settings.PREF_SHIFT_REMOVES_AUTOSPACE, Defaults.PREF_SHIFT_REMOVES_AUTOSPACE);
 

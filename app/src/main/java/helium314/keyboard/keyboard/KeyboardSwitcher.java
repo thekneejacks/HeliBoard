@@ -198,7 +198,7 @@ public final class KeyboardSwitcher {
         // @see #getVisibleKeyboardView() and
         // @see LatinIME#onComputeInset(android.inputmethodservice.InputMethodService.Insets)
         mMainKeyboardFrame.setVisibility(visibility);
-        mKeyboardViewWrapper.setVisibility(Settings.getInstance().readShowToolbarOnly() ? View.GONE : View.VISIBLE);
+        mKeyboardViewWrapper.setVisibility(View.VISIBLE);
         mSuggestionStripView.setVisibility(stripVisibility);
     }
 

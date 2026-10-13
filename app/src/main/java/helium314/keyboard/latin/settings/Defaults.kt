@@ -1,7 +1,6 @@
 package helium314.keyboard.latin.settings
 
 import android.content.Context
-import android.os.Build
 import android.util.TypedValue
 import helium314.keyboard.keyboard.KeyboardActionListener
 import helium314.keyboard.latin.utils.LayoutType
@@ -74,12 +73,9 @@ object Defaults {
     const val PREF_SPACE_TO_CHANGE_LANG = true
     const val PREF_LANGUAGE_SWIPE_DISTANCE = 5
 
-    @JvmField
-    val PREF_NAVBAR_COLOR = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
     const val PREF_SELECTED_SUBTYPE = ""
     const val PREF_TOOLBAR_MODE = "EXPANDABLE"
     const val PREF_ABC_AFTER_SYMBOL_SPACE = true
-    const val PREF_ABC_AFTER_NUMPAD_SPACE = false
     const val PREF_REMOVE_REDUNDANT_POPUPS = false
     const val PREF_TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss"
     const val PREF_SAVE_SUBTYPE_PER_APP = false

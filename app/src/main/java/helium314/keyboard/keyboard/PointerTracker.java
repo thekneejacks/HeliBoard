@@ -573,7 +573,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element{
         return switch (code) {
             case Constants.CODE_SPACE -> sv.mSpaceSwipeHorizontal != KeyboardActionListener.SwipeAction.NONE
                     || sv.mSpaceSwipeVertical != KeyboardActionListener.SwipeAction.NONE;
-            case KeyCode.DELETE -> sv.mDeleteSwipeEnabled;
             default -> false;
         };
     }

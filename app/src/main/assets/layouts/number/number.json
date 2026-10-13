@@ -2,20 +2,17 @@
   [
     { "label": "1", "type": "numeric" },
     { "label": "2", "type": "numeric" },
-    { "label": "3", "type": "numeric" },
-    { "label": "-", "type": "function", "popup": { "main": { "label": "+" } }, "labelFlags": 64 }
+    { "label": "3", "type": "numeric" }
   ],
   [
     { "label": "4", "type": "numeric" },
     { "label": "5", "type": "numeric" },
-    { "label": "6", "type": "numeric" },
-    { "label": "space", "type": "function" }
+    { "label": "6", "type": "numeric" }
   ],
   [
     { "label": "7", "type": "numeric" },
     { "label": "8", "type": "numeric" },
-    { "label": "9", "type": "numeric" },
-    { "label": "delete" }
+    { "label": "9", "type": "numeric" }
   ],
   [
     { "$": "variation_selector",
@@ -43,7 +40,6 @@
         { "label": "!noPanelAutoPopupKey!" },
         { "label": "," }
       ] } }
-    },
-    { "label": "enter"}
+    }
   ]
 ]

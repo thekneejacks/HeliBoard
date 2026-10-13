@@ -22,8 +22,6 @@ import helium314.keyboard.latin.define.ProductionFlags
 import helium314.keyboard.latin.inputlogic.InputLogic
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.utils.RecapitalizeMode
-import helium314.keyboard.latin.utils.SubtypeSettings
-import kotlin.math.abs
 
 class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inputLogic: InputLogic) : KeyboardActionListener {
 
@@ -135,13 +133,11 @@ class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inp
 
     override fun onHorizontalSpaceSwipe(steps: Int): Boolean = when (Settings.getValues().mSpaceSwipeHorizontal) {
         KeyboardActionListener.SwipeAction.MOVE_CURSOR -> onMoveCursorHorizontally(steps)
-        KeyboardActionListener.SwipeAction.SWITCH_LANGUAGE -> onLanguageSlide(steps)
         else -> false
     }
 
     override fun onVerticalSpaceSwipe(steps: Int): Boolean = when (Settings.getValues().mSpaceSwipeVertical) {
         KeyboardActionListener.SwipeAction.MOVE_CURSOR -> onMoveCursorVertically(steps)
-        KeyboardActionListener.SwipeAction.SWITCH_LANGUAGE -> onLanguageSlide(steps)
         KeyboardActionListener.SwipeAction.HIDE_KEYBOARD -> {
             latinIME.requestHideSelf(0)
             true
@@ -182,34 +178,6 @@ class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inp
 
     override fun resetMetaState() {
         metaState = 0
-    }
-
-    private fun onLanguageSlide(steps: Int): Boolean {
-        if (abs(steps) < settings.current.mLanguageSwipeDistance) return false
-        val subtypes = SubtypeSettings.getEnabledSubtypes()
-        if (subtypes.size <= 1) { // only allow if we have more than one subtype
-            return false
-        }
-        // decide next or previous dependent on up or down
-        val current = RichInputMethodManager.getInstance().currentSubtype.rawSubtype
-        var wantedIndex = subtypes.indexOf(current) + if (steps > 0) 1 else -1
-        wantedIndex %= subtypes.size
-        if (wantedIndex < 0) {
-            wantedIndex += subtypes.size
-        }
-        val newSubtype = subtypes[wantedIndex]
-
-        // do not switch if we would switch to the initial subtype after cycling all other subtypes
-        if (initialSubtype == null) initialSubtype = current
-        if (initialSubtype == newSubtype) {
-            if ((subtypeSwitchCount > 0 && steps > 0) || (subtypeSwitchCount < 0 && steps < 0)) {
-                return true
-            }
-        }
-        if (steps > 0) subtypeSwitchCount++ else subtypeSwitchCount--
-
-        keyboardSwitcher.switchToSubtype(newSubtype)
-        return true
     }
 
     private fun onMoveCursorVertically(steps: Int): Boolean {

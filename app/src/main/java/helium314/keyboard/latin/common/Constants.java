@@ -12,19 +12,6 @@ import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
 
 public final class Constants {
 
-    public static final class ImeOption {
-        /**
-         * The private IME option used to indicate that no microphone should be shown for a given
-         * text field. For instance, this is specified by the search dialog when the dialog is
-         * already showing a voice search button.
-         */
-        public static final String NO_MICROPHONE = "noMicrophoneKey";
-
-        private ImeOption() {
-            // This utility class is not publicly instantiable.
-        }
-    }
-
     public static final class Subtype {
         /** The subtype mode used to indicate that the subtype is a keyboard. */
         public static final String KEYBOARD_MODE = "keyboard";

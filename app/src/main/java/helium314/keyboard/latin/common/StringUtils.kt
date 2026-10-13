@@ -168,11 +168,6 @@ fun String.splitOnFirstSpacesOnly(): List<String> {
 
 fun decodeBase36(string: String) = BigInteger(string, 36).toByteArray().decodeToString()
 
-fun containsValueWhenSplit(string: String?, value: String, split: String): Boolean {
-    if (string == null) return false
-    return string.split(split).contains(value)
-}
-
 /** converts comma-separates character pairs into a list of codepoint-pair-arrays (sorted by first codepoint) */
 fun toSortedCodepointArrays(string: String): List<IntArray> {
     val split = string.split(",")

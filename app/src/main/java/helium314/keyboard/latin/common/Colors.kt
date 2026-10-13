@@ -54,9 +54,6 @@ class DefaultColors (
     private val keyHintText: Int,
     private val suggestionText: Int = keyText,
 ) : Colors {
-    private val navBar: Int
-    /** brightened or darkened variant of [background], to be used if exact background color would be
-     *  bad contrast, e.g. popup keys popup or no border space bar */
     private val adjustedBackground: Int
     /** further brightened or darkened variant of [adjustedBackground] */
     private val doubleAdjustedBackground: Int
@@ -78,7 +75,6 @@ class DefaultColors (
             stripBackground = adjustedBackground
             pressedStripElementBackground = doubleAdjustedBackground
         }
-        navBar = background
 
 
         adjustedBackgroundFilter = colorFilter(adjustedBackground)

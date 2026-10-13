@@ -11,7 +11,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.view.ContextThemeWrapper;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
@@ -27,7 +26,6 @@ import helium314.keyboard.latin.RichInputMethodSubtype;
 import helium314.keyboard.latin.common.StringUtils;
 import helium314.keyboard.latin.utils.KtxKt;
 import helium314.keyboard.latin.utils.LayoutType;
-import helium314.keyboard.latin.utils.ResourceUtils;
 import helium314.keyboard.latin.utils.RunInLocaleKt;
 import helium314.keyboard.latin.utils.StatsUtils;
 import helium314.keyboard.latin.utils.SubtypeSettings;
@@ -58,7 +56,6 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     public static final String PREF_HINT_FONT_SCALE = "hint_font_scale";
     public static final String PREF_SPACE_HORIZONTAL_SWIPE = "horizontal_space_swipe";
     public static final String PREF_SPACE_VERTICAL_SWIPE = "vertical_space_swipe";
-    public static final String PREF_DELETE_SWIPE = "delete_swipe";
     public static final String PREF_AUTOSPACE_AFTER_PUNCTUATION = "autospace_after_punctuation";
     public static final String PREF_SHIFT_REMOVES_AUTOSPACE = "shift_removes_autospace";
     public static final String PREF_KEY_LONGPRESS_TIMEOUT = "key_longpress_timeout";
@@ -73,23 +70,12 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     public static final String PREF_MORE_POPUP_KEYS = "more_popup_keys";
     public static final String PREF_SHOW_TLD_POPUP_KEYS = "show_tld_popup_keys";
     public static final String PREF_SPACE_TO_CHANGE_LANG = "prefs_long_press_keyboard_to_change_lang";
-    public static final String PREF_LANGUAGE_SWIPE_DISTANCE = "language_swipe_distance";
-    public static final String PREF_NAVBAR_COLOR = "navbar_color";
-    public static final String PREF_ENABLED_SUBTYPES = "enabled_subtypes";
     public static final String PREF_SELECTED_SUBTYPE = "selected_subtype";
-    public static final String PREF_DONT_SHOW_MISSING_DICTIONARY_DIALOG = "dont_show_missing_dict_dialog";
     public static final String PREF_TOOLBAR_KEYS = "toolbar_keys";
     public static final String PREF_ABC_AFTER_SYMBOL_SPACE = "abc_after_symbol_space";
-    public static final String PREF_ABC_AFTER_NUMPAD_SPACE = "abc_after_numpad_space";
     public static final String PREF_REMOVE_REDUNDANT_POPUPS = "remove_redundant_popups";
     public static final String PREF_TIMESTAMP_FORMAT = "timestamp_format";
     public static final String PREF_TOOLBAR_MODE = "toolbar_mode";
-    public static final String PREF_SHOW_ONLY_TOOLBAR_WITH_HARDWARE_KEYBOARD = "only_toolbar_with_hw_keyboard";
-
-    public static final String PREF_RECENT_EMOJIS = "recent_emojis";
-    public static final String PREF_LAST_SHOWN_EMOJI_CATEGORY_ID = "last_shown_emoji_category_id";
-    public static final String PREF_LAST_SHOWN_EMOJI_CATEGORY_PAGE_ID = "last_shown_emoji_category_page_id";
-
     public static final String PREF_SAVE_SUBTYPE_PER_APP = "save_subtype_per_app";
     public static final String PREF_SAVED_APP_SUBTYPE_PREFIX = "saved_app_subtype_";
 
@@ -103,8 +89,7 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     // preferences that are not used in SettingsValues and thus should not trigger reload when changed
     private static boolean reloadOnChanged(String key) {
         return switch (key) {
-            case PREF_LAST_SHOWN_EMOJI_CATEGORY_PAGE_ID, PREF_LAST_SHOWN_EMOJI_CATEGORY_ID, PREF_RECENT_EMOJIS,
-                 PREF_DONT_SHOW_MISSING_DICTIONARY_DIALOG, PREF_SELECTED_SUBTYPE -> false;
+            case PREF_SELECTED_SUBTYPE -> false;
             default -> !key.startsWith(PREF_SAVED_APP_SUBTYPE_PREFIX) && !key.startsWith("floating_pos");
         };
     }
@@ -249,24 +234,6 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
         // is NOKEYS and if it's not hidden (e.g. folded inside the device).
         return conf.keyboard != Configuration.KEYBOARD_NOKEYS
                 && conf.hardKeyboardHidden != Configuration.HARDKEYBOARDHIDDEN_YES;
-    }
-
-    public boolean readShowToolbarOnly() {
-        return mSettingsValues.mHasHardwareKeyboard
-            && mPrefs.getBoolean(PREF_SHOW_ONLY_TOOLBAR_WITH_HARDWARE_KEYBOARD, Defaults.PREF_SHOW_ONLY_TOOLBAR_WITH_HARDWARE_KEYBOARD);
-    }
-
-    public static Context getDayNightContext(final Context context, final boolean wantNight) {
-        final boolean isNight = ResourceUtils.isNight(context.getResources());
-        if (isNight == wantNight)
-            return context;
-        final Configuration config = new Configuration(context.getResources().getConfiguration());
-        final int night = config.uiMode & Configuration.UI_MODE_NIGHT_MASK;
-        final int uiModeWithNightBitsZero = config.uiMode - night;
-        config.uiMode = uiModeWithNightBitsZero + (wantNight ? Configuration.UI_MODE_NIGHT_YES : Configuration.UI_MODE_NIGHT_NO);
-        final ContextThemeWrapper wrapper = new ContextThemeWrapper(context, R.style.platformActivityTheme);
-        wrapper.applyOverrideConfiguration(config);
-        return wrapper;
     }
 
     public boolean isTablet() {
