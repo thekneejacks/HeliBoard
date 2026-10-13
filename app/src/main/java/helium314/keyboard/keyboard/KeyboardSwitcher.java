@@ -206,9 +206,7 @@ public final class KeyboardSwitcher {
         mState.toggleLayout(layout, autoCapsFlags, recapitalizeMode);
     }
 
-    public void onLongPressAlphaSymbolForNumpad() {
-        mState.onLongPressAlphaSymbolForNumpad();
-    }
+
 
     public enum KeyboardSwitchState {
         HIDDEN(null),
@@ -393,10 +391,6 @@ public final class KeyboardSwitcher {
             setKeyboard(KeyboardElement.SYMBOLS_SHIFTED, KeyboardSwitchState.SYMBOLS_SHIFTED);
         }
 
-        @Override
-        public void setNumpadKeyboard() {
-            setKeyboard(KeyboardElement.NUMPAD, KeyboardSwitchState.OTHER);
-        }
 
         @Override
         public void startDoubleTapShiftKeyTimer() {

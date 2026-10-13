@@ -871,7 +871,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element{
             }
         }
         if (code == KeyCode.SYMBOL_ALPHA) {
-            sListener.onLongPressAlphaSymbolForNumpad();
             return;
         }
 

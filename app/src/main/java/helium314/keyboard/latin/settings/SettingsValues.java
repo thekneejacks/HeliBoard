@@ -156,9 +156,6 @@ public class SettingsValues {
             mAlphaAfterSpace.add(KeyboardState.Mode.SYMBOLS);
             mAlphaAfterSpace.add(KeyboardState.Mode.SYMBOLS_SHIFTED);
         }
-        if (prefs.getBoolean(Settings.PREF_ABC_AFTER_NUMPAD_SPACE, Defaults.PREF_ABC_AFTER_NUMPAD_SPACE)) {
-            mAlphaAfterSpace.add(KeyboardState.Mode.NUMPAD);
-        }
         mRemoveRedundantPopups = prefs.getBoolean(Settings.PREF_REMOVE_REDUNDANT_POPUPS, Defaults.PREF_REMOVE_REDUNDANT_POPUPS);
         mFontSizeMultiplier = prefs.getFloat(Settings.PREF_FONT_SCALE, Defaults.PREF_FONT_SCALE);
         mHintFontSizeMultiplier = prefs.getFloat(Settings.PREF_HINT_FONT_SCALE, Defaults.PREF_HINT_FONT_SCALE);

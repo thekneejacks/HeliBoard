@@ -89,7 +89,6 @@ enum class KeyboardElement() {
     ALPHABET_SHIFT_LOCKED(),
     SYMBOLS(),
     SYMBOLS_SHIFTED(),
-    NUMPAD(),
     NUMBER(),
     PHONE(),
     PHONE_SYMBOLS(),;
@@ -98,8 +97,8 @@ enum class KeyboardElement() {
     val isAlphaOrSymbol get() = this <= SYMBOLS_SHIFTED
     val isAlphabetShifted get() = isAlphabet && this != ALPHABET
     val isAlphabetShiftedManually get() = this == ALPHABET_MANUAL_SHIFTED || this == ALPHABET_SHIFT_LOCKED
-    val isNumberLayout get() = this in NUMPAD..PHONE_SYMBOLS
-    val takesFunctionalKeys get() = this <= NUMPAD
+    val isNumberLayout get() = this in NUMBER..PHONE_SYMBOLS
+    val takesFunctionalKeys get() = this <= NUMBER
     val capsMode get() = when (this) {
         ALPHABET_AUTOMATIC_SHIFTED -> CapsMode.AUTO
         ALPHABET_MANUAL_SHIFTED -> CapsMode.MANUAL

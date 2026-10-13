@@ -30,7 +30,6 @@ class KeyboardState(private val switchActions: SwitchActions) {
     interface SwitchActions {
         fun setAlphabetKeyboard(shiftMode: ShiftMode)
 
-        fun setNumpadKeyboard()
         fun setSymbolsKeyboard()
         fun setSymbolsShiftedKeyboard()
 
@@ -136,7 +135,6 @@ class KeyboardState(private val switchActions: SwitchActions) {
             is Alphabet -> switchActions.setAlphabetKeyboard(layout.shiftMode)
             Utility.SYMBOLS -> switchActions.setSymbolsKeyboard()
             Utility.SYMBOLS_SHIFTED -> switchActions.setSymbolsShiftedKeyboard()
-            Utility.NUMPAD -> switchActions.setNumpadKeyboard()
         }
         mode = layout.mode()
         if (layout is Alphabet) shiftMode = layout.shiftMode
@@ -145,12 +143,6 @@ class KeyboardState(private val switchActions: SwitchActions) {
         if (layout is Alphabet && layout.shiftMode == ShiftMode.AUTOMATIC) {
             onUpdateShiftState(layout.autoCapsFlags, layout.recapitalizeMode)
         }
-    }
-
-    fun onLongPressAlphaSymbolForNumpad() {
-        // We want sliding input to return to the original layout, so
-        // don't remember the layout shown momentarily when holding
-        loadLayout(Utility.NUMPAD)
     }
 
     fun toggleLayout(layout: Utility, autoCapsFlags: Int, recapitalizeMode: RecapitalizeMode?) {
@@ -225,7 +217,6 @@ class KeyboardState(private val switchActions: SwitchActions) {
             // to accommodate toolbar keys and prevent double-loads.
             KeyCode.SYMBOL       -> if (withSliding) slideInto(Utility.SYMBOLS)
             KeyCode.ALPHA        -> if (withSliding) slideInto(Alphabet(shiftMode, autoCapsFlags, recapitalizeMode))
-            KeyCode.NUMPAD       -> if (withSliding) slideInto(Utility.NUMPAD)
         }
     }
 
@@ -415,8 +406,6 @@ class KeyboardState(private val switchActions: SwitchActions) {
             updateAlphabetShiftState(autoCapsFlags, recapitalizeMode)
         } else when (code) {
             KeyCode.ALPHA -> resetToAlpha(autoCapsFlags, recapitalizeMode)
-            // Note: Printing clipboard content is handled in InputLogic.handleFunctionalEvent
-            KeyCode.NUMPAD -> toggleLayout(Utility.NUMPAD, autoCapsFlags, recapitalizeMode)
             KeyCode.SYMBOL -> toggleLayout(Utility.SYMBOLS, autoCapsFlags, recapitalizeMode)
         }
     }
@@ -433,14 +422,12 @@ class KeyboardState(private val switchActions: SwitchActions) {
         ALPHABET,
         SYMBOLS,
         SYMBOLS_SHIFTED,
-        NUMPAD,
     ;
         fun directive(shiftMode: ShiftMode, autoCapsFlags: Int, recapitalizeMode: RecapitalizeMode?): LayoutDirective {
             return when (this) {
                 ALPHABET -> Alphabet(shiftMode, autoCapsFlags, recapitalizeMode)
                 SYMBOLS -> Utility.SYMBOLS
                 SYMBOLS_SHIFTED -> Utility.SYMBOLS_SHIFTED
-                NUMPAD -> Utility.NUMPAD
             }
         }
     }

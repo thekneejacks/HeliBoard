@@ -49,8 +49,6 @@ class KeyboardParser(private val params: KeyboardParams, private val context: Co
             KeyboardElement.PHONE -> LayoutType.PHONE
             KeyboardElement.PHONE_SYMBOLS -> LayoutType.PHONE_SYMBOLS
             KeyboardElement.NUMBER -> LayoutType.NUMBER
-            KeyboardElement.NUMPAD -> if (Settings.getValues().mDisplayOrientation == Configuration.ORIENTATION_LANDSCAPE)
-                LayoutType.NUMPAD_LANDSCAPE else LayoutType.NUMPAD
             else -> LayoutType.MAIN
         }
         val baseKeys = LayoutParser.parseLayout(layoutType, params, context)
@@ -75,7 +73,7 @@ class KeyboardParser(private val params: KeyboardParams, private val context: Co
     private fun createRows(baseKeys: MutableList<MutableList<KeyData>>): ArrayList<ArrayList<KeyParams>> {
         // add padding for number layouts in landscape mode (maybe do it some other way later)
         val element = params.mId.element
-        if (element.isNumberLayout && element != KeyboardElement.NUMPAD
+        if (element.isNumberLayout
                 && context.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             params.mLeftPadding = (params.mOccupiedWidth * 0.1f).toInt()
             params.mRightPadding = (params.mOccupiedWidth * 0.1f).toInt()

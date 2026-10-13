@@ -136,20 +136,12 @@ class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inp
     override fun onHorizontalSpaceSwipe(steps: Int): Boolean = when (Settings.getValues().mSpaceSwipeHorizontal) {
         KeyboardActionListener.SwipeAction.MOVE_CURSOR -> onMoveCursorHorizontally(steps)
         KeyboardActionListener.SwipeAction.SWITCH_LANGUAGE -> onLanguageSlide(steps)
-        KeyboardActionListener.SwipeAction.TOGGLE_NUMPAD -> {
-            toggleLayout(LayoutDirective.Utility.NUMPAD, latinIME.currentAutoCapsState, latinIME.currentRecapitalizeState)
-            true
-        }
         else -> false
     }
 
     override fun onVerticalSpaceSwipe(steps: Int): Boolean = when (Settings.getValues().mSpaceSwipeVertical) {
         KeyboardActionListener.SwipeAction.MOVE_CURSOR -> onMoveCursorVertically(steps)
         KeyboardActionListener.SwipeAction.SWITCH_LANGUAGE -> onLanguageSlide(steps)
-        KeyboardActionListener.SwipeAction.TOGGLE_NUMPAD -> {
-            toggleLayout(LayoutDirective.Utility.NUMPAD, latinIME.currentAutoCapsState, latinIME.currentRecapitalizeState)
-            true
-        }
         KeyboardActionListener.SwipeAction.HIDE_KEYBOARD -> {
             latinIME.requestHideSelf(0)
             true
@@ -164,10 +156,6 @@ class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inp
 
     override fun toggleLayout(layout: LayoutDirective.Utility, autoCapsFlags: Int, recapitalizeMode: RecapitalizeMode?) {
         keyboardSwitcher.toggleLayout(layout, autoCapsFlags, recapitalizeMode)
-    }
-
-    override fun onLongPressAlphaSymbolForNumpad() {
-        keyboardSwitcher.onLongPressAlphaSymbolForNumpad()
     }
 
     override fun onMoveDeletePointer(steps: Int) {
