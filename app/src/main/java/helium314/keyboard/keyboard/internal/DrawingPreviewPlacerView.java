@@ -35,12 +35,6 @@ public final class DrawingPreviewPlacerView extends RelativeLayout {
         setLayerType(LAYER_TYPE_HARDWARE, layerPaint);
     }
 
-    public void addPreview(final AbstractDrawingPreview preview) {
-        if (!mPreviews.contains(preview)) {
-            mPreviews.add(preview);
-        }
-    }
-
     public void setKeyboardViewGeometry(final int[] originCoords, final int width,
             final int height) {
         CoordinateUtils.copy(mKeyboardViewOrigin, originCoords);

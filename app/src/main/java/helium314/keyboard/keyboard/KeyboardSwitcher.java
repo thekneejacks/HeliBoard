@@ -141,7 +141,7 @@ public final class KeyboardSwitcher {
     }
 
     public void saveKeyboardState() {
-        if (getKeyboard() != null || isShowingEmojiPalettes() || isShowingClipboardHistory()) {
+        if (getKeyboard() != null) {
             mState.onSaveKeyboardState();
         }
     }
@@ -221,10 +221,7 @@ public final class KeyboardSwitcher {
     }
 
     public KeyboardSwitchState getKeyboardSwitchState() {
-        boolean hidden = !isShowingEmojiPalettes() && !isShowingClipboardHistory()
-                && (mKeyboardLayoutSet == null
-                || mKeyboardView == null
-                || !mKeyboardView.isShown());
+        boolean hidden = (mKeyboardLayoutSet == null || mKeyboardView == null || !mKeyboardView.isShown());
         if (hidden) {
             return KeyboardSwitchState.HIDDEN;
         } else if (isShowingKeyboardId(KeyboardElement.SYMBOLS_SHIFTED)) {
@@ -280,18 +277,8 @@ public final class KeyboardSwitcher {
         return false;
     }
 
-    public boolean isShowingEmojiPalettes() {
-        return false;
-    }
-
-    public boolean isShowingClipboardHistory() {
-        return false;
-    }
 
     public boolean isShowingPopupKeysPanel() {
-        if (isShowingEmojiPalettes() || isShowingClipboardHistory()) {
-            return false;
-        }
         return mKeyboardView.isShowingPopupKeysPanel();
     }
 
@@ -367,10 +354,6 @@ public final class KeyboardSwitcher {
             return ScriptUtils.SCRIPT_UNKNOWN;
         }
         return mKeyboardLayoutSet.getScript();
-    }
-
-    public void switchToSubtype(InputMethodSubtype subtype) {
-        mLatinIME.switchToSubtype(subtype);
     }
 
 

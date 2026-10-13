@@ -54,12 +54,9 @@ object Defaults {
     val PREF_SPACE_HORIZONTAL_SWIPE = KeyboardActionListener.SwipeAction.MOVE_CURSOR.name
     @JvmField
     val PREF_SPACE_VERTICAL_SWIPE = KeyboardActionListener.SwipeAction.NONE.name
-    const val PREF_DELETE_SWIPE = true
     const val PREF_AUTOSPACE_AFTER_PUNCTUATION = false
     const val PREF_SHIFT_REMOVES_AUTOSPACE = false
     const val PREF_KEY_LONGPRESS_TIMEOUT = 300
-
-    const val PREFS_LONG_PRESS_SYMBOLS_FOR_NUMPAD = false
 
     const val PREF_SHOW_NUMBER_ROW = false
     const val PREF_SHOW_NUMBER_ROW_IN_SYMBOLS = true
@@ -70,14 +67,10 @@ object Defaults {
     const val PREF_POPUP_KEYS_HINT_ORDER = POPUP_KEYS_LABEL_DEFAULT
     const val PREF_SHOW_TLD_POPUP_KEYS = true
     const val PREF_MORE_POPUP_KEYS = "main"
-    const val PREF_SPACE_TO_CHANGE_LANG = true
-    const val PREF_LANGUAGE_SWIPE_DISTANCE = 5
 
     const val PREF_SELECTED_SUBTYPE = ""
     const val PREF_TOOLBAR_MODE = "EXPANDABLE"
     const val PREF_ABC_AFTER_SYMBOL_SPACE = true
     const val PREF_REMOVE_REDUNDANT_POPUPS = false
     const val PREF_TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss"
-    const val PREF_SAVE_SUBTYPE_PER_APP = false
-    const val PREF_SHOW_ONLY_TOOLBAR_WITH_HARDWARE_KEYBOARD = false
 }

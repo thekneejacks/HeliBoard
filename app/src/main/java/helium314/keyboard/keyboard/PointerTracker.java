@@ -141,7 +141,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element{
     private boolean mIsAllowedDraggingFinger;
     // true if a keyswipe gesture is enabled and warranted.
     private boolean mKeySwipeAllowed = false;
-    private static boolean sInKeySwipe = false;
 
 
     // TODO: Add PointerTrackerFactory singleton and move some class static methods into it.
@@ -522,7 +521,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element{
                 || mKeyDetector.alwaysAllowsKeySelectionByDraggingFinger();
         if (key != null && isSwiper(key.getCode())) {
             mKeySwipeAllowed = true;
-            sInKeySwipe = true;
         }
         mKeyboardLayoutHasBeenChanged = false;
         mIsTrackingForActionDisabled = false;
@@ -807,8 +805,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element{
 
         if (mKeySwipeAllowed) {
             mKeySwipeAllowed = false;
-            sInKeySwipe = false;
-
 
             if (mInHorizontalSwipe || mInVerticalSwipe) {
                 mInHorizontalSwipe = false;
@@ -860,7 +856,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element{
             return;
         }
         if (code == KeyCode.LANGUAGE_SWITCH
-                || (code == Constants.CODE_SPACE && key.getPopupKeys() == null && Settings.getValues().mSpaceForLangChange)
         ) {
             // Long pressing the space key invokes IME switcher dialog.
             if (sListener.onCustomRequest(KeyboardActionListener.CustomAction.SHOW_INPUT_METHOD_PICKER)) {
@@ -868,7 +863,7 @@ public final class PointerTracker implements PointerTrackerQueue.Element{
                 sListener.onReleaseKey(code, false);
                 return;
             }
-        }
+        } else {if (code == Constants.CODE_SPACE) {key.getPopupKeys();}}
         if (code == KeyCode.SYMBOL_ALPHA) {
             return;
         }
@@ -884,7 +879,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element{
         mPopupKeysPanel = popupKeysPanel;
         if (mKeySwipeAllowed) {
             mKeySwipeAllowed = false;
-            sInKeySwipe = false;
         }
     }
 
@@ -948,11 +942,7 @@ public final class PointerTracker implements PointerTrackerQueue.Element{
             sIsShiftLongPressSuppressed = false;
             return;
         }
-        if (code == KeyCode.SYMBOL_ALPHA
-            && (!Settings.getValues().mLongPressSymbolsForNumpad
-                || mKeyboard.mId.getElement() != KeyboardElement.SYMBOLS
-            )
-        ) {
+        if (code == KeyCode.SYMBOL_ALPHA) {
             return;
         }
 
@@ -1011,7 +1001,6 @@ public final class PointerTracker implements PointerTrackerQueue.Element{
         mCurrentRepeatingKeyCode = code;
         if (mKeySwipeAllowed) {
             mKeySwipeAllowed = false;
-            sInKeySwipe = false;
         }
         final int nextRepeatCount = repeatCount + 1;
         startKeyRepeatTimer(nextRepeatCount);
@@ -1024,9 +1013,4 @@ public final class PointerTracker implements PointerTrackerQueue.Element{
         sTimerProxy.startKeyRepeatTimerOf(this, repeatCount, delay);
     }
 
-    private void printTouchEvent(final String title, final int x, final int y,
-            final long eventTime) {
-        final Key key = mKeyDetector.detectHitKey(x, y);
-        final String code = (key == null ? "none" : Constants.printableCode(key.getCode()));
-    }
 }

@@ -10,14 +10,6 @@ import android.view.KeyEvent
 // taken from FlorisBoard and modified
 object KeyCode {
     object Spec {
-        const val CHARACTERS_MIN = 1
-        const val CHARACTERS_MAX = 65535
-        val CHARACTERS = CHARACTERS_MIN..CHARACTERS_MAX
-
-        const val INTERNAL_FLORIS_MIN = -9999
-        const val INTERNAL_FLORIS_MAX = -1
-        val INTERNAL_FLORIS = INTERNAL_FLORIS_MIN..INTERNAL_FLORIS_MAX // do NOT add key codes in this range
-        val INTERNAL_HELI = -19999..-10000 // for keys exclusive to this app
         val CURRENCY = CURRENCY_SLOT_6..CURRENCY_SLOT_1
     }
 

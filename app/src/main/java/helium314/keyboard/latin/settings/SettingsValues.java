@@ -56,7 +56,6 @@ public class SettingsValues {
     public final boolean mLocalizedNumberRow;
     public final boolean mShowNumberRowHints;
     public final boolean mShowTldPopupKeys;
-    public final boolean mSpaceForLangChange;
     public final boolean mVarToolbarDirection;
     public final boolean mUseDoubleSpacePeriod;
     public final KeyboardActionListener.SwipeAction mSpaceSwipeHorizontal;
@@ -78,7 +77,6 @@ public class SettingsValues {
     public final boolean mRemoveRedundantPopups;
     public final float mFontSizeMultiplier;
     public final float mHintFontSizeMultiplier;
-    public final boolean mLongPressSymbolsForNumpad;
 
     // From the input box
     @NonNull
@@ -114,7 +112,6 @@ public class SettingsValues {
         mLocalizedNumberRow = SubtypeUtilsKt.getHasLocalizedNumberRow(selectedSubtype, prefs);
         mShowNumberRowHints = prefs.getBoolean(Settings.PREF_SHOW_NUMBER_ROW_HINTS, Defaults.PREF_SHOW_NUMBER_ROW_HINTS);
         mShowTldPopupKeys = prefs.getBoolean(Settings.PREF_SHOW_TLD_POPUP_KEYS, Defaults.PREF_SHOW_TLD_POPUP_KEYS);
-        mSpaceForLangChange = prefs.getBoolean(Settings.PREF_SPACE_TO_CHANGE_LANG, Defaults.PREF_SPACE_TO_CHANGE_LANG);
         mVarToolbarDirection = mToolbarMode != ToolbarMode.HIDDEN && prefs.getBoolean(Settings.PREF_VARIABLE_TOOLBAR_DIRECTION, Defaults.PREF_VARIABLE_TOOLBAR_DIRECTION);
         mUseDoubleSpacePeriod = prefs.getBoolean(Settings.PREF_KEY_USE_DOUBLE_SPACE_PERIOD, Defaults.PREF_KEY_USE_DOUBLE_SPACE_PERIOD)
                 && inputAttributes.mIsGeneralTextInput;
@@ -145,7 +142,6 @@ public class SettingsValues {
         mSpacingAndPunctuations = new SpacingAndPunctuations(res, false);
         mBottomPaddingScale = Settings.readBottomPaddingScale(prefs, isLandscape, isFolded);
         mSidePaddingScale = Settings.readSidePaddingScale(prefs, isLandscape, false, isFolded);
-        mLongPressSymbolsForNumpad = prefs.getBoolean(Settings.PREFS_LONG_PRESS_SYMBOLS_FOR_NUMPAD, Defaults.PREFS_LONG_PRESS_SYMBOLS_FOR_NUMPAD);
         if (prefs.getBoolean(Settings.PREF_ABC_AFTER_SYMBOL_SPACE, Defaults.PREF_ABC_AFTER_SYMBOL_SPACE)) {
             mAlphaAfterSpace.add(KeyboardState.Mode.SYMBOLS);
             mAlphaAfterSpace.add(KeyboardState.Mode.SYMBOLS_SHIFTED);

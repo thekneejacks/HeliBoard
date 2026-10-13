@@ -117,11 +117,10 @@ class SubtypeState(private val switchToSubtype: (InputMethodSubtype?) -> Unit) {
     // 5. we don't switch.
     fun getSubtypeForLocales(
         richImm: RichInputMethodManager,
-        locales: MutableList<Locale>,
-        subtypeForApp: RichInputMethodSubtype?
+        locales: MutableList<Locale>
     ): InputMethodSubtype? {
         val overridden = overriddenByLocale
-        if (locales.isEmpty() && subtypeForApp == null) {
+        if (locales.isEmpty()) {
             if (overridden != null) {
                 // no locales provided, so switch back to
                 // whatever subtype was used last time.
@@ -136,10 +135,6 @@ class SubtypeState(private val switchToSubtype: (InputMethodSubtype?) -> Unit) {
 
         // Try finding a subtype matching the hint languages and app saved subtype.
         var newSubtype: InputMethodSubtype? = null
-        if (subtypeForApp != null) {
-            if (locales.any { isGoodMatch(subtypeForApp, it) })
-                newSubtype = subtypeForApp.rawSubtype // saved subtype is a good match
-        }
 
         if (newSubtype == null) {
             if (locales.any { isGoodMatch(currentSubtype, it) }) {
@@ -150,10 +145,6 @@ class SubtypeState(private val switchToSubtype: (InputMethodSubtype?) -> Unit) {
             newSubtype = locales.firstNotNullOfOrNull { richImm.findSubtypeForHintLocale(it) }
         }
 
-        if (newSubtype == null && subtypeForApp != null) {
-            // fall back on saved subtype
-            newSubtype = subtypeForApp.rawSubtype
-        }
 
         if (newSubtype != null && newSubtype != currentSubtype.rawSubtype) {
             if (overridden == null) {

@@ -479,7 +479,6 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
         if (hasSuggestionStripView()) {
             mSuggestionStripView.setRtl();
         }
-        mSettings.saveSubtypeForApp(mRichImm.getCurrentSubtype(), getCurrentInputEditorInfo().packageName);
     }
 
     /** alias to onCurrentInputMethodSubtypeChanged with a better name, as it's also used for internal switching */
@@ -490,11 +489,8 @@ public class LatinIME extends InputMethodService implements SuggestionStripView.
     private void onStartInputInternal(final EditorInfo editorInfo, final boolean restarting) {
         super.onStartInput(editorInfo, restarting);
 
-        final RichInputMethodSubtype subtypeForApp = editorInfo == null
-            ? null :
-            mSettings.getSubtypeForApp(editorInfo.packageName);
         final List<Locale> hintLocales = EditorInfoCompatUtils.getHintLocales(editorInfo);
-        final InputMethodSubtype subtypeForLocales = mSubtypeState.getSubtypeForLocales(mRichImm, hintLocales, subtypeForApp);
+        final InputMethodSubtype subtypeForLocales = mSubtypeState.getSubtypeForLocales(mRichImm, hintLocales);
         if (subtypeForLocales != null) {
             // found a better subtype using hint locales and saved-per-app subtype, that we should switch to.
             mHandler.postSwitchLanguage(subtypeForLocales);

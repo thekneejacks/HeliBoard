@@ -21,9 +21,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import helium314.keyboard.keyboard.KeyboardActionListener;
 import helium314.keyboard.latin.InputAttributes;
 import helium314.keyboard.latin.R;
-import helium314.keyboard.latin.RichInputMethodManager;
-import helium314.keyboard.latin.RichInputMethodSubtype;
-import helium314.keyboard.latin.common.StringUtils;
 import helium314.keyboard.latin.utils.KtxKt;
 import helium314.keyboard.latin.utils.LayoutType;
 import helium314.keyboard.latin.utils.RunInLocaleKt;
@@ -59,7 +56,6 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     public static final String PREF_AUTOSPACE_AFTER_PUNCTUATION = "autospace_after_punctuation";
     public static final String PREF_SHIFT_REMOVES_AUTOSPACE = "shift_removes_autospace";
     public static final String PREF_KEY_LONGPRESS_TIMEOUT = "key_longpress_timeout";
-    public static final String PREFS_LONG_PRESS_SYMBOLS_FOR_NUMPAD = "long_press_symbols_for_numpad";
     public static final String PREF_SHOW_NUMBER_ROW = "show_number_row";
     public static final String PREF_SHOW_NUMBER_ROW_IN_SYMBOLS = "show_number_row_in_symbols";
     public static final String PREF_LOCALIZED_NUMBER_ROW = "localized_number_row";
@@ -69,14 +65,12 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     public static final String PREF_POPUP_KEYS_HINT_ORDER = "popup_keys_labels_order";
     public static final String PREF_MORE_POPUP_KEYS = "more_popup_keys";
     public static final String PREF_SHOW_TLD_POPUP_KEYS = "show_tld_popup_keys";
-    public static final String PREF_SPACE_TO_CHANGE_LANG = "prefs_long_press_keyboard_to_change_lang";
     public static final String PREF_SELECTED_SUBTYPE = "selected_subtype";
     public static final String PREF_TOOLBAR_KEYS = "toolbar_keys";
     public static final String PREF_ABC_AFTER_SYMBOL_SPACE = "abc_after_symbol_space";
     public static final String PREF_REMOVE_REDUNDANT_POPUPS = "remove_redundant_popups";
     public static final String PREF_TIMESTAMP_FORMAT = "timestamp_format";
     public static final String PREF_TOOLBAR_MODE = "toolbar_mode";
-    public static final String PREF_SAVE_SUBTYPE_PER_APP = "save_subtype_per_app";
     public static final String PREF_SAVED_APP_SUBTYPE_PREFIX = "saved_app_subtype_";
 
     private Context mContext;
@@ -264,27 +258,6 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     // "default" layout as in this is used if nothing else is specified in the subtype
     public static String readDefaultLayoutName(final LayoutType type, final SharedPreferences prefs) {
         return prefs.getString(PREF_LAYOUT_PREFIX + type.name(), Defaults.INSTANCE.getDefault(type));
-    }
-
-    public void saveSubtypeForApp(RichInputMethodSubtype subtype, String packageName) {
-        if (isSubtypePerApp() && ! StringUtils.isEmpty(packageName)) {
-            mPrefs.edit().putString(PREF_SAVED_APP_SUBTYPE_PREFIX + packageName,
-                                    SettingsSubtype.Companion.toSettingsSubtype(subtype.getRawSubtype()).toPref()).apply();
-        }
-    }
-
-    public RichInputMethodSubtype getSubtypeForApp(String packageName) {
-        if (! isSubtypePerApp() || StringUtils.isEmpty(packageName)) return null;
-        var subtypePref = mPrefs.getString(PREF_SAVED_APP_SUBTYPE_PREFIX + packageName, null);
-        if (subtypePref == null) return null;
-        var settingsSubtype = SettingsSubtype.Companion.toSettingsSubtype(subtypePref);
-        var subtype = settingsSubtype.toEnabledSubtype();
-        if (subtype == null) subtype = RichInputMethodManager.getInstance().findSubtypeForHintLocale(settingsSubtype.getLocale());
-        return subtype != null? RichInputMethodSubtype.Companion.get(subtype) : null;
-    }
-
-    private boolean isSubtypePerApp() {
-        return mPrefs.getBoolean(PREF_SAVE_SUBTYPE_PER_APP, Defaults.PREF_SAVE_SUBTYPE_PER_APP);
     }
 
 }
